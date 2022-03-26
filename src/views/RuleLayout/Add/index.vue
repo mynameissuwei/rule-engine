@@ -43,7 +43,7 @@ import {reactive, ref} from 'vue';
 import RuleGraph from '@/views/RuleGraph/index.vue'
 import {useRoute, useRouter} from "vue-router";
 import {randomRuleLayoutCode, saveRuleLayout} from "@/api/ruleLayout";
-import { ElMessage } from '@enn/element-plus';
+import { ElMessage } from 'element-plus';
 import router from "@/router";
 
 export default {

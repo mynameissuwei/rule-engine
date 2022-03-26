@@ -44,7 +44,7 @@ import { ref, reactive, onMounted,onBeforeMount,provide,inject,  } from 'vue';
 import { useRoute,useRouter } from 'vue-router';
 import RuleGraph from "../../RuleGraph/index.vue";
 import  {ruleLayoutDetail, saveRuleLayout, editRuleLayout} from '@/api/ruleLayout'
-import {ElMessage} from "@enn/element-plus";
+import {ElMessage} from "element-plus";
 export default {
   name: "RuleLayoutDetail",
   components: {RuleGraph},
