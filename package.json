@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build:prod": "vite build --mode=production",
-    "build:dev": "vite build --mode=development",
+    "build:prod": "vue-cli-service build --mode production",
+    "build:dev": "vue-cli-service build --mode development",
     "preview": "vite preview"
   },
   "dependencies": {
