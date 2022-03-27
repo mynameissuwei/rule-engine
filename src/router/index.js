@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: "/customRule/edit/:id?",
       name: "editCustomRule",
-      component: () => import("views/CustomRule/edit.vue"),
+      component: () => import("views/customrule/edit.vue"),
     },
   ],
 });
