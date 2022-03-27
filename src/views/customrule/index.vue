@@ -108,7 +108,7 @@ import { useRouter } from 'vue-router'
 import { fetchTableData, deleteList, modifyList } from '@/api/customRule.js'
 import { cloneDeep } from 'lodash'
 import rBadge from '@/components/rBadge.vue'
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessageBox, ElMessage } from '@enn/element-plus'
 import { MoreFilled } from '@element-plus/icons-vue'
 
 const listQuery = reactive({
