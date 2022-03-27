@@ -76,6 +76,7 @@ import RuleModal from "./RuleModal.vue";
 export default {
   components: { PageHeader, QuestionFilled, RuleHeader, RuleModal },
   setup() {
+    console.log(123);
     const router = useRouter();
     const rules = {
       name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
