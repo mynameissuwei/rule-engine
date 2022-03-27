@@ -141,7 +141,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { fetchTableData, deleteList, modifyList } from "@/api/customrule.js";
+import { fetchTableData, deleteList, modifyList } from "@/api/customrule";
 import { cloneDeep } from "lodash";
 import rBadge from "@/components/rBadge.vue";
 import { ElMessageBox, ElMessage } from "@enn/element-plus";
