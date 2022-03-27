@@ -70,7 +70,7 @@ import { QuestionFilled } from "@element-plus/icons-vue";
 // import { defaultArticleModel } from "apis/checkRule";
 import { cloneDeep } from "lodash";
 import { useRouter } from "vue-router";
-import { fetchDetail } from "@/api/customrule.js";
+// import { fetchDetail } from "api/customrule.js";
 import RuleModal from "./RuleModal.vue";
 
 export default {

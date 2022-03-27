@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 import path from "path";
 
 export default defineConfig({
@@ -12,23 +12,23 @@ export default defineConfig({
       views: path.resolve(__dirname, "src/views"),
       layouts: path.resolve(__dirname, "src/layouts"),
       utils: path.resolve(__dirname, "src/utils"),
-      apis: path.resolve(__dirname, "src/apis"),
+      api: path.resolve(__dirname, "src/api"),
       dirs: path.resolve(__dirname, "src/directives"),
     },
   },
   plugins: [vue()],
-  server:{
-    hostname: '0.0.0.0',
+  server: {
+    hostname: "0.0.0.0",
     port: 3000,
-    open:true,
+    open: true,
     // 反向代理
     proxy: {
-      '/api': {
-        target: 'https://os-rule-engine.dev.ennew.com/rule/',
+      "/api": {
+        target: "https://os-rule-engine.dev.ennew.com/rule/",
         changeOrigin: true,
         secure: true,
-        rewrite: path => path.replace(/^\/api/, '')
-      }
-    }},
-})
-
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
+});
