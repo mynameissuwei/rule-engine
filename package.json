@@ -4,13 +4,15 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:prod": "vite build --mode production",
+    "build:dev": "vite build --mode development",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@antv/x6": "^1.31.0",
     "@element-plus/icons-vue": "^1.1.4",
     "@enn/element-plus": "^2.0.0-beta2",
-    "@enncloud/enn-auth-sdk": "^0.1.23",
+    "@enncloud/enn-auth-sdk": "^0.1.30",
     "axios": "^0.26.1",
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",

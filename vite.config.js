@@ -17,18 +17,19 @@ export default defineConfig({
     },
   },
   plugins: [vue()],
-  server: {
-    hostname: "0.0.0.0",
+  server:{
+    https:true,
+    hostname: '0.0.0.0',
     port: 3000,
     open: true,
     // 反向代理
     proxy: {
-      "/api": {
-        target: "https://os-rule-engine.dev.ennew.com/rule/",
+      '/api': {
+        target: 'https://os-rule-engine.dev.ennew.com/rule/',
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
-});
+        rewrite: path => path.replace(/^\/api/, '')
+      }
+    }},
+})
+

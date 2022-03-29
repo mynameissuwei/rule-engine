@@ -8,6 +8,9 @@
     <el-tab-pane label="自定义规则" name="third">
       <custom-rule></custom-rule>
     </el-tab-pane>
+    <el-tab-pane label="脚本规则编排" name="four">
+      <rule-layout-list></rule-layout-list>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -16,10 +19,12 @@ import { ref } from "vue";
 import PageHeader from "comps/PageHeader.vue";
 import CheckRule from "views/checkrule/index.vue";
 import CustomRule from "views/customrule/index.vue";
+import RuleLayoutList from "views/RuleLayout/List/index.vue";
 
 export default {
   name: "tabs",
   components: {
+    RuleLayoutList,
     PageHeader,
     CheckRule,
     CustomRule,
