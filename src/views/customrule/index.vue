@@ -8,7 +8,7 @@
         <el-input v-model="listQuery.ruleCode" placeholder="规则编码" class="handle-input mr10"></el-input>
       </el-col>
       <el-col :span="7">
-        <el-select v-model="listQuery.status" clearable placeholder="请选择">
+        <el-select v-model="listQuery.releaseStatus" clearable placeholder="请选择">
           <el-option
             v-for="item in [
               { value: 0, label: '未发布' },
@@ -114,8 +114,8 @@ import { MoreFilled } from '@element-plus/icons-vue'
 const listQuery = reactive({
   ruleName: '',
   ruleCode: '',
-  status: null,
-  pageIndex: 1,
+  releaseStatus: 1,
+  pageNum: 1,
   pageSize: 10
 })
 const tableData = ref([])
@@ -127,59 +127,40 @@ const multipleSelection = ref([])
 
 // 获取表格数据
 const getList = () => {
-  listLoading.value = false
-  // fetchTableData({
-  //   ...listQuery
-  // }).then((res) => {
-  //   const data = {
-  //     success: true,
-  //     code: '0',
-  //     message: '',
-  //     pageNum: 0,
-  //     pageSize: 10,
-  //     totalPages: 1,
-  //     totalCount: 9,
-  //     data: [
-  //       {
-  //         ruleId: '1',
-  //         ruleName: '测试一条规则',
-  //         ruleCode: 'RL0001',
-  //         releaseStatus: '1',
-  //         callCount: 0,
-  //         updatedUserName: '翟某某',
-  //         updatedDate: '2022-03-09 14:59:23',
-  //         updatedById: '1',
-  //         status: 1
-  //       }
-  //     ]
-  //   }
-  //   tableData.value = data.data
-  //   pageTotal.value = data.totalCount
-  // listLoading.value = false
-  // })
-  const data = {
-    success: true,
-    code: '0',
-    message: '',
-    pageNum: 0,
-    pageSize: 10,
-    totalPages: 1,
-    totalCount: 9,
-    data: [
-      {
-        ruleId: '1',
-        ruleName: '测试一条规则',
-        ruleCode: 'RL0001',
-        releaseStatus: '1',
-        callCount: 0,
-        updatedUserName: '翟某某',
-        updatedDate: '2022-03-09 14:59:23',
-        updatedById: '1',
-        status: 1
-      }
-    ]
-  }
-  tableData.value = data.data
+  listLoading.value = true
+
+  fetchTableData({
+    ...listQuery
+  }).then((res) => {
+
+    // const data = {
+    //   success: true,
+    //   code: '0',
+    //   message: '',
+    //   pageNum: 0,
+    //   pageSize: 10,
+    //   totalPages: 1,
+    //   totalCount: 9,
+    //   data: [
+    //     {
+    //       ruleId: '1',
+    //       ruleName: '测试一条规则',
+    //       ruleCode: 'RL0001',
+    //       releaseStatus: '1',
+    //       callCount: 0,
+    //       updatedUserName: '翟某某',
+    //       updatedDate: '2022-03-09 14:59:23',
+    //       updatedById: '1',
+    //       status: 1
+    //     }
+    //   ]
+    // }
+
+    const data = res.data
+    tableData.value = data.data
+    pageTotal.value = data.totalCount
+    listLoading.value = false
+  })
 }
 
 const handleSelectionChange = (val) => {
@@ -192,7 +173,7 @@ const handleSearch = () => {
 }
 // 分页导航
 const handlePageChange = (val) => {
-  query.pageIndex = val
+  listQuery.pageNum = val
   getList()
 }
 
