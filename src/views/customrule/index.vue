@@ -62,7 +62,11 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="callCount" label="被调用次数" sortable></el-table-column>
+      <el-table-column label="被调用次数" sortable>
+        <template #default="scope">
+          {{scope.row.callCount == null ? '0' : scope.row.callCount}}
+        </template>
+      </el-table-column>
       <el-table-column label="最后修改人" align="center">
         <template #default="scope">
           {{ scope.row.updatedUserName }}
@@ -114,7 +118,7 @@ import { MoreFilled } from '@element-plus/icons-vue'
 const listQuery = reactive({
   ruleName: '',
   ruleCode: '',
-  releaseStatus: 1,
+  releaseStatus: null,
   pageNum: 1,
   pageSize: 10
 })
