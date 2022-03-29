@@ -30,7 +30,7 @@ export default {
     CustomRule,
   },
   setup() {
-    const message = ref("third");
+    const message = ref("four");
     return {
       message,
     };
