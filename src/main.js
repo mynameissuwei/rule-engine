@@ -17,7 +17,6 @@ EnnAuthSdk({
     console.log(message, "error");
   },
 }).then((ennAuth) => {
-  console.log(ennAuth, "ennAuth");
   const app = createApp(App);
   // ennAuth.logout();
   app.config.globalProperties.$ennAuth = ennAuth; // 将实例挂载至vue原型链中，以便其它组件调用 登出功能 （this.authSdk.logout()） 切换租户功能(this.authSdk.selectTenant())
