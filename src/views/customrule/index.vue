@@ -64,7 +64,7 @@
       </el-table-column>
       <el-table-column label="被调用次数" sortable>
         <template #default="scope">
-          {{scope.row.callCount == null ? '0' : scope.row.callCount}}
+          {{scope.row.callCount == null ? '0/次' : scope.row.callCount + '/次'}}
         </template>
       </el-table-column>
       <el-table-column label="最后修改人" align="center">
