@@ -58,7 +58,11 @@
         <el-button size="small">测试</el-button>
       </el-button-group>
     </el-footer>
-    <rule-modal :visible="visible"></rule-modal>
+    <rule-modal
+      :visible="visible"
+      :handleCancel="handleCancel"
+      v-if="visible"
+    ></rule-modal>
   </div>
 </template>
 
@@ -98,9 +102,12 @@ export default {
         dataMap.resetForm();
         dataMap.fieldStatus = "create";
         dataMap.visible = true;
-        nextTick(() => {
-          formFieldRef.value.clearValidate();
-        });
+        // nextTick(() => {
+        //   formFieldRef.value.clearValidate();
+        // });
+      },
+      handleCancel() {
+        dataMap.visible = false;
       },
       onSubmitRule() {},
       onCancel() {

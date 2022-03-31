@@ -70,6 +70,7 @@
       ref="multipleTable"
       @selection-change="handleSelectionChange"
       v-loading="listLoading"
+      max-height="450"
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="ruleName" label="规则名字">

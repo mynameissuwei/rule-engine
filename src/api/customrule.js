@@ -1,31 +1,38 @@
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 export const fetchTableData = (data) => {
   return request({
-    url: '/manager/pageList',
-    method: 'post',
-    data: data
-  })
-}
+    url: "/manager/pageList",
+    method: "post",
+    data: data,
+  });
+};
 
 export const deleteList = (id) => {
   return request({
     url: `/rule/manager/deleteOneRule/${id}`,
-    method: 'get'
-  })
-}
+    method: "get",
+  });
+};
 
 export const modifyList = (data) => {
   return request({
     url: `/rule/manager/batchChangeRules`,
-    method: 'post',
-    data
-  })
-}
+    method: "post",
+    data,
+  });
+};
 
 export const fetchDetail = (id) => {
   return request({
     url: `/rule/manager/viewOneRule/${id}`,
-    method: 'get'
-  })
-}
+    method: "get",
+  });
+};
+
+export const fetchObjectList = () => {
+  return request({
+    url: `/ruleEntityObject/page`,
+    method: "post",
+  });
+};
