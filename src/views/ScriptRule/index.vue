@@ -154,7 +154,7 @@ export default {
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
-/*        ruleGroupCode: route.query.name,*/
+        ruleGroupCode: route.query.name,
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)

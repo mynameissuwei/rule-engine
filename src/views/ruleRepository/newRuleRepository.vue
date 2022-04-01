@@ -58,6 +58,7 @@
 import {reactive} from "vue";
 import {addRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import router from "../../router";
+import {ElMessage} from "@enn/element-plus";
 
 export default {
   name: "newRuleRepository",
@@ -87,6 +88,17 @@ export default {
         ruleGroupDescription:newRuleRepositoryForm.form.newRuleRepositoryDescription
       }
       addRuleRepository(requestBody).then(response => {
+        if(response.data.code !== '0'){
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          message: '新增规则库成功',
+          type: 'success',
+        })
+        router.push({
+          path: '/',
+        })
             console.log(response,12)
             router.push('/'),
                 getRuleRepository
