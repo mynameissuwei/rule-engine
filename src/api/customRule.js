@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-export const fetchTableData = ({ data }) => {
+export const fetchTableData = (data) => {
   return request({
-    url: '/rule/manager/pageList',
+    url: '/manager/pageList',
     method: 'post',
-    data
+    data: data
   })
 }
 

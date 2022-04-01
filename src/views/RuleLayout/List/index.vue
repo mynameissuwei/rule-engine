@@ -116,6 +116,9 @@ export default {
     }
 
     const convertToRuleLayoutList = (data) => {
+      if(!data){
+        return []
+      }
       return data.map(layout => {
         return {
           id: layout.id,
