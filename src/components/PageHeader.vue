@@ -3,7 +3,9 @@
     <div class="top-container">
       <div class="left">{{ name }}</div>
       <div class="right">
-        <el-button type="primary" class="gray-button" plain size="small"
+        <el-button type="primary"
+                   class="gray-button"
+                   plain size="small"
         >修改
         </el-button
         >
@@ -25,7 +27,7 @@
 </template>
 
 <script>
-import {inject, ref} from "vue";
+import {inject} from "vue";
 
 export default {
   name: "pageHeader",
