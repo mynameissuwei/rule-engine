@@ -99,8 +99,7 @@ export default {
         router.push({
           path: '/',
         })
-            console.log(response,12)
-            router.push('/'),
+            console.log(response,12),
                 getRuleRepository
           }
       )
