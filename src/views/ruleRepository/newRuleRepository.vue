@@ -18,22 +18,6 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="* 规则库编码:" prop="newRuleRepositoryCode">
-          <div>
-            <el-input
-                v-model="newRuleRepositoryForm.form.newRuleRepositoryCode"
-                placeholder="纯英文格式，区分大小写"
-                show-word-limit
-                maxlength="20"
-                style="width: 800px;margin-left: 20px;margin-right: 10px">
-            </el-input>
-            <el-button
-                type="text"
-                @click="randomCode">
-              随机生成
-            </el-button>
-          </div>
-        </el-form-item>
         <el-form-item label="规则库描述:" prop="newRuleRepositoryDescription">
           <el-input
               v-model="newRuleRepositoryForm.form.newRuleRepositoryDescription"
