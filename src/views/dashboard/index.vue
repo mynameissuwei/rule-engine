@@ -33,7 +33,7 @@ import CustomRule from "views/customrule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
 import {useRoute} from "vue-router";
 import ScriptRule from "views/ScriptRule/index.vue";
-import entityObject from "views/entityObject/index.vue"
+import entityObject from "views/EntityObject/index.vue"
 
 export default {
   name: "tabs",
