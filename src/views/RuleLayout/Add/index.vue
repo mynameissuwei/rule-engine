@@ -33,7 +33,7 @@
     </el-main>
     <el-footer>
       <el-button type="primary" size="small" @click="addRuleLayout">保存</el-button>
-      <el-button type="primary" size="small" plain @click="scene = 'preview'">取消</el-button>
+      <el-button type="primary" size="small" plain @click="cancelAddRuleLayout">取消</el-button>
     </el-footer>
   </el-container>
 </template>
@@ -75,6 +75,11 @@ export default {
         required: true
       }
     })
+
+    const cancelAddRuleLayout = () => {
+      // scene = 'preview'
+      router.go(-1);
+    }
 
     const route = useRoute();
     const ruleGroupCode = route.query.ruleGroupCode
@@ -175,7 +180,8 @@ export default {
       rules,
       handleRandomRuleLayoutCode,
       addRuleLayout,
-      ruleGraph
+      ruleGraph,
+      cancelAddRuleLayout
     }
   }
 }
