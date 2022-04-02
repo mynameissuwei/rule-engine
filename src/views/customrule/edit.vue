@@ -37,7 +37,64 @@
               >
                 + 添加规则
               </div>
-              <div v-for="item in form.conditions"></div>
+              <div class="rule-container" v-for="(item, index) in ruleSet">
+                <div class="rule-top">
+                  <span class="rule-left">
+                    <el-icon
+                      @click="item.edit = false"
+                      style="cursor: pointer"
+                      v-if="item.edit"
+                      ><arrow-down-bold
+                    /></el-icon>
+
+                    <el-icon
+                      @click="item.edit = true"
+                      style="cursor: pointer"
+                      v-if="!item.edit"
+                      ><arrow-up-bold
+                    /></el-icon>
+
+                    <span> 规则集{{ index + 1 }} </span>
+                  </span>
+                  <span class="rule-right">
+                    <el-icon style="cursor: pointer" @click="handleEdit"
+                      ><edit-pen
+                    /></el-icon>
+                    <span class="space"></span>
+                    <el-icon
+                      style="cursor: pointer"
+                      @click="handleDelete(index)"
+                    >
+                      <delete
+                    /></el-icon>
+                  </span>
+                </div>
+                <el-form
+                  v-if="item.edit"
+                  ref="form"
+                  label-width="auto"
+                  label-position="top"
+                  size="default"
+                >
+                  <el-form-item
+                    :label="item.fieldName"
+                    v-for="(item, index) in item.ruleObjectList
+                      .ruleObjectFieldList"
+                  >
+                    <el-input
+                      v-if="item.calibratorType == 'STRING_EQUALS'"
+                      v-model="item.fieldValue"
+                      :disabled="formDisabled"
+                    />
+                    <el-select
+                      v-if="item.calibratorType == 'VALUE_CONTAIN'"
+                      v-model="item.fieldValue"
+                      :disabled="formDisabled"
+                    >
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+              </div>
             </div>
           </el-form-item>
         </el-form>
@@ -62,6 +119,7 @@
       :visible="visible"
       :handleCancel="handleCancel"
       v-if="visible"
+      @pushRule="pushRule"
     ></rule-modal>
   </div>
 </template>
@@ -70,46 +128,144 @@
 import { reactive, ref, toRefs, nextTick, onBeforeMount } from "vue";
 import PageHeader from "comps/PageHeader.vue";
 import RuleHeader from "./RuleHeader.vue";
-import { QuestionFilled } from "@element-plus/icons-vue";
-// import { defaultArticleModel } from "apis/checkRule";
+import {
+  QuestionFilled,
+  ArrowDownBold,
+  ArrowUpBold,
+  EditPen,
+  Delete,
+} from "@element-plus/icons-vue";
 import { cloneDeep } from "lodash";
 import { useRouter } from "vue-router";
-// import { fetchDetail } from "api/customrule.js";
+import { fetchRuleObjectDetail, createRuleObject } from "api/customrule.js";
 import RuleModal from "./RuleModal.vue";
 
 export default {
-  components: { PageHeader, QuestionFilled, RuleHeader, RuleModal },
+  components: {
+    PageHeader,
+    QuestionFilled,
+    ArrowDownBold,
+    ArrowUpBold,
+    EditPen,
+    Delete,
+    RuleHeader,
+    RuleModal,
+  },
   setup() {
-    console.log(123);
     const router = useRouter();
     const rules = {
       name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
       region: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
     };
     const formFieldRef = ref(null);
+    const ruleSet = ref([
+      {
+        conditionName: "fake_data",
+        sortNo: 1,
+        nextRelation: "AND",
+        ruleObjectList: {
+          id: "12",
+          objectName: "客户",
+          objectCode: "customer",
+          status: 0,
+          useStatus: 0,
+          updatedByName: "苏伟",
+          updatedDate: "2022-03-31 10:35:46",
+          ruleObjectFieldList: [
+            {
+              id: "26",
+              fieldName: "客户类型",
+              fieldCode: "customer_type",
+              fieldType: "java.lang.String",
+              fieldEnum: "小客户;中客户;大客户",
+              calibratorType: "STRING_EQUALS",
+              fieldValue: "123",
+            },
+            {
+              id: "27",
+              fieldName: "客户名称",
+              fieldCode: "customer_name",
+              fieldType: "java.lang.String",
+              fieldEnum: "",
+              calibratorType: "STRING_EQUALS",
+              fieldValue: "kkkk",
+            },
+          ],
+        },
+      },
+    ]);
     const dataMap = reactive({
       form: {
         ruleName: "",
         scenarioName: "",
       },
+      mapObject: {
+        VALUE_CONTAIN: "targetContains",
+        STRING_EQUALS: "targetValue",
+        INTEGER_RANGE: "rangeType",
+      },
+      formDisabled: true,
       id: router.currentRoute.value.params.id,
       visible: false,
       fieldStatus: "",
-      resetForm() {
-        dataMap.form = cloneDeep([]);
-      },
       handleCreate() {
-        dataMap.resetForm();
         dataMap.fieldStatus = "create";
         dataMap.visible = true;
-        // nextTick(() => {
-        //   formFieldRef.value.clearValidate();
-        // });
+      },
+      handleEdit() {
+        dataMap.fieldStatus = "edit";
+        dataMap.visible = true;
       },
       handleCancel() {
         dataMap.visible = false;
       },
-      onSubmitRule() {},
+      handleDelete(index) {
+        ruleSet.value.splice(index, 1);
+      },
+      changeCondition(value) {
+        let result = value.map((item) => {
+          return {
+            ...item,
+            ruleObjectList: item.ruleObjectList.ruleObjectFieldList.map((l) => {
+              let result = {
+                ruleType: l.calibratorType,
+                dataType: l.fieldType,
+                id: l.id,
+                fieldName: l.fieldName,
+                fieldCode: `$.${item.ruleObjectList.objectCode}.${l.fieldCode}`,
+              };
+              result[dataMap.mapObject[l.calibratorType]] = l.fieldValue;
+              return result;
+            }),
+          };
+        });
+        return result;
+      },
+      async onSubmit() {
+        let result = {
+          ...dataMap.form,
+          conditions: dataMap.changeCondition(ruleSet.value),
+        };
+        const res = await createRuleObject(result);
+      },
+      pushRule(ruleObjectList) {
+        let ruleSetObject = {
+          conditionName: "fake_data",
+          sortNo: 1,
+          nextRelation: "AND",
+          ruleObjectList,
+        };
+        let array = [...ruleSet.value, ruleSetObject];
+        let result = array.map((item, idx) => {
+          return {
+            conditionName: `规则集${idx + 1}`,
+            sortNo: idx,
+            nextRelation: "OR",
+            ...item,
+          };
+        });
+        ruleSet.value = result;
+      },
       onCancel() {
         router.push({
           name: "dashboard",
@@ -118,87 +274,11 @@ export default {
       },
     });
     onBeforeMount(async () => {
-      const data = {
-        id: "1",
-        ruleCode: "RL0001",
-        ruleName: "测试一条规则",
-        scenarioName: "测试使用",
-        comment: "规则配置",
-        releaseStatus: "1",
-        status: 1,
-        ruleGroup: {
-          id: "1",
-          ruleGroupCode: "D001",
-          ruleGroupName: "规则一",
-        },
-        conditions: [
-          {
-            sortNo: 1,
-            nextRelation: "AND",
-            ruleName: "123",
-            ruleObjectList: [
-              {
-                id: "2",
-                objectName: "对象二",
-                ruleObjectFieldList: [
-                  {
-                    sortNo: 1,
-                    comment: "测试一下规则field",
-                    fieldName: "name",
-                    fieldType: "String",
-                    dataType: "java.lang.String",
-                    fieldPath: "$.name",
-                    fieldComment: "字符串错误信息",
-                    ruleType: "STRING_NOT_EMPTY",
-                    nextRelation: "AND",
-                    message: "这是返回消息",
-                  },
-                  {
-                    sortNo: 2,
-                    comment: "测试一下规则field",
-                    fieldName: "nickName",
-                    fieldType: "String",
-                    dataType: "java.lang.String",
-                    fieldPath: "$.nickName",
-                    fieldComment: "字符串长度不能超过指定范围",
-                    ruleType: "STRING_LENGTH",
-                    maxValue: "",
-                    minValue: "",
-                    maxLength: 4,
-                    minLength: 2,
-                    rangeType: "GT_LT",
-                    nextRelation: "AND",
-                    message: "这是返回消息",
-                  },
-                  {
-                    sortNo: 2,
-                    comment: "3-field",
-                    fieldName: "company",
-                    fieldType: "String",
-                    dataType: "java.lang.String",
-                    fieldPath: "$.company",
-                    fieldComment: "第3个测试字符串",
-                    ruleType: "STRING_LENGTH",
-                    targetLength: 222222,
-                    targetValue: "11111",
-                    maxValue: "",
-                    minValue: "",
-                    maxLength: 10,
-                    minLength: 2,
-                    rangeType: "GTE_LTE",
-                    nextRelation: "AND",
-                    message: "message-3",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      };
-
       if (dataMap.id) {
-        // const res = await fetchDetail(dataMap.id)
-        dataMap.form = data;
+        let object = {
+          id: dataMap.id,
+        };
+        const res = await fetchRuleObjectDetail(object);
       } else {
       }
     });
@@ -206,6 +286,7 @@ export default {
     return {
       ...toRefs(dataMap),
       formFieldRef,
+      ruleSet,
     };
   },
 };
@@ -217,6 +298,34 @@ export default {
   .el-input {
     width: 320px;
     margin-right: 10px;
+  }
+}
+.rule-container {
+  margin-top: 10px;
+  .el-form {
+    margin-left: 22px;
+    margin-top: 7px;
+    .el-form-item {
+      margin-top: 9px;
+    }
+  }
+  .rule-top {
+    width: 800px;
+    height: 37px;
+    line-height: 37px;
+    background: #f6f7fb;
+    border-radius: 2px;
+    display: flex;
+    justify-content: space-between;
+    .rule-left {
+      margin-left: 8px;
+    }
+    .rule-right {
+      margin-right: 8px;
+      .space {
+        margin-right: 8px;
+      }
+    }
   }
 }
 </style>

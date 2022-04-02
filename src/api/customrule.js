@@ -30,9 +30,34 @@ export const fetchDetail = (id) => {
   });
 };
 
-export const fetchObjectList = () => {
+export const fetchObjectList = (data) => {
   return request({
     url: `/ruleEntityObject/page`,
     method: "post",
+    data,
+  });
+};
+
+export const fetchObjectDetail = (id) => {
+  return request({
+    url: `/ruleEntityObject/detail/${id}`,
+    method: "post",
+  });
+};
+
+//规则详情
+export const fetchRuleObjectDetail = (data) => {
+  return request({
+    url: ` /rule/viewRuleConfigDetails	`,
+    method: "post",
+    data,
+  });
+};
+
+export const createRuleObject = (data) => {
+  return request({
+    url: `/rule/saveObjectBusinessRule`,
+    method: "post",
+    data,
   });
 };

@@ -30,5 +30,3 @@ const initVue = (authSdk) => {
   app.use(element);
   app.mount("#app");
 };
-
-initVue("");

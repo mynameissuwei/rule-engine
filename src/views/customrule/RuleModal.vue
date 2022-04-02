@@ -3,43 +3,70 @@
     <div class="diag-container">
       <div class="left">
         <el-input
-          v-model="input3"
+          v-model="searchValueRef"
           class="input-class"
           placeholder="关键字名称"
           :prefix-icon="Search"
         />
         <div class="left-container">
-          <div v-for="o in 10" :key="o" class="item">
-            {{ o }}
-          </div>
+          <el-table
+            :data="objectListRef"
+            highlight-current-row
+            v-loading="tableLoading"
+            @current-change="handleCurrentChange"
+            height="430px"
+            :show-header="false"
+          >
+            <el-table-column prop="objectName" label="objectName" width="200" />
+          </el-table>
         </div>
       </div>
       <div class="center">
         <div class="center-title">客户</div>
         <div class="check-group">
-          <el-checkbox-group v-model="checkList">
-            <el-checkbox :label="o" v-for="o in 10" :key="o" />
-          </el-checkbox-group>
+          <el-scrollbar height="420px" v-loading="checkBoxLoading">
+            <el-checkbox-group v-model="checkListRef" @change="handleCheckBox">
+              <el-checkbox
+                :label="item.id"
+                v-for="item in objectDetailRef"
+                :key="item.id"
+                :value="item.id"
+                >{{ item.fieldName }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-scrollbar>
         </div>
       </div>
       <div class="right">
-        <div>this is right</div>
+        <formily-form :checkedForm="testCheckListRef" ref="formRef" />
       </div>
     </div>
 
-    <!-- <div class="dialog-footer" style="margin-right: 20px">
+    <div class="dialog-footer" style="margin-right: 20px">
       <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
       <el-button @click="props.handleCancel" size="small">取 消</el-button>
-    </div> -->
+    </div>
   </el-dialog>
 </template>
 
 <script setup>
-import { reactive, onMounted, defineProps, ref } from "vue";
-import { fetchObjectList } from "@/api/customrule";
+import { reactive, onMounted, defineProps, ref, defineEmits } from "vue";
+import { fetchObjectList, fetchObjectDetail } from "@/api/customrule";
 import { Search } from "@element-plus/icons-vue";
+import FormilyForm from "./FormilyForm.vue";
 
+//logic
+const searchValueRef = ref("");
+const currentRowRef = ref(null);
 const objectListRef = ref([]);
+const objectDetailRef = ref([]);
+const checkListRef = ref([]);
+const tableLoading = ref(false);
+const checkBoxLoading = ref(false);
+const formRef = ref("");
+
+const testCheckListRef = ref([]);
+
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -50,56 +77,66 @@ const props = defineProps({
   },
 });
 
-const data = reactive({});
+const emits = defineEmits(["pushRule"]);
+
+//选择checkBox
+const handleCheckBox = (val, row) => {
+  let result = val.map((item) => {
+    let obj = objectDetailRef.value.find((l) => l.id == item);
+    return obj;
+  });
+  testCheckListRef.value = result;
+};
+
+// 点击table每一行高亮
+const handleCurrentChange = async (val) => {
+  const { id } = val;
+  checkBoxLoading.value = true;
+  const res = await fetchObjectDetail(id);
+  console.log(
+    res.data.data.ruleObjectFieldResVoList,
+    "ruleObjectFieldResVoList"
+  );
+  objectDetailRef.value = res.data.data.ruleObjectFieldResVoList;
+  currentRowRef.value = val;
+  checkBoxLoading.value = false;
+};
 
 // 获取对象列表
 const getObjectList = async () => {
-  const res = await fetchObjectList();
-  let result = [
-    {
-      id: 0,
-      objectCode: "string",
-      objectName: "string",
-      ruleObjectFieldResVoList: [
-        {
-          calibratorType: "string",
-          fieldCode: "string",
-          fieldEnum: "string",
-          fieldName: "string",
-          fieldType: "string",
-          id: 0,
-        },
-      ],
-      status: 0,
-      updatedByName: "string",
-      updatedDate: "2022-03-30T07:39:10.768Z",
-      useStatus: 0,
-    },
-    {
-      id: 23,
-      objectCode: "string",
-      objectName: "123",
-      ruleObjectFieldResVoList: [
-        {
-          calibratorType: "string",
-          fieldCode: "string",
-          fieldEnum: "string",
-          fieldName: "string",
-          fieldType: "string",
-          id: 0,
-        },
-      ],
-      status: 0,
-      updatedByName: "string",
-      updatedDate: "2022-03-30T07:39:10.768Z",
-      useStatus: 0,
-    },
-  ];
-  objectListRef.value = result;
+  tableLoading.value = true;
+  const { data } = await fetchObjectList({
+    pageSize: 10,
+    pageNum: 1,
+    timeAscOrDesc: "desc",
+  });
+
+  objectListRef.value = data.data;
+  tableLoading.value = false;
 };
 
-const onSubmit = () => {
-  console.log("onSubmit");
+// 将formData 进行对应的赋值
+const changeRuleObject = (checkBoxData, formData) => {
+  console.log(checkBoxData, "checkBoxData");
+  let result = checkBoxData.map((item) => {
+    if (Object.keys(formData).includes(item.fieldCode)) {
+      item["fieldValue"] = formData[item.fieldCode];
+    }
+    return item;
+  });
+  return result;
+};
+// 提交按钮
+const onSubmit = async () => {
+  const { checkBoxData, formData } = formRef.value.schemaRef;
+  let ruleObject = {
+    ...currentRowRef.value,
+    ruleObjectFieldList: changeRuleObject(checkBoxData, formData),
+  };
+  props.handleCancel();
+  emits("pushRule", ruleObject);
+
+  // await formRef.value.formRefDom.value.$$uiFormRef.validate();
 };
 
 onMounted(() => {
@@ -119,7 +156,7 @@ onMounted(() => {
 }
 .left {
   width: 164px;
-  padding: 16px 0px 16px 16px;
+  padding: 16px 0px 0px 16px;
   border-right: 1px solid #ebecf0;
   .left-container {
     margin-top: 9px;
@@ -148,7 +185,10 @@ onMounted(() => {
     margin-top: 19px;
   }
 }
-.right {
+.dialog-footer {
+  position: relative;
+  top: 15px;
+  text-align: right;
 }
 .el-checkbox {
   display: block;
