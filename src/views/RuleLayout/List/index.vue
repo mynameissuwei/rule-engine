@@ -96,7 +96,8 @@ export default {
   setup(){
     let ruleGroupCode = '';
     onMounted( () => {
-      ruleGroupCode = inject('ruleGroupCode', '0001');
+      //注入规则集code
+      ruleGroupCode = inject('code', '0001');
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize
@@ -163,6 +164,7 @@ export default {
         ruleLayoutName: ruleLayoutQueryForm.name,
         updatedByName: ruleLayoutQueryForm.keyword,
         ruleLayoutStatus: ruleLayoutQueryForm.status,
+        ruleGroupCode: ruleGroupCode
       }
       pageRuleLayoutList(params).then(res => {
         const data = res.data;

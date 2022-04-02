@@ -61,15 +61,15 @@ export default {
       name:[
         {
           required: true,
-          message: 'Please input Activity name',
+          message: 'Please input rule name',
           trigger: 'blur',
         },
-        {
-          min: 3,
-          max: 5,
-          message: 'Length should be 3 to 5',
-          trigger: 'blur',
-        },
+        // {
+        //   min: 3,
+        //   max: 5,
+        //   message: 'Length should be 3 to 5',
+        //   trigger: 'blur',
+        // },
       ],
       code: {
         required: true
