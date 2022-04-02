@@ -18,22 +18,6 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="* 规则库编码:" prop="newRuleRepositoryCode">
-          <div>
-            <el-input
-                v-model="newRuleRepositoryForm.form.newRuleRepositoryCode"
-                placeholder="纯英文格式，区分大小写"
-                show-word-limit
-                maxlength="20"
-                style="width: 800px;margin-left: 20px;margin-right: 10px">
-            </el-input>
-            <el-button
-                type="text"
-                @click="randomCode">
-              随机生成
-            </el-button>
-          </div>
-        </el-form-item>
         <el-form-item label="规则库描述:" prop="newRuleRepositoryDescription">
           <el-input
               v-model="newRuleRepositoryForm.form.newRuleRepositoryDescription"
@@ -58,6 +42,7 @@
 import {reactive} from "vue";
 import {addRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import router from "../../router";
+import {ElMessage} from "@enn/element-plus";
 
 export default {
   name: "newRuleRepository",
@@ -87,8 +72,18 @@ export default {
         ruleGroupDescription:newRuleRepositoryForm.form.newRuleRepositoryDescription
       }
       addRuleRepository(requestBody).then(response => {
-            console.log(response,12)
-            router.push('/'),
+        if(response.data.code !== '0'){
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          message: '新增规则库成功',
+          type: 'success',
+        })
+        router.push({
+          path: '/',
+        })
+            console.log(response,12),
                 getRuleRepository
           }
       )

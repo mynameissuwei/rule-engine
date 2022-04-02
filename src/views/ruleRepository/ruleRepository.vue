@@ -28,7 +28,8 @@
       <el-table-column
         prop="ruleGroupName"
         label="规则库名称"
-        min-width="100%">
+        min-width="100%"
+      >
       </el-table-column>
       <el-table-column
         prop="ruleGroupCode"
