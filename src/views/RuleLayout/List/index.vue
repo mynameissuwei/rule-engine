@@ -19,7 +19,6 @@
               <el-form-item>
                 <el-select  placeholder="状态" v-model="ruleLayoutQueryForm.status">
                   <el-option value="PUBLISHED" label="发布"></el-option>
-                  <el-option value="STOP" label="停用"></el-option>
                   <el-option value="UNPUBLISHED" label="未发布"></el-option>
                 </el-select>
               </el-form-item>

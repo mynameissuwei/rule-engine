@@ -86,7 +86,8 @@ export default {
 
     let graph;
 
-    let ruleGroupCode = inject('ruleGroupCode', '0001')
+    const route = useRoute();
+    let ruleGroupCode = route.query.ruleGroupCode;
     let rulesData = reactive([])
     const ruleName = ref('')
     //获取脚本规则列表
