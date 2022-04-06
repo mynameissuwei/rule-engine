@@ -67,7 +67,7 @@
               v-model="inputScriptRuleForm.form.scriptContent"
               placeholder="请输入"
               show-word-limit
-              maxlength="300"
+              maxlength="300000"
               type="textarea"
               :autosize="{ minRows: 5 }"
               style="width: 800px;margin-left: 20px">
