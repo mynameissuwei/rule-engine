@@ -30,6 +30,10 @@
         label="规则库名称"
         min-width="100%"
       >
+        <template #default="scope">
+
+          <div style="color:blue;cursor:pointer;">{{scope.row.ruleGroupName }}</div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="ruleGroupCode"

@@ -68,7 +68,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
-      <el-table-column prop="updatedTime" label="最后修改时间" min-width="100%"></el-table-column>
+      <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
           <el-button
