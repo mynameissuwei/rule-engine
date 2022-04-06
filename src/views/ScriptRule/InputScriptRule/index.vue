@@ -8,8 +8,9 @@
           label-width="100px"
           :model="inputScriptRuleForm.form"
           size="large"
+          :rules="rules"
       >
-        <el-form-item label="* 规则名称:" prop="scriptName">
+        <el-form-item label="规则名称:" prop="scriptName">
           <el-input
               v-model="inputScriptRuleForm.form.scriptName"
               placeholder="请输入"
@@ -18,7 +19,7 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="* 规则库代码:" prop="ruleGroupCode">
+        <el-form-item label="规则库代码:" prop="ruleGroupCode">
           <el-input
               v-model="inputScriptRuleForm.form.ruleGroupCode"
               placeholder="请输入"
@@ -27,7 +28,7 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="* 规则代码:" prop="scriptCode">
+        <el-form-item label="规则代码:" prop="scriptCode">
           <div>
             <el-input
                 v-model="inputScriptRuleForm.form.scriptCode"
@@ -101,7 +102,31 @@ export default {
         sceneDesc:'',
         scriptContent:''
       }})
-    //新增修改规则库
+    //脚本规则表单校验
+    const rules = reactive({
+      scriptName: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ],
+      ruleGroupCode: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ],
+      scriptCode: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ],
+    })
+    //新增修改脚本规则
     function addScriptRuleBtn() {
       let requestBody = {
         programType: inputScriptRuleForm.form.programType,
@@ -120,7 +145,8 @@ export default {
 
     return {
       inputScriptRuleForm,
-      addScriptRuleBtn
+      addScriptRuleBtn,
+      rules
     }
   }
 }
