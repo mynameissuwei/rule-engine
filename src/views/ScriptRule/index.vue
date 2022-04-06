@@ -64,7 +64,7 @@
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
           <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
+          <span v-if="scope.row.ruleScriptStatus === 'PUBLISH'">发布</span>
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
@@ -147,7 +147,16 @@ export default {
     const handleCurrentChange = (val) => {
       console.log(`current page: ${val}`)
     }
-    const handleSelectionChange = () => {
+    const selectedRuleLayoutIds = reactive([])
+    const handleSelectionChange = (layouts) => {
+      console.log("layouts",layouts)
+      selectedRuleLayoutIds.length = 0;
+      selectedRuleLayoutIds.push(...layouts.map(layout=>(
+          {
+            id:layout.id,
+            scriptCode:layout.scriptCode
+          }
+      )))
     }
 
     //分页查询脚本规则
@@ -188,11 +197,15 @@ export default {
           }
       )
     }
-    const selectedScriptRuleIds = reactive([])
+
+    let RULE_LAYOUT_STATUS = {
+      'PUBLISH': '发布',
+      'UNPUBLISHED': '未发布',
+    }
     //修改脚本规则发布状态
     const batchPublishScriptRule = () => {
       const params = {
-        list: selectedScriptRuleIds,
+        list: selectedRuleLayoutIds,
         ruleScriptStatus: "PUBLISH"
       }
       updateScriptRuleStatus(params);
