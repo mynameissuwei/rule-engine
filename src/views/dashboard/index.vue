@@ -48,9 +48,11 @@ export default {
   setup() {
     const message = ref("ScriptRule");
     const router = useRoute();
+    const id = ref(router.query.id)
     const name = ref(router.query.name);
     const code = ref(router.query.code);
     const description = ref(router.query.description);
+    provide('id',id)
     provide('name',name);
     provide('code',code);
     provide('description',description)

@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { onMounted, reactive} from "vue";
+import { onMounted, reactive,ref} from "vue";
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {deleteRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import { useRouter } from 'vue-router'
@@ -102,6 +102,7 @@ export default {
         router.push({
           path:'home',
           query:{
+            id:row.id,
             name:row.ruleGroupName,
             code:row.ruleGroupCode,
             description:row.ruleGroupDescription
@@ -192,7 +193,6 @@ export default {
       newRuleRepositoryBtn,
       handleSizeChange,
       handleCurrentChange,
-      name
     }
   }
 }

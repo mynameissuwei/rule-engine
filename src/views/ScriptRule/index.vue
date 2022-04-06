@@ -55,7 +55,7 @@
     <el-table
         ref="entityObjectTable"
         :data="scriptRuleTable.tableData"
-        style="width: 100%"
+        style="margin-top: 10px;width: 100%;align:center" height="400px"
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"/>
@@ -65,7 +65,6 @@
         <template #default="scope">
           <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
           <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'STOP'">停用</span>
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
@@ -154,7 +153,7 @@ export default {
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
-        ruleGroupCode: route.query.name,
+        ruleGroupCode: route.query.code,
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)

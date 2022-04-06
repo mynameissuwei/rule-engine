@@ -8,8 +8,9 @@
           label-width="100px"
           :model="newRuleRepositoryForm.form"
           size="large"
+          :rules="rules"
       >
-        <el-form-item label="* 规则库名称:" prop="newRuleRepositoryName">
+        <el-form-item label="规则库名称:" prop="newRuleRepositoryName">
           <el-input
               v-model="newRuleRepositoryForm.form.newRuleRepositoryName"
               placeholder="请输入"
@@ -31,7 +32,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" style="margin: 20px" @click="addRuleRepositoryBtn">确认</el-button>
-          <el-button>取消</el-button>
+          <el-button @click="gotoRuleRepository">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -54,46 +55,63 @@ export default {
         newRuleRepositoryName: '',
         newRuleRepositoryCode: '',
         newRuleRepositoryDescription: ''
-      }})
-    //随机生成规则库编码
-    const randomCode = () => {/*
-      let expect=10;
-      let str=Math.random().toString(36).substring(2);
-      while(str.length<expect){
-        str=Math.random().toString(36).substring(2)
       }
-      return newRuleRepositoryForm.form.newRuleRepositoryCode = str;*/
+    })
+
+    //输入框校验规则
+    const rules = reactive({
+      newRuleRepositoryName: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        },
+        // {
+        //   min: 3,
+        //   max: 5,
+        //   message: 'Length should be 3 to 5',
+        //   trigger: 'blur',
+        // },
+      ],
+      /*      code: {
+              required: true
+            }*/
+    })
+
+    //取消新建
+    const gotoRuleRepository = () => {
+      router.push('/')
     }
+
     //新增修改规则库
     function addRuleRepositoryBtn() {
       let requestBody = {
-        ruleGroupCode:newRuleRepositoryForm.form.newRuleRepositoryCode,
-        ruleGroupName:newRuleRepositoryForm.form.newRuleRepositoryName,
-        ruleGroupDescription:newRuleRepositoryForm.form.newRuleRepositoryDescription
+        ruleGroupName: newRuleRepositoryForm.form.newRuleRepositoryName,
+        ruleGroupDescription: newRuleRepositoryForm.form.newRuleRepositoryDescription
       }
       addRuleRepository(requestBody).then(response => {
-        if(response.data.code !== '0'){
-          ElMessage.error(response.data.message)
-          return;
-        }
-        ElMessage({
-          message: '新增规则库成功',
-          type: 'success',
-        })
-        router.push({
-          path: '/',
-        })
-            console.log(response,12),
+            if (response.data.code !== '0') {
+              ElMessage.error(response.data.message)
+              return;
+            }
+            ElMessage({
+              message: '新增规则库成功',
+              type: 'success',
+            })
+            router.push({
+              path: '/',
+            })
+            console.log(response, 12),
                 getRuleRepository
           }
       )
-
     }
-    
+
     return {
       newRuleRepositoryForm,
-      randomCode,
-      addRuleRepositoryBtn
+      addRuleRepositoryBtn,
+      rules,
+      gotoRuleRepository
     }
   }
 }
