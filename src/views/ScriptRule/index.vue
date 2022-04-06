@@ -65,7 +65,7 @@
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
           <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'PUBLISH'">发布</span>
+          <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
