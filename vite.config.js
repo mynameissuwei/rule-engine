@@ -30,6 +30,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/base": {
+        target: "https://os-rule-engine.dev.ennew.com",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/base/, ""),
+      },
     },
   },
 });

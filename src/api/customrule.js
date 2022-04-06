@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import request2 from "@/utils/request2";
 
 export const fetchTableData = (data) => {
   return request({
@@ -10,14 +11,14 @@ export const fetchTableData = (data) => {
 
 export const deleteList = (id) => {
   return request({
-    url: `/rule/manager/deleteOneRule/${id}`,
+    url: `/manager/deleteOneRule/${id}`,
     method: "get",
   });
 };
 
 export const modifyList = (data) => {
   return request({
-    url: `/rule/manager/batchChangeRules`,
+    url: `/manager/batchChangeRules`,
     method: "post",
     data,
   });
@@ -25,7 +26,7 @@ export const modifyList = (data) => {
 
 export const fetchDetail = (id) => {
   return request({
-    url: `/rule/manager/viewOneRule/${id}`,
+    url: `/manager/viewOneRule/${id}`,
     method: "get",
   });
 };
@@ -45,18 +46,17 @@ export const fetchObjectDetail = (id) => {
   });
 };
 
-//规则详情
-export const fetchRuleObjectDetail = (data) => {
+export const createRuleObject = (data) => {
   return request({
-    url: ` /rule/viewRuleConfigDetails	`,
+    url: `/manager/saveOneRule`,
     method: "post",
     data,
   });
 };
 
-export const createRuleObject = (data) => {
+export const updateRuleObject = (data) => {
   return request({
-    url: `/rule/saveObjectBusinessRule`,
+    url: `/manager/updateOneRule`,
     method: "post",
     data,
   });

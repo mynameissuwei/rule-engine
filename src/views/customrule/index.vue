@@ -174,34 +174,21 @@ const getList = () => {
 
   fetchTableData({
     ...listQuery,
+    ruleName: listQuery.ruleName.trim(),
+    ruleCode: listQuery.ruleCode.trim(),
   }).then((res) => {
-    // const data = {
-    //   success: true,
-    //   code: '0',
-    //   message: '',
-    //   pageNum: 0,
-    //   pageSize: 10,
-    //   totalPages: 1,
-    //   totalCount: 9,
-    //   data: [
-    //     {
-    //       ruleId: '1',
-    //       ruleName: '测试一条规则',
-    //       ruleCode: 'RL0001',
-    //       releaseStatus: '1',
-    //       callCount: 0,
-    //       updatedUserName: '翟某某',
-    //       updatedDate: '2022-03-09 14:59:23',
-    //       updatedById: '1',
-    //       status: 1
-    //     }
-    //   ]
-    // }
-
-    const data = res.data;
-    tableData.value = data.data;
-    pageTotal.value = data.totalCount;
-    listLoading.value = false;
+    if (res.data.success) {
+      const data = res.data;
+      tableData.value = data.data;
+      pageTotal.value = data.totalCount;
+      listLoading.value = false;
+    } else {
+      ElMessage({
+        type: "warning",
+        message: res.data.message,
+      });
+      listLoading.value = false;
+    }
   });
 };
 
@@ -225,6 +212,9 @@ const handleCreate = () => {
   router.push({
     name: "editCustomRule",
     params: { id: undefined },
+    query: {
+      status: "create",
+    },
   });
 };
 
@@ -236,7 +226,8 @@ const handleModify = (status, row) => {
   const ids = row
     ? [row.ruleId]
     : multipleSelection.value.map((item) => item.ruleId);
-  const res = modifyList({
+
+  modifyList({
     ids,
     releaseStatus: status,
   })
@@ -267,16 +258,25 @@ const handleDelete = (row) => {
     buttonSize: "small",
   })
     .then(async () => {
-      await deleteList(row.ruleId);
-      await getList();
-      ElMessage({
-        type: "success",
-        message: "删除成功",
-      });
+      const {
+        data: { success, message },
+      } = await deleteList(row.ruleId);
+      if (success) {
+        await getList();
+        ElMessage({
+          type: "success",
+          message: message,
+        });
+      } else {
+        ElMessage({
+          type: "error",
+          message: message,
+        });
+      }
     })
     .catch(() => {
       ElMessage({
-        type: "info",
+        type: "error",
         message: "删除失败",
       });
     });
@@ -286,7 +286,7 @@ const handleReset = () => {
   const data = {
     ruleName: "",
     ruleCode: "",
-    status: null,
+    releaseStatus: null,
     pageIndex: 1,
     pageSize: 10,
   };
@@ -299,6 +299,7 @@ const handleEdit = (row) => {
   router.push({
     name: "editCustomRule",
     params: { id: row.ruleId },
+    query: { status: "edit" },
   });
 };
 const handleDetail = (row) => {

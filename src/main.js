@@ -6,6 +6,7 @@ import "styles/index.scss";
 import { Base64 } from "js-base64";
 import EnnAuthSdk from "@enncloud/enn-auth-sdk/src/index";
 import element from "plugins/element";
+import "@/permission"; // 权限控制
 
 EnnAuthSdk({
   baseUrl: import.meta.env.VITE_APP_LOGIN_API, //项目后端接口地址

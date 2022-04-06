@@ -39,6 +39,9 @@ const ruleObjectFieldResVoList = [
     id: "30",
     fieldName: "客户mm",
     fieldCode: "kehuMM",
+    
+    fieldPath
+
     $.objectCode.fieldCode
     fieldType: "java.lang.Double",
     dataType

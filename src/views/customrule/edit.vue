@@ -1,16 +1,19 @@
 <template>
   <div>
     <rule-header
-      :leftText="id ? '编辑校验规则' : '新建校验规则'"
-      :showButton="id ? true : false"
+      :leftText="
+        id ? (isDetail ? '校验规则详情' : '编辑校验规则') : '新建校验规则'
+      "
+      :showButton="id ? (isDetail ? true : false) : false"
     />
-    <div class="container">
+    <div class="container" v-loading="spinLoadingRef">
       <div class="form-box">
         <el-form ref="formRef" :rules="rules" :model="form" label-width="120px">
           <el-form-item label="规则名称:" prop="name">
             <el-input
               v-model="form.ruleName"
               placeholder="可使用中英文、数字组合"
+              :disabled="isDetail"
             ></el-input>
             <el-tooltip
               class="item"
@@ -25,38 +28,40 @@
             <el-input
               v-model="form.scenarioName"
               placeholder="请输入"
+              :disabled="isDetail"
             ></el-input>
           </el-form-item>
           <el-form-item label="规则编辑" prop="region">
             <div>
-              <div
-                type="primary"
+              <el-button
                 size="small"
                 @click="handleCreate"
                 class="gray-button"
+                :disabled="isDetail"
               >
                 + 添加规则
-              </div>
+              </el-button>
               <div class="rule-container" v-for="(item, index) in ruleSet">
                 <div class="rule-top">
                   <span class="rule-left">
                     <el-icon
-                      @click="item.edit = false"
+                      @click="item.edit = true"
                       style="cursor: pointer"
-                      v-if="item.edit"
+                      v-if="!item.edit"
                       ><arrow-down-bold
                     /></el-icon>
 
                     <el-icon
-                      @click="item.edit = true"
+                      @click="item.edit = false"
                       style="cursor: pointer"
-                      v-if="!item.edit"
+                      v-if="item.edit"
                       ><arrow-up-bold
                     /></el-icon>
 
                     <span> 规则集{{ index + 1 }} </span>
                   </span>
-                  <span class="rule-right">
+
+                  <span class="rule-right" v-if="!isDetail">
                     <el-icon style="cursor: pointer" @click="handleEdit"
                       ><edit-pen
                     /></el-icon>
@@ -69,31 +74,32 @@
                     /></el-icon>
                   </span>
                 </div>
-                <el-form
-                  v-if="item.edit"
-                  ref="form"
-                  label-width="auto"
-                  label-position="top"
-                  size="default"
-                >
-                  <el-form-item
-                    :label="item.fieldName"
-                    v-for="(item, index) in item.ruleObjectList
-                      .ruleObjectFieldList"
+                <div v-if="!item.edit">
+                  <el-form
+                    v-for="(every, index) in item.ruleObjectList"
+                    ref="form"
+                    label-width="auto"
+                    label-position="top"
+                    size="default"
                   >
-                    <el-input
-                      v-if="item.calibratorType == 'STRING_EQUALS'"
-                      v-model="item.fieldValue"
-                      :disabled="formDisabled"
-                    />
-                    <el-select
-                      v-if="item.calibratorType == 'VALUE_CONTAIN'"
-                      v-model="item.fieldValue"
-                      :disabled="formDisabled"
+                    <el-form-item
+                      :label="item.fieldName"
+                      v-for="(item, index) in every.ruleObjectFieldList"
                     >
-                    </el-select>
-                  </el-form-item>
-                </el-form>
+                      <el-input
+                        v-if="item.calibratorType == 'STRING_EQUALS'"
+                        v-model="item.fieldValue"
+                        :disabled="formDisabled"
+                      />
+                      <el-select
+                        v-if="item.calibratorType == 'VALUE_CONTAIN'"
+                        v-model="item.fieldValue"
+                        :disabled="formDisabled"
+                      >
+                      </el-select>
+                    </el-form-item>
+                  </el-form>
+                </div>
               </div>
             </div>
           </el-form-item>
@@ -102,7 +108,11 @@
     </div>
     <el-footer class="footerContainer">
       <el-button-group>
-        <el-button type="primary" size="small" @click="onSubmit"
+        <el-button
+          type="primary"
+          size="small"
+          @click="onSubmit"
+          :loading="buttonLoadingRef"
           >完成</el-button
         >
         <el-button
@@ -135,10 +145,15 @@ import {
   EditPen,
   Delete,
 } from "@element-plus/icons-vue";
-import { cloneDeep } from "lodash";
-import { useRouter } from "vue-router";
-import { fetchRuleObjectDetail, createRuleObject } from "api/customrule.js";
+import { useRouter, useRoute } from "vue-router";
+import {
+  createRuleObject,
+  fetchDetail,
+  updateRuleObject,
+} from "api/customrule.js";
 import RuleModal from "./RuleModal.vue";
+import { useStore } from "vuex";
+import { ElMessage } from "@enn/element-plus";
 
 export default {
   components: {
@@ -153,47 +168,18 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
+    const store = useStore();
+
     const rules = {
       name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
       region: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
     };
     const formFieldRef = ref(null);
-    const ruleSet = ref([
-      {
-        conditionName: "fake_data",
-        sortNo: 1,
-        nextRelation: "AND",
-        ruleObjectList: {
-          id: "12",
-          objectName: "客户",
-          objectCode: "customer",
-          status: 0,
-          useStatus: 0,
-          updatedByName: "苏伟",
-          updatedDate: "2022-03-31 10:35:46",
-          ruleObjectFieldList: [
-            {
-              id: "26",
-              fieldName: "客户类型",
-              fieldCode: "customer_type",
-              fieldType: "java.lang.String",
-              fieldEnum: "小客户;中客户;大客户",
-              calibratorType: "STRING_EQUALS",
-              fieldValue: "123",
-            },
-            {
-              id: "27",
-              fieldName: "客户名称",
-              fieldCode: "customer_name",
-              fieldType: "java.lang.String",
-              fieldEnum: "",
-              calibratorType: "STRING_EQUALS",
-              fieldValue: "kkkk",
-            },
-          ],
-        },
-      },
-    ]);
+    const buttonLoadingRef = ref(false);
+    const spinLoadingRef = ref(false);
+
+    const ruleSet = ref([]);
     const dataMap = reactive({
       form: {
         ruleName: "",
@@ -206,6 +192,7 @@ export default {
       },
       formDisabled: true,
       id: router.currentRoute.value.params.id,
+      isDetail: route.query.status == "detail" ? true : false,
       visible: false,
       fieldStatus: "",
       handleCreate() {
@@ -222,17 +209,23 @@ export default {
       handleDelete(index) {
         ruleSet.value.splice(index, 1);
       },
+      //关于字段赋值的逻辑
+      // calibratorType => ruleType
+      // fieldType => dataType
+      // fieldPath => objectCode fieldCode
+      // 根据不同的 calibratorType 来进行不同的 字段赋值
       changeCondition(value) {
         let result = value.map((item) => {
           return {
             ...item,
-            ruleObjectList: item.ruleObjectList.ruleObjectFieldList.map((l) => {
+            ruleObjectFieldList: item.ruleObjectFieldList.map((l, idx) => {
               let result = {
                 ruleType: l.calibratorType,
                 dataType: l.fieldType,
-                id: l.id,
+                // id: l.id,
+                sortNo: idx,
                 fieldName: l.fieldName,
-                fieldCode: `$.${item.ruleObjectList.objectCode}.${l.fieldCode}`,
+                fieldPath: `$.${item.objectCode}.${l.fieldCode}`,
               };
               result[dataMap.mapObject[l.calibratorType]] = l.fieldValue;
               return result;
@@ -241,20 +234,65 @@ export default {
         });
         return result;
       },
+      revertCondition(value) {
+        let result = value.map((item) => {
+          return {
+            ...item,
+            ruleObjectList: item.ruleObjectList.map((l) => {
+              return {
+                ...l,
+                ruleObjectFieldList: l.ruleObjectFieldList.map((every) => {
+                  let result = {
+                    calibratorType: every.ruleType,
+                    fieldType: every.dataType,
+                    fieldName: every.fieldName,
+                  };
+                  result["fieldValue"] =
+                    every[dataMap.mapObject[every.ruleType]];
+                  return result;
+                }),
+              };
+            }),
+          };
+        });
+        return result;
+      },
       async onSubmit() {
+        buttonLoadingRef.value = true;
+
         let result = {
           ...dataMap.form,
-          conditions: dataMap.changeCondition(ruleSet.value),
+          conditions: ruleSet.value,
+          tenantId: store.state.user.tenantId,
+          userId: store.state.user.userId,
+          userName: store.state.user.username,
         };
-        const res = await createRuleObject(result);
+
+        const {
+          data: { success, message },
+        } = dataMap.id
+          ? await updateRuleObject({
+              id: dataMap.id,
+              ...result,
+            })
+          : await createRuleObject(result);
+        if (success) {
+          ElMessage.success(message);
+          router.push({
+            name: "dashboard",
+          });
+        } else {
+          ElMessage.error(message);
+        }
+        buttonLoadingRef.value = false;
       },
+      // 添加多个currentRow  ruleObjectList:[{ruleObjectFieldList:{}},{ruleObjectFieldList:{}}]
       pushRule(ruleObjectList) {
+        let changeData = dataMap.changeCondition(ruleObjectList);
         let ruleSetObject = {
-          conditionName: "fake_data",
-          sortNo: 1,
-          nextRelation: "AND",
-          ruleObjectList,
+          ruleObjectList: changeData,
         };
+        console.log(ruleSetObject, "ruleSetObject");
         let array = [...ruleSet.value, ruleSetObject];
         let result = array.map((item, idx) => {
           return {
@@ -272,14 +310,22 @@ export default {
           params: { id: undefined },
         });
       },
+      initForm(data) {
+        const { ruleName, scenarioName, conditions } = data;
+        dataMap.form = {
+          ruleName,
+          scenarioName,
+        };
+        ruleSet.value = dataMap.revertCondition(conditions);
+      },
     });
+
     onBeforeMount(async () => {
       if (dataMap.id) {
-        let object = {
-          id: dataMap.id,
-        };
-        const res = await fetchRuleObjectDetail(object);
-      } else {
+        spinLoadingRef.value = true;
+        const res = await fetchDetail(dataMap.id);
+        dataMap.initForm(res.data.data);
+        spinLoadingRef.value = false;
       }
     });
 
@@ -287,6 +333,8 @@ export default {
       ...toRefs(dataMap),
       formFieldRef,
       ruleSet,
+      buttonLoadingRef,
+      spinLoadingRef,
     };
   },
 };

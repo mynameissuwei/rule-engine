@@ -129,10 +129,12 @@ const changeRuleObject = (checkBoxData, formData) => {
 // 提交按钮
 const onSubmit = async () => {
   const { checkBoxData, formData } = formRef.value.schemaRef;
-  let ruleObject = {
-    ...currentRowRef.value,
-    ruleObjectFieldList: changeRuleObject(checkBoxData, formData),
-  };
+  let ruleObject = [
+    {
+      ...currentRowRef.value,
+      ruleObjectFieldList: changeRuleObject(checkBoxData, formData),
+    },
+  ];
   props.handleCancel();
   emits("pushRule", ruleObject);
 
