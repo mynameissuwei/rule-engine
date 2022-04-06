@@ -55,7 +55,7 @@
     <el-table
         ref="entityObjectTable"
         :data="scriptRuleTable.tableData"
-        style="margin-top: 10px;width: 100%;align:center" height="400px"
+        style="margin-top: 10px;width: 100%;align:center"
         @selection-change="handleSelectionChange"
         height="280px"
     >
