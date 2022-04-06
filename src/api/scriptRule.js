@@ -62,3 +62,14 @@ export function queryScriptRuleById (requestBody){
         data:requestBody
     })
 }
+
+/**
+ * 更改脚本规则状态
+ */
+export function updateScriptRuleStatus (requestBody){
+    return request({
+        method:'post',
+        url:'/scriptRule/updateBatchStatus',
+        data:requestBody
+    })
+}

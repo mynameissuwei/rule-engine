@@ -46,8 +46,8 @@
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="inputScriptRule">新建</el-button>
-          <el-button class="stop" size="small">停用</el-button>
-          <el-button class="publish" size="small">发布</el-button>
+          <el-button class="stop" size="small" @click="batchPublishScriptRule">停用</el-button>
+          <el-button class="publish" size="small" @click="batchPublishScriptRule">发布</el-button>
         </el-button-group>
       </el-col>
     </el-row>
@@ -55,7 +55,7 @@
     <el-table
         ref="entityObjectTable"
         :data="scriptRuleTable.tableData"
-        style="width: 100%"
+        style="margin-top: 10px;width: 100%;align:center" height="400px"
         @selection-change="handleSelectionChange"
         height="280px"
     >
@@ -65,8 +65,7 @@
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
           <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'STOP'">停用</span>
+          <span v-if="scope.row.ruleScriptStatus === 'PUBLISH'">发布</span>
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
@@ -110,7 +109,8 @@
 <script>
 import {onMounted, reactive, ref, inject} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {pageScriptRule} from "@/api/scriptRule";
+import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
+import {changeRuleLayoutStatus} from "@/api/ruleLayout";
 
 export default {
   name: "index.vue",
@@ -147,6 +147,7 @@ export default {
         }
       })
     }
+
     const resetForm = (ruleForm) => {
       ruleForm.resetForm()
     }
@@ -157,13 +158,20 @@ export default {
     const handleCurrentChange = (val) => {
       console.log(`current page: ${val}`)
     }
-    const handleSelectionChange = () => {
-
+    const selectedRuleLayoutIds = reactive([])
+    const handleSelectionChange = (layouts) => {
+      console.log("layouts",layouts)
+      selectedRuleLayoutIds.length = 0;
+      selectedRuleLayoutIds.push(...layouts.map(layout=>(
+          {
+            id:layout.id,
+            scriptCode:layout.scriptCode
+          }
+      )))
     }
 
     //分页查询脚本规则
     function getPageScriptRuleData() {
-      console.log("============", route.query)
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
@@ -201,6 +209,20 @@ export default {
       )
     }
 
+    let RULE_LAYOUT_STATUS = {
+      'PUBLISH': '发布',
+      'UNPUBLISHED': '未发布',
+    }
+    //修改脚本规则发布状态
+    const batchPublishScriptRule = () => {
+      const params = {
+        list: selectedRuleLayoutIds,
+        ruleScriptStatus: "PUBLISH"
+      }
+      updateScriptRuleStatus(params);
+      getPageScriptRuleData()
+    }
+
 
     onMounted(() => {
       getPageScriptRuleData()
@@ -216,6 +238,7 @@ export default {
       inputScriptRule,
       scriptRulePaginationConfig,
       getPageScriptRuleData,
+      batchPublishScriptRule,
       search
     }
   }

@@ -48,9 +48,11 @@ export default {
   setup() {
     const message = ref("ScriptRule");
     const router = useRoute();
+    const id = ref(router.query.id)
     const name = ref(router.query.ruleGroupName);
     const ruleGroupCode = ref(router.query.ruleGroupCode);
     const description = ref(router.query.ruleGroupDesc);
+    provide('id',id)
     provide('ruleGroupName',name);
     provide('ruleGroupCode',ruleGroupCode);
     provide('ruleGroupDesc',description)

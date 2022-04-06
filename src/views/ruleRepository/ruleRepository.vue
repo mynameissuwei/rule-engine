@@ -30,6 +30,10 @@
         label="规则库名称"
         min-width="100%"
       >
+        <template #default="scope">
+
+          <div style="color:blue;cursor:pointer;">{{scope.row.ruleGroupName }}</div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="ruleGroupCode"
@@ -79,7 +83,7 @@
 </template>
 
 <script>
-import { onMounted, reactive} from "vue";
+import { onMounted, reactive,ref} from "vue";
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {deleteRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import { useRouter } from 'vue-router'
@@ -102,6 +106,7 @@ export default {
         router.push({
           path:'home',
           query:{
+            id:row.id,
             ruleGroupName:row.ruleGroupName,
             ruleGroupCode:row.ruleGroupCode,
             ruleGroupDesc:row.ruleGroupDescription

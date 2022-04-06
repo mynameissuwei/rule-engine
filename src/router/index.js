@@ -89,7 +89,24 @@ const router = createRouter({
       meta: {
         title: "新建脚本规则"
       }
-    },
+    },{
+      path: "/updateRuleRepository",
+      component: () => import("../views/ruleRepository/updateRuleRepository.vue"),
+      name: "UpdateRuleRepository",
+      hidden:true,
+      meta: {
+        title: "修改规则库信息"
+      }
+    },{
+      path: "/scriptRuleDetail",
+      component: () => import("../views/ScriptRule/ScriptRuleDetail/index.vue"),
+      name: "ScriptRuleDetail",
+      hidden:true,
+      meta: {
+        title: "脚本规则详情"
+      }
+    }
+
   ],
 });
 

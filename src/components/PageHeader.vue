@@ -6,6 +6,7 @@
         <el-button type="primary"
                    class="gray-button"
                    plain size="small"
+                   @click="gotoUpdateRuleRepository"
         >修改
         </el-button
         >
@@ -28,26 +29,35 @@
 
 <script>
 import {inject, onMounted} from "vue";
+import {useRouter} from "vue-router";
 
 export default {
   name: "pageHeader",
   setup() {
-    //provide、inject的demo
+    //provide、inject
     const name = inject('ruleGroupName')
     const code = inject('ruleGroupCode')
     const description = inject('ruleGroupDesc')
-    console.log(name, 20)
-    console.log(code, 21)
-    console.log(description, 22)
+    const id = inject('id')
 
-    onMounted(()=> {
-
-    })
-
+    const router = useRouter();
+    //跳转到修改规则库页面
+    const gotoUpdateRuleRepository = () => {
+      router.push({
+        path:'updateRuleRepository',
+        query:{
+          id:id.value,
+          name:name.value,
+          code:code.value,
+          description:description.value
+        }
+      })
+    }
     return {
       name,
       code,
-      description
+      description,
+      gotoUpdateRuleRepository
     }
   }
 }
