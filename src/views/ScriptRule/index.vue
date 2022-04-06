@@ -198,15 +198,12 @@ export default {
       )
     }
 
-    let RULE_LAYOUT_STATUS = {
-      'PUBLISH': '发布',
-      'UNPUBLISHED': '未发布',
-    }
+
     //修改脚本规则发布状态
     const batchPublishScriptRule = () => {
       const params = {
         list: selectedRuleLayoutIds,
-        ruleScriptStatus: "PUBLISH"
+        ruleScriptStatus: "PUBLISHED"
       }
       updateScriptRuleStatus(params);
       getPageScriptRuleData()
