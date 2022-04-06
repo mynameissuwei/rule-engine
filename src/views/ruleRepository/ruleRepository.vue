@@ -102,9 +102,9 @@ export default {
         router.push({
           path:'home',
           query:{
-            name:row.ruleGroupName,
-            code:row.ruleGroupCode,
-            description:row.ruleGroupDescription
+            ruleGroupName:row.ruleGroupName,
+            ruleGroupCode:row.ruleGroupCode,
+            ruleGroupDesc:row.ruleGroupDescription
           }
         })
       }

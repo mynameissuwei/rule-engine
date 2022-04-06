@@ -57,6 +57,7 @@
         :data="scriptRuleTable.tableData"
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        height="280px"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
@@ -69,7 +70,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
-      <el-table-column prop="updatedTime" label="最后修改时间" min-width="100%"></el-table-column>
+      <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
           <el-button
@@ -107,7 +108,7 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, inject} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {pageScriptRule} from "@/api/scriptRule";
 
@@ -133,8 +134,18 @@ export default {
       current: 1
     })
     //跳转脚本规则录入页面
+    const ruleGroupCode = inject("ruleGroupCode").value
+    const ruleGroupName = inject("ruleGroupName").value
+    const ruleGroupDesc = inject("ruleGroupDesc").value
     const inputScriptRule = () => {
-      router.push('inputScriptRule')
+      router.push({
+        path: 'inputScriptRule',
+        query: {
+          ruleGroupCode: ruleGroupCode,
+          ruleGroupName: ruleGroupName,
+          ruleGroupDesc: ruleGroupDesc
+        }
+      })
     }
     const resetForm = (ruleForm) => {
       ruleForm.resetForm()
@@ -147,14 +158,16 @@ export default {
       console.log(`current page: ${val}`)
     }
     const handleSelectionChange = () => {
+
     }
 
     //分页查询脚本规则
     function getPageScriptRuleData() {
+      console.log("============", route.query)
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
-        ruleGroupCode: route.query.name,
+        ruleGroupCode: ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)
@@ -174,7 +187,8 @@ export default {
         pageSize: scriptRulePaginationConfig.pageSize,
         scriptName: scriptRuleForm.scriptName,
         ruleScriptStatus: scriptRuleForm.ruleScriptStatus,
-        updatedByName: scriptRuleForm.updatedByName
+        updatedByName: scriptRuleForm.updatedByName,
+        ruleGroupCode: ruleGroupCode
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)
@@ -191,7 +205,6 @@ export default {
     onMounted(() => {
       getPageScriptRuleData()
     })
-
 
     return {
       handleSizeChange,

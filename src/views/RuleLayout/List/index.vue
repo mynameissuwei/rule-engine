@@ -96,7 +96,7 @@ export default {
     let ruleGroupCode = '';
     onMounted( () => {
       //注入规则集code
-      ruleGroupCode = inject('code').value;
+      ruleGroupCode = inject('ruleGroupCode').value;
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,

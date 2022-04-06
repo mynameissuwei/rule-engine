@@ -27,18 +27,22 @@
 </template>
 
 <script>
-import {inject} from "vue";
+import {inject, onMounted} from "vue";
 
 export default {
   name: "pageHeader",
   setup() {
     //provide、inject的demo
-    const name = inject('name')
-    const code = inject('code')
-    const description = inject('description')
+    const name = inject('ruleGroupName')
+    const code = inject('ruleGroupCode')
+    const description = inject('ruleGroupDesc')
     console.log(name, 20)
     console.log(code, 21)
     console.log(description, 22)
+
+    onMounted(()=> {
+
+    })
 
     return {
       name,
