@@ -28,32 +28,31 @@
 </template>
 
 <script>
-import {inject} from "vue";
-import router from "@/router";
+import {inject, onMounted} from "vue";
+import {useRouter} from "vue-router";
 
 export default {
   name: "pageHeader",
   setup() {
     //provide、inject
-    const name = inject('name')
-    const code = inject('code')
-    const description = inject('description')
+    const name = inject('ruleGroupName')
+    const code = inject('ruleGroupCode')
+    const description = inject('ruleGroupDesc')
     const id = inject('id')
 
+    const router = useRouter();
     //跳转到修改规则库页面
     const gotoUpdateRuleRepository = () => {
       router.push({
-      path:'updateRuleRepository',
-      query:{
-        id:id.value,
-        name:name.value,
-        code:code.value,
-        description:description.value
-      }
-    })
+        path:'updateRuleRepository',
+        query:{
+          id:id.value,
+          name:name.value,
+          code:code.value,
+          description:description.value
+        }
+      })
     }
-
-
     return {
       name,
       code,

@@ -107,9 +107,9 @@ export default {
           path:'home',
           query:{
             id:row.id,
-            name:row.ruleGroupName,
-            code:row.ruleGroupCode,
-            description:row.ruleGroupDescription
+            ruleGroupName:row.ruleGroupName,
+            ruleGroupCode:row.ruleGroupCode,
+            ruleGroupDesc:row.ruleGroupDescription
           }
         })
       }
@@ -197,6 +197,7 @@ export default {
       newRuleRepositoryBtn,
       handleSizeChange,
       handleCurrentChange,
+      name
     }
   }
 }

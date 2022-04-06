@@ -55,8 +55,9 @@
     <el-table
         ref="entityObjectTable"
         :data="scriptRuleTable.tableData"
-        style="margin-top: 10px;width: 100%;align:center" height="400px"
+        style="margin-top: 10px;width: 100%;align:center"
         @selection-change="handleSelectionChange"
+        height="280px"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
@@ -106,7 +107,7 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, inject} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
 import {changeRuleLayoutStatus} from "@/api/ruleLayout";
@@ -133,8 +134,18 @@ export default {
       current: 1
     })
     //跳转脚本规则录入页面
+    const ruleGroupCode = inject("ruleGroupCode").value
+    const ruleGroupName = inject("ruleGroupName").value
+    const ruleGroupDesc = inject("ruleGroupDesc").value
     const inputScriptRule = () => {
-      router.push('inputScriptRule')
+      router.push({
+        path: 'inputScriptRule',
+        query: {
+          ruleGroupCode: ruleGroupCode,
+          ruleGroupName: ruleGroupName,
+          ruleGroupDesc: ruleGroupDesc
+        }
+      })
     }
 
     const resetForm = (ruleForm) => {
@@ -164,7 +175,7 @@ export default {
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
-        ruleGroupCode: route.query.code,
+        ruleGroupCode: ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)
@@ -185,7 +196,7 @@ export default {
         scriptName: scriptRuleForm.scriptName,
         ruleScriptStatus: scriptRuleForm.ruleScriptStatus,
         updatedByName: scriptRuleForm.updatedByName,
-        ruleGroupCode: route.query.code,
+        ruleGroupCode: ruleGroupCode
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)
@@ -214,7 +225,6 @@ export default {
       getPageScriptRuleData()
     })
 
-
     return {
       handleSizeChange,
       handleCurrentChange,
@@ -224,6 +234,7 @@ export default {
       handleSelectionChange,
       inputScriptRule,
       scriptRulePaginationConfig,
+      getPageScriptRuleData,
       batchPublishScriptRule,
       search
     }
