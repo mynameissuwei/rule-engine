@@ -88,7 +88,8 @@
 
 <script>
 import {reactive, onMounted, inject} from 'vue';
-import {useRouter,useRoute} from 'vue-router'
+import {useRouter,useRoute} from 'vue-router';
+import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
 export default {
   name: "RuleLayoutList",
@@ -263,8 +264,13 @@ export default {
     }
 
     const deleteRuleLayout = (id) => {
-      removeRuleLayout({id});
-      searchRuleLayout();
+      removeRuleLayout({id}).then(res => {
+        if(res.data.code != "0"){
+          ElMessage.error(res.data.message)
+        }else{
+          searchRuleLayout();
+        }
+      })
     }
     return {
       ruleLayoutQueryForm,
