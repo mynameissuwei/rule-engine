@@ -77,7 +77,6 @@ export default {
     })
 
     const cancelAddRuleLayout = () => {
-      // scene = 'preview'
       router.go(-1);
     }
 
@@ -135,6 +134,14 @@ export default {
 
     //对node进行排序 根据edge的指向
     const convertToRuleLayouts = (graphData) => {
+      if(graphData.edges.length == 0){
+        return [
+          {
+            scriptCode: graphData.nodes[0].id,
+            scriptExecutionSort: 0
+          }
+        ]
+      }
       return sortRule(graphData.edges).map((item,index) => {
         return {
           scriptCode: item,
@@ -166,9 +173,9 @@ export default {
           type: 'success',
         })
         router.push({
-          path: '/',
+          path: '/home',
           query: {
-            ruleGroupCode: ruleGroupCode,
+            ...route.query,
             message: 'four'
           }
         })
