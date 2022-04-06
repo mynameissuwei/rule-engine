@@ -96,7 +96,6 @@ export default {
                 description: updateRuleRepositoryForm.form.RuleRepositoryDescription
               }
             })
-                getRuleRepository
           }
       )
 
