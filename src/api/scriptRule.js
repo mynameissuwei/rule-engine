@@ -55,11 +55,10 @@ export function updateScriptRuleById (requestBody){
 /**
  * 根据id查看脚本规则详情
  */
-export function queryScriptRuleById (requestBody){
+export function queryScriptRuleById (id){
     return request({
         method:'post',
-        url:'/scriptRule/queryScriptRuleById/{id}',
-        data:requestBody
+        url:`/scriptRule/queryScriptRuleById/${id}`,
     })
 }
 

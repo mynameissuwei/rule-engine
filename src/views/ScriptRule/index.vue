@@ -19,11 +19,10 @@
           </el-input>
         </el-col>
         <el-col :span="7">
-          <el-input
-              v-model="scriptRuleForm.ruleScriptStatus"
-              placeholder="状态"
-              clearable>
-          </el-input>
+          <el-select  placeholder="状态" v-model="scriptRuleForm.ruleScriptStatus">
+            <el-option value="PUBLISHED" label="发布"></el-option>
+            <el-option value="UNPUBLISHED" label="未发布"></el-option>
+          </el-select>
         </el-col>
         <el-col :span="3" style="text-align: right">
           <el-button
@@ -34,7 +33,7 @@
           </el-button>
           <el-button
               size="small"
-              @click="resetInput">
+              @click="resetForm">
             重置
           </el-button>
         </el-col>
@@ -46,7 +45,7 @@
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="inputScriptRule">新建</el-button>
-          <el-button class="stop" size="small" @click="batchPublishScriptRule">停用</el-button>
+          <el-button class="stop" size="small" @click="batchDisPublishScriptRule">停用</el-button>
           <el-button class="publish" size="small" @click="batchPublishScriptRule">发布</el-button>
         </el-button-group>
       </el-col>
@@ -75,7 +74,7 @@
           <el-button
               type="text"
               icon="el-icon-edit"
-              @click="Edit(scope.$index, scope.row)"
+              @click="editScriptRule(scope.row.id)"
           >编辑
           </el-button>
           <el-button
@@ -115,6 +114,7 @@ import {changeRuleLayoutStatus} from "@/api/ruleLayout";
 export default {
   name: "index.vue",
   setup() {
+    const id = ref('')
     const route = useRoute();
     const router = useRouter();
     const scriptRuleForm = reactive({
@@ -124,7 +124,6 @@ export default {
     })
     const scriptRuleTable = reactive({
       tableData: [],
-
     })
     //脚本规则分页对象
     let scriptRulePaginationConfig = reactive({
@@ -148,8 +147,11 @@ export default {
       })
     }
 
-    const resetForm = (ruleForm) => {
-      ruleForm.resetForm()
+    const resetForm = () => {
+      scriptRuleForm.scriptName=''
+      scriptRuleForm.ruleScriptStatus=''
+      scriptRuleForm.updatedByName = ''
+      getPageScriptRuleData()
     }
 
     const handleSizeChange = (val) => {
@@ -178,8 +180,6 @@ export default {
         ruleGroupCode: ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
-            console.log(response, 11)
-            console.log(params, 13)
             scriptRuleTable.tableData = response.data.data
             scriptRulePaginationConfig.current = response.data.pageNum || 1
             scriptRulePaginationConfig.pageSize = response.data.pageSize
@@ -209,6 +209,21 @@ export default {
       )
     }
 
+    //编辑脚本规则
+    const editScriptRule = (id) => {
+      console.log(id,10)
+      router.push({
+        path: 'scriptRuleDetail',
+        query: {
+          scriptRuleId:id,
+          ruleGroupCode: ruleGroupCode,
+          ruleGroupName: ruleGroupName,
+          ruleGroupDesc: ruleGroupDesc,
+          scene: 'preview'
+        }
+      })
+    }
+
 
     //修改脚本规则发布状态
     const batchPublishScriptRule = () => {
@@ -220,6 +235,14 @@ export default {
       getPageScriptRuleData()
     }
 
+    const batchDisPublishScriptRule = () => {
+      const params = {
+        list: selectedRuleLayoutIds,
+        ruleScriptStatus: "UNPUBLISHED"
+      }
+      updateScriptRuleStatus(params);
+      getPageScriptRuleData()
+    }
 
     onMounted(() => {
       getPageScriptRuleData()
@@ -236,7 +259,9 @@ export default {
       scriptRulePaginationConfig,
       getPageScriptRuleData,
       batchPublishScriptRule,
-      search
+      search,
+      editScriptRule,
+      batchDisPublishScriptRule
     }
   }
 }
