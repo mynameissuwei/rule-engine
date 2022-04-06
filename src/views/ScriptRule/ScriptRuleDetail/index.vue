@@ -109,6 +109,7 @@ export default {
 
     const updateScriptRule = () => {
       let requestBody = {
+        id:route.query.scriptRuleId,
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
@@ -116,7 +117,8 @@ export default {
         scriptName: ScriptRuleFormDetailForm.form.scriptName
       }
       updateScriptRuleById(requestBody).then(response => {
-        if (response.data.code == '0') {
+        console.log(response,30)
+        if (response.data.code === '0') {
           ElMessage({
             message: '更新脚本规则成功',
             type: 'success',
