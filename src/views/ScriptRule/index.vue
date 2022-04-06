@@ -46,8 +46,8 @@
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="inputScriptRule">新建</el-button>
-          <el-button class="stop" size="small">停用</el-button>
-          <el-button class="publish" size="small">发布</el-button>
+          <el-button class="stop" size="small" @click="batchPublishScriptRule">停用</el-button>
+          <el-button class="publish" size="small" @click="batchPublishScriptRule">发布</el-button>
         </el-button-group>
       </el-col>
     </el-row>
@@ -108,7 +108,8 @@
 <script>
 import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {pageScriptRule} from "@/api/scriptRule";
+import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
+import {changeRuleLayoutStatus} from "@/api/ruleLayout";
 
 export default {
   name: "index.vue",
@@ -135,6 +136,7 @@ export default {
     const inputScriptRule = () => {
       router.push('inputScriptRule')
     }
+
     const resetForm = (ruleForm) => {
       ruleForm.resetForm()
     }
@@ -173,7 +175,8 @@ export default {
         pageSize: scriptRulePaginationConfig.pageSize,
         scriptName: scriptRuleForm.scriptName,
         ruleScriptStatus: scriptRuleForm.ruleScriptStatus,
-        updatedByName: scriptRuleForm.updatedByName
+        updatedByName: scriptRuleForm.updatedByName,
+        ruleGroupCode: route.query.code,
       }
       pageScriptRule(params).then(response => {
             console.log(response, 11)
@@ -184,6 +187,16 @@ export default {
             scriptRulePaginationConfig.total = response.data.totalCount
           }
       )
+    }
+    const selectedScriptRuleIds = reactive([])
+    //修改脚本规则发布状态
+    const batchPublishScriptRule = () => {
+      const params = {
+        list: selectedScriptRuleIds,
+        ruleScriptStatus: "PUBLISH"
+      }
+      updateScriptRuleStatus(params);
+      getPageScriptRuleData()
     }
 
 
@@ -201,7 +214,7 @@ export default {
       handleSelectionChange,
       inputScriptRule,
       scriptRulePaginationConfig,
-      getPageScriptRuleData,
+      batchPublishScriptRule,
       search
     }
   }

@@ -42,7 +42,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" style="margin: 20px" @click="addRuleRepositoryBtn">确认</el-button>
-          <el-button>取消</el-button>
+          <el-button @click="cancel">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -122,6 +122,17 @@ export default {
             }
     })
 
+    const cancel = () => {
+      router.push({
+        path: 'home',
+        query: {
+          name: updateRuleRepositoryForm.form.RuleRepositoryName,
+          code: updateRuleRepositoryForm.form.RuleRepositoryCode,
+          description: updateRuleRepositoryForm.form.RuleRepositoryDescription
+        }
+      })
+    }
+
     onMounted(() => {
       updateRuleRepositoryForm.form.RuleRepositoryName = route.query.name
       updateRuleRepositoryForm.form.RuleRepositoryCode = route.query.code
@@ -132,7 +143,8 @@ export default {
     return {
       updateRuleRepositoryForm,
       addRuleRepositoryBtn,
-      rules
+      rules,
+      cancel
     }
   }
 }
