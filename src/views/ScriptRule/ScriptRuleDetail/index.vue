@@ -172,7 +172,8 @@ export default {
 .el-main {
   background-color: #FFFFFF;
   color: var(--el-text-color-primary);
-  margin: 15px
+  margin: 15px;
+  height:700px
 }
 
 .edit-button {
