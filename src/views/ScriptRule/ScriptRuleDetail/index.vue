@@ -24,9 +24,13 @@
           <el-input v-model="ScriptRuleFormDetailForm.form.sceneDesc" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="规则内容：">
+        <el-form-item label="代码片段：">
           <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"
-                    :disabled="scene === 'preview'"></el-input>
+                    :disabled="scene === 'preview'"
+                    show-word-limit
+                    maxlength="300000"
+                    type="textarea"
+          ></el-input>
         </el-form-item>
       </el-form>
     </el-main>
@@ -43,6 +47,7 @@ import {useRoute, useRouter} from "vue-router";
 import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
 import router from "@/router";
+import {Base64} from "js-base64";
 
 export default {
   name: "index.vue",
@@ -113,17 +118,19 @@ export default {
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
-        scriptContent: ScriptRuleFormDetailForm.form.scriptContent,
+        scriptContent: Base64.encode(ScriptRuleFormDetailForm.form.scriptContent),
         scriptName: ScriptRuleFormDetailForm.form.scriptName
       }
       updateScriptRuleById(requestBody).then(response => {
         console.log(response,30)
-        if (response.data.code === '0') {
+        if (response.data.code !== '0') {
+          ElMessage.error(response.data.message)
+          return;
+        }
           ElMessage({
             message: '更新脚本规则成功',
             type: 'success',
           })
-        }
         router.push({
           path: 'home',
           query: {

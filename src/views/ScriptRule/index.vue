@@ -41,7 +41,7 @@
     </el-form>
     <el-divider></el-divider>
     <el-row class="row-container">
-      <el-col :span="12">脚本规则 （5）</el-col>
+      <el-col :span="12">脚本规则 {{scriptRulePaginationConfig.total}}</el-col>
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="inputScriptRule">新建</el-button>
