@@ -214,21 +214,26 @@ export default {
       // fieldType => dataType
       // fieldPath => objectCode fieldCode
       // 根据不同的 calibratorType 来进行不同的 字段赋值
-      changeCondition(value) {
-        let result = value.map((item) => {
+      changeCondition(data) {
+        let result = data.map((item) => {
           return {
             ...item,
-            ruleObjectFieldList: item.ruleObjectFieldList.map((l, idx) => {
-              let result = {
-                ruleType: l.calibratorType,
-                dataType: l.fieldType,
-                // id: l.id,
-                sortNo: idx,
-                fieldName: l.fieldName,
-                fieldPath: `$.${item.objectCode}.${l.fieldCode}`,
+            ruleObjectList: item.ruleObjectList.map((every, idx) => {
+              return {
+                ...every,
+                ruleObjectFieldList: every.ruleObjectFieldList.map((l, idx) => {
+                  let result = {
+                    ruleType: l.calibratorType,
+                    dataType: l.fieldType,
+                    // id: l.id,
+                    sortNo: idx + 1,
+                    fieldName: l.fieldName,
+                    fieldPath: `$.${every.objectCode}.${l.fieldCode}`,
+                  };
+                  result[dataMap.mapObject[l.calibratorType]] = l.fieldValue;
+                  return result;
+                }),
               };
-              result[dataMap.mapObject[l.calibratorType]] = l.fieldValue;
-              return result;
             }),
           };
         });
@@ -241,11 +246,13 @@ export default {
             ruleObjectList: item.ruleObjectList.map((l) => {
               return {
                 ...l,
+                objectCode: l.ruleObjectFieldList[0].fieldPath.split(".")[1],
                 ruleObjectFieldList: l.ruleObjectFieldList.map((every) => {
                   let result = {
                     calibratorType: every.ruleType,
                     fieldType: every.dataType,
                     fieldName: every.fieldName,
+                    fieldCode: every.fieldPath.split(".")[2],
                   };
                   result["fieldValue"] =
                     every[dataMap.mapObject[every.ruleType]];
@@ -255,14 +262,14 @@ export default {
             }),
           };
         });
+
         return result;
       },
       async onSubmit() {
         buttonLoadingRef.value = true;
-
         let result = {
           ...dataMap.form,
-          conditions: ruleSet.value,
+          conditions: dataMap.changeCondition(ruleSet.value),
           tenantId: store.state.user.tenantId,
           userId: store.state.user.userId,
           userName: store.state.user.username,
@@ -272,7 +279,7 @@ export default {
           data: { success, message },
         } = dataMap.id
           ? await updateRuleObject({
-              id: dataMap.id,
+              id: Number(dataMap.id),
               ...result,
             })
           : await createRuleObject(result);
@@ -288,16 +295,14 @@ export default {
       },
       // 添加多个currentRow  ruleObjectList:[{ruleObjectFieldList:{}},{ruleObjectFieldList:{}}]
       pushRule(ruleObjectList) {
-        let changeData = dataMap.changeCondition(ruleObjectList);
         let ruleSetObject = {
-          ruleObjectList: changeData,
+          ruleObjectList,
         };
-        console.log(ruleSetObject, "ruleSetObject");
         let array = [...ruleSet.value, ruleSetObject];
         let result = array.map((item, idx) => {
           return {
             conditionName: `规则集${idx + 1}`,
-            sortNo: idx,
+            sortNo: idx + 1,
             nextRelation: "OR",
             ...item,
           };

@@ -61,3 +61,18 @@ export const updateRuleObject = (data) => {
     data,
   });
 };
+
+export const fetchTestData = (ruleId) => {
+  return request({
+    url: `/filedProcess/getMockParam/${ruleId}`,
+    method: "get",
+  });
+};
+
+export const upDateTestData = (data) => {
+  return request({
+    url: `/filedProcess/mockValidateRule`,
+    method: "post",
+    data,
+  });
+};

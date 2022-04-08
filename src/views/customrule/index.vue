@@ -142,6 +142,12 @@
         @current-change="handlePageChange"
       ></el-pagination>
     </div>
+    <test-modal
+      v-if="testVisible"
+      :visible="testVisible"
+      :handleCancel="handleCancel"
+      :ruleId="ruleIdRef"
+    ></test-modal>
   </div>
 </template>
 
@@ -149,10 +155,10 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { fetchTableData, deleteList, modifyList } from "@/api/customrule";
-import { cloneDeep } from "lodash";
 import rBadge from "@/components/rBadge.vue";
 import { ElMessageBox, ElMessage } from "@enn/element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
+import TestModal from "./TestModal.vue";
 
 const listQuery = reactive({
   ruleName: "",
@@ -164,9 +170,10 @@ const listQuery = reactive({
 const tableData = ref([]);
 const pageTotal = ref(0);
 const router = useRouter();
-const editVisible = ref(false);
+const testVisible = ref(false);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
+const ruleIdRef = ref("");
 
 // 获取表格数据
 const getList = () => {
@@ -190,6 +197,15 @@ const getList = () => {
       listLoading.value = false;
     }
   });
+};
+
+const testFuc = () => {
+  console.log("debugger;");
+  testVisible.value = true;
+};
+
+const handleCancel = () => {
+  testVisible.value = false;
 };
 
 const handleSelectionChange = (val) => {
@@ -218,35 +234,36 @@ const handleCreate = () => {
   });
 };
 
-const handleTest = (value) => {
-  console.log(value, "vali");
-};
-
 const handleModify = (status, row) => {
-  const ids = row
-    ? [row.ruleId]
-    : multipleSelection.value.map((item) => item.ruleId);
+  ruleIdRef.value = row.ruleId;
+  if (status == "2") {
+    testFuc();
+  } else {
+    const ids = row
+      ? [row.ruleId]
+      : multipleSelection.value.map((item) => item.ruleId);
 
-  modifyList({
-    ids,
-    releaseStatus: status,
-  })
-    .then((res) => {
-      getList();
-      if (!row) {
-        multipleSelection.value = [];
-      }
-      ElMessage({
-        type: "success",
-        message: status == 0 ? "停用成功" : "发布成功",
-      });
+    modifyList({
+      ids,
+      releaseStatus: status,
     })
-    .catch((erro) => {
-      ElMessage({
-        type: "warning",
-        message: status == 0 ? "停用失败" : "发布失败",
+      .then((res) => {
+        getList();
+        if (!row) {
+          multipleSelection.value = [];
+        }
+        ElMessage({
+          type: "success",
+          message: status == 0 ? "停用成功" : "发布成功",
+        });
+      })
+      .catch((erro) => {
+        ElMessage({
+          type: "warning",
+          message: status == 0 ? "停用失败" : "发布失败",
+        });
       });
-    });
+  }
 };
 
 // 删除操作
