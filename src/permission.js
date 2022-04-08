@@ -1,10 +1,8 @@
-import router, { constantRoutes } from "@/router";
+import router from "@/router";
 import store from "./store";
-import { useStore } from "vuex";
-
-const hasTenant = store.getters.tenantId;
 
 router.beforeEach(async (to, from, next) => {
+  const hasTenant = store.getters.tenantId;
   if (!hasTenant) {
     await store.dispatch("user/getInfo");
   }

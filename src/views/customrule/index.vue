@@ -41,7 +41,7 @@
     </el-row>
     <el-divider></el-divider>
     <el-row class="row-container">
-      <el-col :span="12">自定义规则 (100）</el-col>
+      <el-col :span="12">自定义规则 ({{ pageTotal }})</el-col>
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="handleCreate"
@@ -91,7 +91,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="被调用次数" sortable>
+      <el-table-column label="被调用次数" sortable prop="callCount">
         <template #default="scope">
           {{
             scope.row.callCount == null ? "0/次" : scope.row.callCount + "/次"
@@ -184,18 +184,9 @@ const getList = () => {
     ruleName: listQuery.ruleName.trim(),
     ruleCode: listQuery.ruleCode.trim(),
   }).then((res) => {
-    if (res.data.success) {
-      const data = res.data;
-      tableData.value = data.data;
-      pageTotal.value = data.totalCount;
-      listLoading.value = false;
-    } else {
-      ElMessage({
-        type: "warning",
-        message: res.data.message,
-      });
-      listLoading.value = false;
-    }
+    tableData.value = res.data;
+    pageTotal.value = res.totalCount;
+    listLoading.value = false;
   });
 };
 
@@ -235,7 +226,8 @@ const handleCreate = () => {
 };
 
 const handleModify = (status, row) => {
-  ruleIdRef.value = row.ruleId;
+  if (row) ruleIdRef.value = row.ruleId;
+
   if (status == "2") {
     testFuc();
   } else {
@@ -243,11 +235,20 @@ const handleModify = (status, row) => {
       ? [row.ruleId]
       : multipleSelection.value.map((item) => item.ruleId);
 
-    modifyList({
-      ids,
-      releaseStatus: status,
-    })
-      .then((res) => {
+    ElMessageBox.confirm(
+      `你确定要${status == 0 ? "停用" : "发布"}该规则么?`,
+      "警告",
+      {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        buttonSize: "small",
+      }
+    ).then(() => {
+      modifyList({
+        ids,
+        releaseStatus: status,
+      }).then(() => {
         getList();
         if (!row) {
           multipleSelection.value = [];
@@ -256,13 +257,8 @@ const handleModify = (status, row) => {
           type: "success",
           message: status == 0 ? "停用成功" : "发布成功",
         });
-      })
-      .catch((erro) => {
-        ElMessage({
-          type: "warning",
-          message: status == 0 ? "停用失败" : "发布失败",
-        });
       });
+    });
   }
 };
 
@@ -273,30 +269,16 @@ const handleDelete = (row) => {
     cancelButtonText: "取消",
     type: "warning",
     buttonSize: "small",
-  })
-    .then(async () => {
-      const {
-        data: { success, message },
-      } = await deleteList(row.ruleId);
-      if (success) {
-        await getList();
-        ElMessage({
-          type: "success",
-          message: message,
-        });
-      } else {
-        ElMessage({
-          type: "error",
-          message: message,
-        });
-      }
-    })
-    .catch(() => {
+  }).then(async () => {
+    const { success, message } = await deleteList(row.ruleId);
+    if (success) {
+      await getList();
       ElMessage({
-        type: "error",
-        message: "删除失败",
+        type: "success",
+        message: message,
       });
-    });
+    }
+  });
 };
 
 const handleReset = () => {

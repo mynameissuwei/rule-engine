@@ -1,5 +1,10 @@
 <template>
-  <el-dialog v-model="props.visible" title="添加规则" width="800px">
+  <el-dialog
+    v-model="props.visible"
+    title="添加规则"
+    width="800px"
+    :before-close="props.handleCancel"
+  >
     <div class="diag-container">
       <div class="left">
         <el-input
@@ -110,8 +115,8 @@ const getObjectList = async () => {
     pageNum: 1,
     timeAscOrDesc: "desc",
   });
-
-  objectListRef.value = data.data;
+  console.log(data, "data");
+  objectListRef.value = data;
   tableLoading.value = false;
 };
 

@@ -47,19 +47,16 @@ import {
   onUnmounted,
   watch,
 } from "vue";
-import { ElMessage } from "@enn/element-plus";
-
-// import.meta.globEager("./JsonLint.js");
 
 const props = defineProps(["visible", "ruleId", "handleCancel"]);
-const emit = defineEmits(["change"]);
+const emit = defineEmits(["change", "input"]);
 const buttonLoading = ref(false);
 
 const myLeftRef = ref(null);
 const myRightRef = ref(null);
 
-const leftContentRef = ref(null);
-const rightContentRef = ref(null);
+const leftContentRef = ref("");
+const rightContentRef = ref("");
 
 var leftEditor = {};
 var rightEditor = {};
@@ -76,9 +73,7 @@ watch(
     await nextTick();
     const oldValue = rightEditor.getValue();
     if (value !== oldValue) {
-      rightEditor.setValue(
-        JSON.stringify(value, null, 2) ? JSON.stringify(value, null, 2) : ""
-      );
+      rightEditor.setValue(value ? JSON.stringify(value, null, 2) : "");
     }
   },
   { flush: "post" }
@@ -90,9 +85,7 @@ watch(
     await nextTick();
     const oldValue = leftEditor.getValue();
     if (value !== oldValue) {
-      leftEditor.setValue(
-        JSON.stringify(value, null, 2) ? JSON.stringify(value, null, 2) : ""
-      );
+      leftEditor.setValue(value ? JSON.stringify(value, null, 2) : "");
     }
   },
   { flush: "post" }
@@ -110,7 +103,6 @@ const initEditor = (editor, refDom, contentRef) => {
     leftEditor.setValue(contentRef.value);
     leftEditor.on("change", () => {
       contentRef.value = leftEditor.getValue();
-
       emit("change", leftEditor.getValue());
       emit("input", leftEditor.getValue());
     });
@@ -134,24 +126,15 @@ const initEditor = (editor, refDom, contentRef) => {
 const onSubmit = async () => {
   buttonLoading.value = true;
   const res = await upDateTestData(JSON.parse(leftContentRef.value));
-
-  if (res.data.success) {
-    let data = {
-      status: "",
-      message: "",
-    };
-    rightContentRef.value = res.data.data;
-  } else {
-    ElMessage.error(res.data.message);
-  }
+  rightContentRef.value = res.data;
   buttonLoading.value = false;
 };
 
 onMounted(async () => {
-  await getData();
   await nextTick();
   initEditor("left", myLeftRef.value, leftContentRef);
   initEditor("right", myRightRef.value, rightContentRef);
+  await getData();
 });
 
 onUnmounted(() => {

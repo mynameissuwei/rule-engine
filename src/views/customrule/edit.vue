@@ -329,7 +329,11 @@ export default {
       if (dataMap.id) {
         spinLoadingRef.value = true;
         const res = await fetchDetail(dataMap.id);
-        dataMap.initForm(res.data.data);
+        if (res.data.success) {
+          dataMap.initForm(res.data.data);
+        } else {
+          ElMessage.error(res.data.message);
+        }
         spinLoadingRef.value = false;
       }
     });

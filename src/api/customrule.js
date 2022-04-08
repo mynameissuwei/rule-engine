@@ -1,8 +1,8 @@
 import request from "@/utils/request";
-import request2 from "@/utils/request2";
+import fetch from "@/utils/fetch";
 
 export const fetchTableData = (data) => {
-  return request({
+  return fetch({
     url: "/manager/pageList",
     method: "post",
     data: data,
@@ -10,14 +10,14 @@ export const fetchTableData = (data) => {
 };
 
 export const deleteList = (id) => {
-  return request({
+  return fetch({
     url: `/manager/deleteOneRule/${id}`,
     method: "get",
   });
 };
 
 export const modifyList = (data) => {
-  return request({
+  return fetch({
     url: `/manager/batchChangeRules`,
     method: "post",
     data,
@@ -32,7 +32,7 @@ export const fetchDetail = (id) => {
 };
 
 export const fetchObjectList = (data) => {
-  return request({
+  return fetch({
     url: `/ruleEntityObject/page`,
     method: "post",
     data,
@@ -63,14 +63,14 @@ export const updateRuleObject = (data) => {
 };
 
 export const fetchTestData = (ruleId) => {
-  return request({
+  return fetch({
     url: `/filedProcess/getMockParam/${ruleId}`,
     method: "get",
   });
 };
 
 export const upDateTestData = (data) => {
-  return request({
+  return fetch({
     url: `/filedProcess/mockValidateRule`,
     method: "post",
     data,
