@@ -14,6 +14,7 @@
               v-model="form.ruleName"
               placeholder="可使用中英文、数字组合"
               :disabled="isDetail"
+              style="width: 340px; margin-right: 10px"
             ></el-input>
             <el-tooltip
               class="item"
@@ -29,6 +30,7 @@
               v-model="form.scenarioName"
               placeholder="请输入"
               :disabled="isDetail"
+              style="width: 340px"
             ></el-input>
           </el-form-item>
           <el-form-item label="规则编辑" prop="region">
@@ -41,66 +43,122 @@
               >
                 + 添加规则
               </el-button>
-              <div class="rule-container" v-for="(item, index) in ruleSet">
-                <div class="rule-top">
-                  <span class="rule-left">
-                    <el-icon
-                      @click="item.edit = true"
-                      style="cursor: pointer"
-                      v-if="!item.edit"
-                      ><arrow-down-bold
-                    /></el-icon>
+              <el-scrollbar
+                height="570px"
+                style="padding-right: 20px"
+                :always="true"
+              >
+                <div class="rule-container" v-for="(item, index) in ruleSet">
+                  <div class="rule-top">
+                    <span class="rule-left">
+                      <el-icon
+                        @click="item.edit = true"
+                        style="cursor: pointer"
+                        v-if="!item.edit"
+                        ><arrow-down-bold
+                      /></el-icon>
 
-                    <el-icon
-                      @click="item.edit = false"
-                      style="cursor: pointer"
-                      v-if="item.edit"
-                      ><arrow-up-bold
-                    /></el-icon>
+                      <el-icon
+                        @click="item.edit = false"
+                        style="cursor: pointer"
+                        v-if="item.edit"
+                        ><arrow-up-bold
+                      /></el-icon>
 
-                    <span> 规则集{{ index + 1 }} </span>
-                  </span>
+                      <span> 规则集{{ index + 1 }} </span>
+                    </span>
 
-                  <span class="rule-right" v-if="!isDetail">
-                    <el-icon style="cursor: pointer" @click="handleEdit"
-                      ><edit-pen
-                    /></el-icon>
-                    <span class="space"></span>
-                    <el-icon
-                      style="cursor: pointer"
-                      @click="handleDelete(index)"
-                    >
-                      <delete
-                    /></el-icon>
-                  </span>
-                </div>
-                <div v-if="!item.edit">
-                  <el-form
-                    v-for="(every, index) in item.ruleObjectList"
-                    ref="form"
-                    label-width="auto"
-                    label-position="top"
-                    size="default"
-                  >
-                    <el-form-item
-                      :label="item.fieldName"
-                      v-for="(item, index) in every.ruleObjectFieldList"
-                    >
-                      <el-input
-                        v-if="item.calibratorType == 'STRING_EQUALS'"
-                        v-model="item.fieldValue"
-                        :disabled="formDisabled"
-                      />
-                      <el-select
-                        v-if="item.calibratorType == 'VALUE_CONTAIN'"
-                        v-model="item.fieldValue"
-                        :disabled="formDisabled"
+                    <span class="rule-right" v-if="!isDetail">
+                      <el-icon
+                        style="cursor: pointer"
+                        @click="handleEdit(item.ruleObjectList, item.id)"
+                        ><edit-pen
+                      /></el-icon>
+                      <span class="space"></span>
+                      <el-icon
+                        style="cursor: pointer"
+                        @click="handleDelete(index)"
                       >
-                      </el-select>
-                    </el-form-item>
-                  </el-form>
+                        <delete
+                      /></el-icon>
+                    </span>
+                  </div>
+                  <div v-if="!item.edit">
+                    <el-form
+                      v-for="(every, index) in item.ruleObjectList"
+                      ref="form"
+                      label-width="auto"
+                      label-position="top"
+                      size="default"
+                    >
+                      <el-form-item
+                        :label="item.fieldName"
+                        v-for="(item, index) in every.ruleObjectFieldList"
+                      >
+                        <el-input
+                          v-if="
+                            item.calibratorType == 'STRING_EQUALS' ||
+                            item.calibratorType == 'UN_KNOWN'
+                          "
+                          v-model="item.fieldValue"
+                          :disabled="formDisabled"
+                          style="width: 340px"
+                        />
+                        <el-select
+                          v-if="item.calibratorType == 'VALUE_CONTAIN'"
+                          v-model="item.fieldValue"
+                          multiple
+                          :disabled="formDisabled"
+                          style="width: 340px"
+                        >
+                          <el-option
+                            v-for="l in item.fieldEnum.split(';')"
+                            :key="l"
+                            :label="l"
+                            :value="l"
+                          />
+                        </el-select>
+                        <el-date-picker
+                          v-model="item.fieldValue"
+                          v-if="item.calibratorType === 'DATE_RANGE'"
+                          type="datetimerange"
+                          range-separator="To"
+                          start-placeholder="开始时间"
+                          end-placeholder="结束时间"
+                          format="YYYY-MM-DD"
+                          value-format="YYYY-MM-DD"
+                          style="width: 340px"
+                          :disabled="formDisabled"
+                        />
+                        <el-row
+                          style="width: 340px"
+                          v-if="
+                            item.calibratorType === 'NUMBER_RANGE' ||
+                            item.calibratorType === 'DOUBLE_RANGE' ||
+                            item.calibratorType === 'INTEGER_RANGE'
+                          "
+                        >
+                          <el-col :span="11">
+                            <el-input
+                              v-model="item.fieldValue"
+                              :disabled="formDisabled"
+                            />
+                          </el-col>
+                          <el-col :span="2" class="text-center">
+                            <span class="text-gray-500">-</span>
+                          </el-col>
+                          <el-col :span="11">
+                            <el-input
+                              v-model="item['fieldValueSecond']"
+                              :disabled="formDisabled"
+                            />
+                          </el-col>
+                        </el-row>
+                      </el-form-item>
+                    </el-form>
+                  </div>
                 </div>
-              </div>
+              </el-scrollbar>
             </div>
           </el-form-item>
         </el-form>
@@ -127,7 +185,9 @@
     </el-footer>
     <rule-modal
       :visible="visible"
+      :fieldStatus="fieldStatus"
       :handleCancel="handleCancel"
+      :editData="editDataRef"
       v-if="visible"
       @pushRule="pushRule"
     ></rule-modal>
@@ -178,13 +238,15 @@ export default {
     const formFieldRef = ref(null);
     const buttonLoadingRef = ref(false);
     const spinLoadingRef = ref(false);
-
     const ruleSet = ref([]);
+    const editDataRef = ref(null);
+
     const dataMap = reactive({
       form: {
         ruleName: "",
         scenarioName: "",
       },
+      editId: null,
       mapObject: {
         VALUE_CONTAIN: "targetContains",
         STRING_EQUALS: "targetValue",
@@ -199,15 +261,20 @@ export default {
         dataMap.fieldStatus = "create";
         dataMap.visible = true;
       },
-      handleEdit() {
+      handleEdit(editData, id) {
         dataMap.fieldStatus = "edit";
+        dataMap.editId = id;
         dataMap.visible = true;
+        editDataRef.value = editData;
       },
       handleCancel() {
         dataMap.visible = false;
       },
       handleDelete(index) {
         ruleSet.value.splice(index, 1);
+      },
+      initID() {
+        return Math.random().toString();
       },
       //关于字段赋值的逻辑
       // calibratorType => ruleType
@@ -295,18 +362,29 @@ export default {
       },
       // 添加多个currentRow  ruleObjectList:[{ruleObjectFieldList:{}},{ruleObjectFieldList:{}}]
       pushRule(ruleObjectList) {
-        let ruleSetObject = {
-          ruleObjectList,
-        };
-        let array = [...ruleSet.value, ruleSetObject];
-        let result = array.map((item, idx) => {
-          return {
+        let result;
+        if (dataMap.fieldStatus == "edit") {
+          // console.log(ruleSet.value, dataMap.editId, ruleObjectList, "editId");
+          result = ruleSet.value.map((item) => {
+            if (item.id == dataMap.editId) {
+              return {
+                ...item,
+                ruleObjectList,
+              };
+            }
+            return item;
+          });
+        } else {
+          let array = [...ruleSet.value, { ruleObjectList }];
+          result = array.map((item, idx) => ({
             conditionName: `规则集${idx + 1}`,
             sortNo: idx + 1,
             nextRelation: "OR",
+            id: dataMap.initID(),
             ...item,
-          };
-        });
+          }));
+        }
+        console.log(result, "result");
         ruleSet.value = result;
       },
       onCancel() {
@@ -324,7 +402,6 @@ export default {
         ruleSet.value = dataMap.revertCondition(conditions);
       },
     });
-
     onBeforeMount(async () => {
       if (dataMap.id) {
         spinLoadingRef.value = true;
@@ -340,6 +417,7 @@ export default {
 
     return {
       ...toRefs(dataMap),
+      editDataRef,
       formFieldRef,
       ruleSet,
       buttonLoadingRef,
@@ -352,10 +430,6 @@ export default {
 <style lang="scss" scoped>
 .container {
   display: flex;
-  .el-input {
-    width: 320px;
-    margin-right: 10px;
-  }
 }
 .rule-container {
   margin-top: 10px;
@@ -383,6 +457,9 @@ export default {
         margin-right: 8px;
       }
     }
+  }
+  .text-center {
+    text-align: center;
   }
 }
 </style>

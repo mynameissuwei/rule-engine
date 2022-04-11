@@ -243,3 +243,87 @@ let per  = [
       "calibratorType": "DATE_RANGE"
   }
 ]
+
+INTEGER_RANGE 整数 
+DOUBLE_RANGE  支持整数 小数 
+NUMBER_RANGE  是支持什么？
+
+
+
+{
+  "id": "12",
+  "objectName": "客户",
+  "objectCode": "customer",
+  "status": 0,
+  "useStatus": 1,
+  "updatedByName": "苏伟",
+  "updatedDate": "2022-03-31 10:35:46",
+  "ruleObjectFieldResVoList": [
+      {
+          "id": "26",
+          "fieldName": "客户类型",
+          "fieldCode": "customer_type",
+          "fieldType": "java.lang.String",
+          "fieldEnum": "小客户;中客户;大客户"
+      },
+      {
+          "id": "27",
+          "fieldName": "客户名称",
+          "fieldCode": "customer_name",
+          "fieldType": "java.lang.String",
+          "fieldEnum": ""
+      },
+      {
+          "id": "28",
+          "fieldName": "客户规模",
+          "fieldCode": "customer_size",
+          "fieldType": "java.lang.Integer",
+          "fieldEnum": "1000;2000;3000"
+      },
+      {
+          "id": "29",
+          "fieldName": "客户年龄",
+          "fieldCode": "customer_age",
+          "fieldType": "java.lang.Integer",
+          "fieldEnum": ""
+      },
+      {
+          "id": "30",
+          "fieldName": "客户市值",
+          "fieldCode": "customer_market_value",
+          "fieldType": "java.lang.Double",
+          "fieldEnum": ""
+      },
+      {
+          "id": "31",
+          "fieldName": "客户员工数量",
+          "fieldCode": "customer_employees_num",
+          "fieldType": "java.math.BigDecimal",
+          "fieldEnum": ""
+      },
+      {
+          "id": "32",
+          "fieldName": "客户上市时期",
+          "fieldCode": "customer_launch_data",
+          "fieldType": "java.util.Date",
+          "fieldEnum": ""
+      }
+  ],
+  "formData": {
+      "customer_name": "1234"
+  },
+  "checkList": [
+      "27"
+  ],
+  "ruleObjectFieldList": [
+      {
+          "id": "27",
+          "fieldName": "客户名称",
+          "fieldCode": "customer_name",
+          "fieldType": "java.lang.String",
+          "fieldEnum": "",
+          "calibratorType": "STRING_EQUALS",
+          "fieldValue": "1234"
+      }
+  ]
+}

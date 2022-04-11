@@ -40,7 +40,7 @@ export const fetchObjectList = (data) => {
 };
 
 export const fetchObjectDetail = (id) => {
-  return request({
+  return fetch({
     url: `/ruleEntityObject/detail/${id}`,
     method: "post",
   });

@@ -15,6 +15,7 @@
         />
         <div class="left-container">
           <el-table
+            ref="singleTableRef"
             :data="objectListRef"
             highlight-current-row
             v-loading="tableLoading"
@@ -43,7 +44,11 @@
         </div>
       </div>
       <div class="right">
-        <formily-form :checkedForm="testCheckListRef" ref="formRef" />
+        <formily-form
+          :checkedForm="checkedForm"
+          ref="formRef"
+          :formData="formData"
+        />
       </div>
     </div>
 
@@ -55,55 +60,111 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, defineProps, ref, defineEmits } from "vue";
+import {
+  reactive,
+  onMounted,
+  defineProps,
+  ref,
+  defineEmits,
+  computed,
+  toRef,
+  watch,
+} from "vue";
 import { fetchObjectList, fetchObjectDetail } from "@/api/customrule";
 import { Search } from "@element-plus/icons-vue";
 import FormilyForm from "./FormilyForm.vue";
+import { cloneDeep } from "lodash";
 
-//logic
 const searchValueRef = ref("");
 const currentRowRef = ref(null);
 const objectListRef = ref([]);
 const objectDetailRef = ref([]);
-const checkListRef = ref([]);
 const tableLoading = ref(false);
 const checkBoxLoading = ref(false);
 const formRef = ref("");
 
-const testCheckListRef = ref([]);
+const singleTableRef = ref();
+const checkListRef = ref([]);
+const checkedForm = ref([]);
+const formData = ref({});
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
+let valueContains = ["INTEGER_RANGE", "DOUBLE_RANGE", "NUMBER_RANGE"];
+
+//修改checkedForm字段
+watch(
+  () => checkListRef.value,
+  () => {
+    let result = checkListRef.value.map((item) => {
+      let obj = objectDetailRef.value.find((l) => l.id == item);
+      return obj;
+    });
+    checkedForm.value = result;
   },
-  handleCancel: {
-    type: Function,
+  {
+    deep: true,
+  }
+);
+
+//增加formData字段
+watch(
+  formData,
+  (newVal) => {
+    const { id } = currentRowRef.value;
+    let newObjectList = objectListRef.value.map((item) => {
+      if (item.id === id) {
+        item["formData"] = newVal;
+      }
+      return item;
+    });
+    objectListRef.value = newObjectList;
   },
-});
+  {
+    deep: true,
+  }
+);
+
+//增加checkList字段
+const handleCheckBox = (val, row) => {
+  const { id } = currentRowRef.value;
+  let newObjectList = objectListRef.value.map((item) => {
+    if (item.id === id) {
+      item["checkList"] = val;
+      item["ruleObjectFieldList"] = checkedForm.value;
+    }
+    return item;
+  });
+
+  objectListRef.value = newObjectList;
+};
+
+const props = defineProps([
+  "fieldStatus",
+  "visible",
+  "handleCancel",
+  "editData",
+]);
 
 const emits = defineEmits(["pushRule"]);
 
-//选择checkBox
-const handleCheckBox = (val, row) => {
-  let result = val.map((item) => {
-    let obj = objectDetailRef.value.find((l) => l.id == item);
-    return obj;
-  });
-  testCheckListRef.value = result;
-};
-
 // 点击table每一行高亮
-const handleCurrentChange = async (val) => {
-  const { id } = val;
+const handleCurrentChange = async (currentRow, oldCurrentRow) => {
   checkBoxLoading.value = true;
+  const { id } = currentRow;
   const res = await fetchObjectDetail(id);
-  console.log(
-    res.data.data.ruleObjectFieldResVoList,
-    "ruleObjectFieldResVoList"
-  );
-  objectDetailRef.value = res.data.data.ruleObjectFieldResVoList;
-  currentRowRef.value = val;
+  if (currentRow.hasOwnProperty("checkList")) {
+    checkListRef.value = currentRow.checkList;
+  } else {
+    checkListRef.value = [];
+  }
+
+  if (currentRow.hasOwnProperty("formData")) {
+    formData.value = currentRow.formData;
+  } else {
+    formData.value = {};
+  }
+
+  objectDetailRef.value = res.data.ruleObjectFieldResVoList;
+  currentRowRef.value = currentRow;
   checkBoxLoading.value = false;
 };
 
@@ -115,39 +176,60 @@ const getObjectList = async () => {
     pageNum: 1,
     timeAscOrDesc: "desc",
   });
-  console.log(data, "data");
+
   objectListRef.value = data;
   tableLoading.value = false;
 };
 
-// 将formData 进行对应的赋值
-const changeRuleObject = (checkBoxData, formData) => {
-  console.log(checkBoxData, "checkBoxData");
-  let result = checkBoxData.map((item) => {
-    if (Object.keys(formData).includes(item.fieldCode)) {
-      item["fieldValue"] = formData[item.fieldCode];
-    }
-    return item;
+// objectListRef 进行转化
+const changeRuleObject = (data) => {
+  let filterData = data.filter((item) => item.hasOwnProperty("checkList"));
+  let result = filterData.map((item) => {
+    return {
+      ...item,
+      ruleObjectFieldList: item.ruleObjectFieldList.map((single) => {
+        let every = cloneDeep(single);
+        if (Object.keys(item.formData).includes(every.fieldCode)) {
+          every["fieldValue"] = item.formData[every.fieldCode];
+          if (valueContains.includes(every.calibratorType)) {
+            every["fieldValueSecond"] =
+              item.formData[every.fieldCode + "_second"];
+          }
+        }
+
+        return every;
+      }),
+    };
   });
   return result;
 };
 // 提交按钮
 const onSubmit = async () => {
-  const { checkBoxData, formData } = formRef.value.schemaRef;
-  let ruleObject = [
-    {
-      ...currentRowRef.value,
-      ruleObjectFieldList: changeRuleObject(checkBoxData, formData),
-    },
-  ];
-  props.handleCancel();
-  emits("pushRule", ruleObject);
+  let ruleObject = changeRuleObject(objectListRef.value);
 
-  // await formRef.value.formRefDom.value.$$uiFormRef.validate();
+  // const { formRefDom } = formRef.value.schemaRef;
+  props.handleCancel();
+  if (props.fieldStatus == "edit") {
+    emits("pushRule", ruleObject);
+  } else {
+    emits("pushRule", ruleObject);
+  }
 };
 
-onMounted(() => {
-  getObjectList();
+onMounted(async () => {
+  await getObjectList();
+
+  if (props.fieldStatus == "edit") {
+    let result = objectListRef.value.map((item) => {
+      let isRule = props.editData.find((single) => single.id === item.id);
+      return isRule ? isRule : item;
+    });
+    objectListRef.value = result;
+    let currentRow = objectListRef.value.find((item) =>
+      item.hasOwnProperty("checkList")
+    );
+    singleTableRef.value.setCurrentRow(currentRow);
+  }
 });
 </script>
 

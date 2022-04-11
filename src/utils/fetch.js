@@ -23,7 +23,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
-    console.log(res, "resss");
+
     if (!res.success) {
       ElMessage({
         message: res.message || "系统繁忙，请稍后再试",
@@ -36,7 +36,6 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    console.log(error, "error");
     return Promise.reject(error);
   }
 );
