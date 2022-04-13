@@ -435,7 +435,7 @@ export default {
             if (success) {
               ElMessage.success(message);
               router.push({
-                name: "dashboard",
+                name: "home",
               });
             }
             buttonLoadingRef.value = false;
@@ -471,7 +471,7 @@ export default {
       },
       onCancel() {
         router.push({
-          name: "dashboard",
+          name: "home",
           params: { id: undefined },
         });
       },

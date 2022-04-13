@@ -5,9 +5,9 @@
       <el-tab-pane label="实体对象" name="entityObject">
         <entity-object></entity-object>
       </el-tab-pane>
-      <el-tab-pane label="校验规则" name="first">
+      <!-- <el-tab-pane label="校验规则" name="first">
         <check-rule></check-rule>
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane label="脚本规则" name="ScriptRule">
         <ScriptRule></ScriptRule>
       </el-tab-pane>
@@ -28,8 +28,8 @@
 <script>
 import { provide, ref } from "vue";
 import PageHeader from "../../components/PageHeader.vue";
-import CheckRule from "views/checkrule/index.vue";
-import CustomRule from "views/customrule/index.vue";
+import CheckRule from "views/CheckRule/index.vue";
+import CustomRule from "views/CustomRule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
 import { useRoute } from "vue-router";
 import ScriptRule from "views/ScriptRule/index.vue";
@@ -46,7 +46,7 @@ export default {
     entityObject,
   },
   setup() {
-    const message = ref("ScriptRule");
+    const message = ref("third");
     const router = useRoute();
     const id = ref(router.query.id);
     const name = ref(router.query.ruleGroupName);

@@ -316,7 +316,7 @@ export default {
       },
       onCancel() {
         router.push({
-          name: "dashboard",
+          name: "home",
           params: { id: undefined },
         });
       },
