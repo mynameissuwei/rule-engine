@@ -106,16 +106,14 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref, inject} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {onMounted, reactive, inject} from "vue";
+import {useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
-import {changeRuleLayoutStatus} from "@/api/ruleLayout";
+
 
 export default {
   name: "index.vue",
   setup() {
-    const id = ref('')
-    const route = useRoute();
     const router = useRouter();
     const scriptRuleForm = reactive({
       scriptName: '',
@@ -154,15 +152,19 @@ export default {
       getPageScriptRuleData()
     }
 
-    const handleSizeChange = (val) => {
-      console.log(`${val} items per page`)
+    // 分页函数
+    function handleSizeChange(pageSize) {
+      scriptRulePaginationConfig.pageSize = pageSize
+      getPageScriptRuleData()
     }
-    const handleCurrentChange = (val) => {
-      console.log(`current page: ${val}`)
+
+    function handleCurrentChange(pageNumber) {
+      scriptRulePaginationConfig.current = pageNumber
+      getPageScriptRuleData()
     }
+
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
-      console.log("layouts",layouts)
       selectedRuleLayoutIds.length = 0;
       selectedRuleLayoutIds.push(...layouts.map(layout=>(
           {
@@ -199,8 +201,6 @@ export default {
         ruleGroupCode: ruleGroupCode
       }
       pageScriptRule(params).then(response => {
-            console.log(response, 11)
-            console.log(params, 13)
             scriptRuleTable.tableData = response.data.data
             scriptRulePaginationConfig.current = response.data.pageNum || 1
             scriptRulePaginationConfig.pageSize = response.data.pageSize
@@ -211,7 +211,6 @@ export default {
 
     //编辑脚本规则
     const editScriptRule = (id) => {
-      console.log(id,10)
       router.push({
         path: 'scriptRuleDetail',
         query: {
@@ -257,7 +256,6 @@ export default {
       handleSelectionChange,
       inputScriptRule,
       scriptRulePaginationConfig,
-      getPageScriptRuleData,
       batchPublishScriptRule,
       search,
       editScriptRule,

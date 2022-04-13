@@ -19,15 +19,6 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="规则库代码:" prop="ruleGroupCode">
-          <el-input
-              v-model="inputScriptRuleForm.form.ruleGroupCode"
-              placeholder="请输入"
-              show-word-limit
-              maxlength="20"
-              style="width: 800px;margin-left: 20px">
-          </el-input>
-        </el-form-item>
         <el-form-item label="规则代码:" prop="scriptCode">
           <div>
             <el-input

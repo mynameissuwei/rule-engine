@@ -59,6 +59,9 @@ import {useRoute} from "vue-router";
 export default {
   name: "updateRuleRepository.vue",
   setup() {
+    const ruleGroupCode = route.query.ruleGroupCode
+    const ruleGroupName = route.query.ruleGroupName
+    const ruleGroupDesc = route.query.ruleGroupDesc
     const route = useRoute();
     //新建规则库表单对象
     const updateRuleRepositoryForm = reactive({
@@ -125,9 +128,7 @@ export default {
       router.push({
         path: 'home',
         query: {
-          name: updateRuleRepositoryForm.form.RuleRepositoryName,
-          code: updateRuleRepositoryForm.form.RuleRepositoryCode,
-          description: updateRuleRepositoryForm.form.RuleRepositoryDescription
+          ...route.query
         }
       })
     }

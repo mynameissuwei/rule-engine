@@ -1,57 +1,57 @@
 <template>
-  <div class="container" style="height: 90%">
-    <div style="margin: 50px 100px">
-      <el-form
-          :ref="entityObjectForm.ref"
-          :label-position="right"
-          label-width="100px"
-          :model="entityObjectForm.form"
-          :rules="entityObjectForm.rules"
-          size="large"
-      >
-        <el-form-item label="* 对象名称:" prop="ObjectName">
-          <el-input
-              v-model="entityObjectForm.form.ObjectName"
-              placeholder="请输入"
-              show-word-limit
-              maxlength="20"
-              disabled
-              style="width: 800px;margin-left: 20px">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="* 对象代码:" prop="ObjectCode">
-          <el-input
-              v-model="entityObjectForm.form.ObjectCode"
-              placeholder="纯英文格式，区分大小写"
-              show-word-limit
-              maxlength="20"
-              disabled
-              style="width: 800px;margin-left: 20px;margin-right: 10px">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="对象描述:" prop="ObjectDescription">
-          <el-input
-              v-model="entityObjectForm.form.ObjectDescription"
-              placeholder="请输入"
-              show-word-limit
-              maxlength="300"
-              type="textarea"
-              :autosize="{ minRows: 5 }"
-              disabled
-              style="width: 800px;margin-left: 20px">
-          </el-input>
-        </el-form-item>
+  <el-container>
+    <el-header>
+      <span style="float: left">实体对象 - {{ entityObjectForm.form.ObjectName }}</span>
+      <el-button v-if="scene==='preview'" type="primary" size="small"
+                 class="edit-button" @click="scene = 'update'">编辑
+      </el-button>
+    </el-header>
+    <el-main>
+      <el-form :rules="rules" label-position="right" label-width="130px">
+        <el-form-item label="对象名称：" prop="name">{{ entityObjectForm.form.ObjectName }}</el-form-item>
+        <el-form-item label="对象代码：" prop="name">{{ entityObjectForm.form.ObjectCode }}</el-form-item>
+        <el-form-item label="对象描述：" prop="code">{{ entityObjectForm.form.ObjectDescription }}</el-form-item>
       </el-form>
-    </div>
-  </div>
+    </el-main>
+    <el-footer v-if="scene === 'update'">
+      <el-button type="primary" size="small" @click="">保存</el-button>
+      <el-button type="primary" size="small" plain @click="scene = 'preview'">取消</el-button>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
-import {reactive} from "vue";
+import {onMounted, reactive, ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
 
 export default {
   name: "index.vue",
   setup() {
+    const router = useRouter()
+    const route = useRoute()
+    const rules = reactive({
+      ObjectName: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ],
+      ObjectCode: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ],
+      ObjectDescription: [
+        {
+          required: true,
+          message: 'Please input rule name',
+          trigger: 'blur',
+        }
+      ]
+    })
     const entityObjectForm = reactive({
       ref: 'entityObjectFormRef',
       form:{
@@ -60,8 +60,17 @@ export default {
         ObjectDescription:''
       }
     })
+
+    const scene = ref('preview');
+
+
+    onMounted(() => {
+        }
+    )
     return{
-      entityObjectForm
+      scene,
+      entityObjectForm,
+      rules
     }
   }
 }
