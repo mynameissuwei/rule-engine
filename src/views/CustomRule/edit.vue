@@ -87,7 +87,6 @@
                   <div v-if="!item.edit">
                     <el-form
                       v-for="(every, index) in item.ruleObjectList"
-                      ref="form"
                       label-width="auto"
                       label-position="top"
                       size="default"
