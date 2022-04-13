@@ -35,8 +35,7 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/idea.css";
 import "codemirror/theme/material-palenight.css";
 import "codemirror/mode/javascript/javascript";
-import "codemirror/addon/lint/lint";
-import "codemirror/addon/lint/json-lint";
+
 import { fetchTestData, upDateTestData } from "@/api/customrule";
 import {
   defineProps,
@@ -64,7 +63,7 @@ var rightEditor = {};
 const getData = async () => {
   const res = await fetchTestData(props.ruleId);
   const { data } = res;
-  leftContentRef.value = JSON.stringify(data, null, 2);
+  leftContentRef.value = data;
 };
 
 watch(

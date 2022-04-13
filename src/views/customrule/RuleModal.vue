@@ -20,7 +20,7 @@
             highlight-current-row
             v-loading="tableLoading"
             @current-change="handleCurrentChange"
-            height="430px"
+            height="445"
             :show-header="false"
           >
             <el-table-column prop="objectName" label="objectName" width="200" />
@@ -48,6 +48,7 @@
           :checkedForm="checkedForm"
           ref="formRef"
           :formData="formData"
+          :rules="rules"
         />
       </div>
     </div>
@@ -86,16 +87,89 @@ const formRef = ref("");
 const singleTableRef = ref();
 const checkListRef = ref([]);
 const checkedForm = ref([]);
+const rules = reactive({});
 const formData = ref({});
 
 let valueContains = ["INTEGER_RANGE", "DOUBLE_RANGE", "NUMBER_RANGE"];
 
-//修改checkedForm字段
+const validatePass = (rule, value, callback) => {
+  const formRefDom = formRef.value.formRefDom;
+  const { field } = rule;
+  let isSecond = field.includes("_second");
+  let fieldSecond = isSecond ? field.replace("_second", "") : `${field}_second`;
+  if (formData.value[fieldSecond] !== "") {
+    if (!formRefDom) return;
+    formRefDom.validateField(fieldSecond, () => null);
+  }
+  callback();
+};
+
+const validatePass2 = (rule, value, callback) => {
+  const { field } = rule;
+  let isSecond = field.includes("_second");
+  let fieldSecond = isSecond ? field.replace("_second", "") : `${field}_second`;
+  if (value < formData.value[fieldSecond]) {
+    callback(new Error("第二项值应该大于第一项值"));
+  } else {
+    callback();
+  }
+};
+
+// 修改rules数据
+const modifyRule = (item) => {
+  let ruleObj = [];
+  let isSelect =
+    item.calibratorType === "VALUE_CONTAIN" ||
+    item.calibratorType === "DATE_RANGE";
+  let isRange = item.calibratorType.split("_")[1] === "RANGE";
+  if (isRange) {
+    if (item.calibratorType === "INTEGER_RANGE") {
+      ruleObj = [
+        {
+          pattern: /^-?[1-9]\d*$/,
+          message: "请输入整数",
+          trigger: "blur",
+        },
+      ];
+    }
+    if (item.calibratorType === "DOUBLE_RANGE") {
+      ruleObj = [
+        {
+          pattern: /^[1-9][0-9]*([\.][0-9]{1,2})?$/,
+          message: "请输入整数及小数",
+          trigger: "blur",
+        },
+      ];
+    }
+  }
+  if (isRange) {
+    rules[item.fieldCode + "_second"] = [
+      {
+        required: true,
+        message: `${isSelect ? "请选择" : "请输入"}${item.fieldName}`,
+        trigger: "blur",
+      },
+      ...ruleObj,
+      { validator: validatePass2, trigger: "blur" },
+    ];
+  }
+  rules[item.fieldCode] = [
+    {
+      required: true,
+      message: `${isSelect ? "请选择" : "请输入"}${item.fieldName}`,
+      trigger: "blur",
+    },
+    ...ruleObj,
+    { validator: validatePass, trigger: "blur" },
+  ];
+};
+//修改checkedForm rules字段
 watch(
   () => checkListRef.value,
   () => {
     let result = checkListRef.value.map((item) => {
       let obj = objectDetailRef.value.find((l) => l.id == item);
+      modifyRule(obj);
       return obj;
     });
     checkedForm.value = result;
@@ -163,7 +237,9 @@ const handleCurrentChange = async (currentRow, oldCurrentRow) => {
     formData.value = {};
   }
 
-  objectDetailRef.value = res.data.ruleObjectFieldResVoList;
+  objectDetailRef.value = res.data.ruleObjectFieldResVoList.filter(
+    (item) => item.calibratorType != "UN_KNOWN"
+  );
   currentRowRef.value = currentRow;
   checkBoxLoading.value = false;
 };
@@ -205,15 +281,21 @@ const changeRuleObject = (data) => {
 };
 // 提交按钮
 const onSubmit = async () => {
-  let ruleObject = changeRuleObject(objectListRef.value);
-
-  // const { formRefDom } = formRef.value.schemaRef;
-  props.handleCancel();
-  if (props.fieldStatus == "edit") {
-    emits("pushRule", ruleObject);
-  } else {
-    emits("pushRule", ruleObject);
-  }
+  const formRefDom = formRef.value.formRefDom;
+  console.log(formRefDom, "formRefDomformRefDom");
+  await formRefDom.validate(async (valid, fields) => {
+    if (valid) {
+      let ruleObject = changeRuleObject(objectListRef.value);
+      props.handleCancel();
+      if (props.fieldStatus == "edit") {
+        emits("pushRule", ruleObject);
+      } else {
+        emits("pushRule", ruleObject);
+      }
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
 };
 
 onMounted(async () => {
@@ -228,6 +310,7 @@ onMounted(async () => {
     let currentRow = objectListRef.value.find((item) =>
       item.hasOwnProperty("checkList")
     );
+    console.log(result, currentRow, "currentRowcurrentRow");
     singleTableRef.value.setCurrentRow(currentRow);
   }
 });

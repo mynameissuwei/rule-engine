@@ -9,7 +9,7 @@
     <div class="container" v-loading="spinLoadingRef">
       <div class="form-box">
         <el-form ref="formRef" :rules="rules" :model="form" label-width="120px">
-          <el-form-item label="规则名称:" prop="name">
+          <el-form-item label="规则名称:" prop="ruleName">
             <el-input
               v-model="form.ruleName"
               placeholder="可使用中英文、数字组合"
@@ -25,7 +25,7 @@
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
           </el-form-item>
-          <el-form-item label="使用场景描述:" prop="region">
+          <el-form-item label="使用场景描述:" prop="scenarioName">
             <el-input
               v-model="form.scenarioName"
               placeholder="请输入"
@@ -33,12 +33,13 @@
               style="width: 340px"
             ></el-input>
           </el-form-item>
-          <el-form-item label="规则编辑" prop="region">
+          <el-form-item label="规则编辑">
             <div>
               <el-button
                 size="small"
                 @click="handleCreate"
                 class="gray-button"
+                color="#F2F3F5"
                 :disabled="isDetail"
               >
                 + 添加规则
@@ -112,7 +113,9 @@
                           style="width: 340px"
                         >
                           <el-option
-                            v-for="l in item.fieldEnum.split(';')"
+                            v-for="l in item.fieldEnum
+                              ? item.fieldEnum.split(';')
+                              : []"
                             :key="l"
                             :label="l"
                             :value="l"
@@ -169,7 +172,7 @@
         <el-button
           type="primary"
           size="small"
-          @click="onSubmit"
+          @click="onSubmit(formRef)"
           :loading="buttonLoadingRef"
           >完成</el-button
         >
@@ -180,7 +183,6 @@
           @click="onCancel"
           >取消</el-button
         >
-        <el-button size="small">测试</el-button>
       </el-button-group>
     </el-footer>
     <rule-modal
@@ -231,10 +233,6 @@ export default {
     const route = useRoute();
     const store = useStore();
 
-    const rules = {
-      name: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
-      region: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
-    };
     const formFieldRef = ref(null);
     const buttonLoadingRef = ref(false);
     const spinLoadingRef = ref(false);
@@ -242,16 +240,36 @@ export default {
     const editDataRef = ref(null);
 
     const dataMap = reactive({
+      formRef: null,
       form: {
         ruleName: "",
         scenarioName: "",
       },
-      editId: null,
-      mapObject: {
-        VALUE_CONTAIN: "targetContains",
-        STRING_EQUALS: "targetValue",
-        INTEGER_RANGE: "rangeType",
+      rules: {
+        ruleName: [
+          { required: true, message: "请输入规则名称", trigger: "blur" },
+          {
+            min: 1,
+            max: 10,
+            message: "长度在 1 到 50 个字符",
+            trigger: "blur",
+          },
+          {
+            pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+            message: "只能输入中文、数字、英文",
+            trigger: "blur",
+          },
+        ],
+        scenarioName: [
+          {
+            min: 0,
+            max: 100,
+            message: "最大长度100字符",
+            trigger: "blur",
+          },
+        ],
       },
+      editId: null,
       formDisabled: true,
       id: router.currentRoute.value.params.id,
       isDetail: route.query.status == "detail" ? true : false,
@@ -276,54 +294,111 @@ export default {
       initID() {
         return Math.random().toString();
       },
+      revertObject(obj) {
+        let result = {
+          id: obj.id,
+          calibratorType: obj.ruleType,
+          fieldType: obj.dataType,
+          fieldName: obj.fieldName,
+          fieldCode: obj.fieldPath.split(".")[2],
+        };
+
+        if (obj.ruleType === "STRING_EQUALS") {
+          result.fieldValue = obj.targetValue;
+        }
+        if (obj.ruleType === "VALUE_CONTAIN") {
+          result.fieldValue = obj.targetContains.split("|");
+        }
+        if (
+          obj.ruleType === "INTEGER_RANGE" ||
+          obj.ruleType === "DOUBLE_RANGE" ||
+          obj.ruleType === "NUMBER_RANGE"
+        ) {
+          result.fieldValue = obj.minValue;
+          result.fieldValueSecond = obj.maxValue;
+        }
+        if (obj.ruleType === "DATE_RANGE") {
+          result.fieldValue = [obj.minValue, obj.maxValue];
+        }
+        return result;
+      },
+      modifyObject(parentObj, obj, idx) {
+        let result = {
+          id: obj.id,
+          ruleType: obj.calibratorType,
+          dataType: obj.fieldType,
+          sortNo: idx + 1,
+          fieldName: obj.fieldName,
+          fieldPath: `$.${parentObj.objectCode}.${obj.fieldCode}`,
+        };
+        if (obj.calibratorType === "STRING_EQUALS") {
+          result.targetValue = obj.fieldValue;
+        }
+        if (obj.calibratorType === "VALUE_CONTAIN") {
+          result.targetContains = obj.fieldValue.join("|");
+        }
+        if (
+          obj.calibratorType === "INTEGER_RANGE" ||
+          obj.calibratorType === "DOUBLE_RANGE" ||
+          obj.calibratorType === "NUMBER_RANGE"
+        ) {
+          result.rangeType = "GTE_LTE";
+          result.minValue = obj.fieldValue;
+          result.maxValue = obj.fieldValueSecond;
+        }
+        if (obj.calibratorType === "DATE_RANGE") {
+          result.minValue = obj.fieldValue[0];
+          result.maxValue = obj.fieldValue[1];
+        }
+        return result;
+      },
       //关于字段赋值的逻辑
       // calibratorType => ruleType
       // fieldType => dataType
       // fieldPath => objectCode fieldCode
       // 根据不同的 calibratorType 来进行不同的 字段赋值
       changeCondition(data) {
-        let result = data.map((item) => {
+        let frontCheckList = {};
+        let conditions = data.map((item) => {
           return {
             ...item,
             ruleObjectList: item.ruleObjectList.map((every, idx) => {
+              frontCheckList[every.id] = {
+                checkList: every.checkList,
+                formData: every.formData,
+              };
               return {
                 ...every,
+                checkList: JSON.stringify(every.checkList),
+                formData: JSON.stringify(every.formData),
                 ruleObjectFieldList: every.ruleObjectFieldList.map((l, idx) => {
-                  let result = {
-                    ruleType: l.calibratorType,
-                    dataType: l.fieldType,
-                    // id: l.id,
-                    sortNo: idx + 1,
-                    fieldName: l.fieldName,
-                    fieldPath: `$.${every.objectCode}.${l.fieldCode}`,
-                  };
-                  result[dataMap.mapObject[l.calibratorType]] = l.fieldValue;
+                  let result = dataMap.modifyObject(every, l, idx);
                   return result;
                 }),
               };
             }),
           };
         });
-        return result;
+        return {
+          conditions,
+          frontCheckList,
+        };
       },
-      revertCondition(value) {
+      revertCondition(value, frontCheckList) {
+        let frontCheckListObj = JSON.parse(frontCheckList);
         let result = value.map((item) => {
           return {
             ...item,
+            id: dataMap.initID(),
             ruleObjectList: item.ruleObjectList.map((l) => {
+              let frontObj = frontCheckListObj[l.id];
               return {
                 ...l,
+                ...frontObj,
                 objectCode: l.ruleObjectFieldList[0].fieldPath.split(".")[1],
                 ruleObjectFieldList: l.ruleObjectFieldList.map((every) => {
-                  let result = {
-                    calibratorType: every.ruleType,
-                    fieldType: every.dataType,
-                    fieldName: every.fieldName,
-                    fieldCode: every.fieldPath.split(".")[2],
-                  };
-                  result["fieldValue"] =
-                    every[dataMap.mapObject[every.ruleType]];
-                  return result;
+                  let data = dataMap.revertObject(every);
+                  return data;
                 }),
               };
             }),
@@ -332,39 +407,46 @@ export default {
 
         return result;
       },
-      async onSubmit() {
-        buttonLoadingRef.value = true;
-        let result = {
-          ...dataMap.form,
-          conditions: dataMap.changeCondition(ruleSet.value),
-          tenantId: store.state.user.tenantId,
-          userId: store.state.user.userId,
-          userName: store.state.user.username,
-        };
+      async onSubmit(formEl) {
+        if (!formEl) return;
+        await formEl.validate(async (valid, fields) => {
+          if (valid) {
+            buttonLoadingRef.value = true;
+            const { conditions, frontCheckList } = dataMap.changeCondition(
+              ruleSet.value
+            );
+            console.log(frontCheckList, "RevertfrontCheckList");
+            let result = {
+              ...dataMap.form,
+              frontCheckList: JSON.stringify(frontCheckList),
+              conditions,
+              tenantId: store.state.user.tenantId,
+              userId: store.state.user.userId,
+              userName: store.state.user.username,
+            };
 
-        const {
-          data: { success, message },
-        } = dataMap.id
-          ? await updateRuleObject({
-              id: Number(dataMap.id),
-              ...result,
-            })
-          : await createRuleObject(result);
-        if (success) {
-          ElMessage.success(message);
-          router.push({
-            name: "dashboard",
-          });
-        } else {
-          ElMessage.error(message);
-        }
-        buttonLoadingRef.value = false;
+            const { success, message } = dataMap.id
+              ? await updateRuleObject({
+                  id: Number(dataMap.id),
+                  ...result,
+                })
+              : await createRuleObject(result);
+
+            if (success) {
+              ElMessage.success(message);
+              router.push({
+                name: "dashboard",
+              });
+            }
+            buttonLoadingRef.value = false;
+          }
+        });
       },
       // 添加多个currentRow  ruleObjectList:[{ruleObjectFieldList:{}},{ruleObjectFieldList:{}}]
       pushRule(ruleObjectList) {
         let result;
         if (dataMap.fieldStatus == "edit") {
-          // console.log(ruleSet.value, dataMap.editId, ruleObjectList, "editId");
+          //
           result = ruleSet.value.map((item) => {
             if (item.id == dataMap.editId) {
               return {
@@ -384,7 +466,7 @@ export default {
             ...item,
           }));
         }
-        console.log(result, "result");
+
         ruleSet.value = result;
       },
       onCancel() {
@@ -394,22 +476,21 @@ export default {
         });
       },
       initForm(data) {
-        const { ruleName, scenarioName, conditions } = data;
+        const { ruleName, scenarioName, conditions, frontCheckList } = data;
         dataMap.form = {
           ruleName,
           scenarioName,
         };
-        ruleSet.value = dataMap.revertCondition(conditions);
+        console.log(JSON.parse(frontCheckList, "RevertfrontCheckList"));
+        ruleSet.value = dataMap.revertCondition(conditions, frontCheckList);
       },
     });
     onBeforeMount(async () => {
       if (dataMap.id) {
         spinLoadingRef.value = true;
-        const res = await fetchDetail(dataMap.id);
-        if (res.data.success) {
-          dataMap.initForm(res.data.data);
-        } else {
-          ElMessage.error(res.data.message);
+        const { success, data } = await fetchDetail(dataMap.id);
+        if (success) {
+          dataMap.initForm(data);
         }
         spinLoadingRef.value = false;
       }

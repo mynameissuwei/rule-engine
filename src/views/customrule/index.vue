@@ -4,7 +4,7 @@
       <el-col :span="7">
         <el-input
           v-model="listQuery.ruleName"
-          placeholder="脚本规则名称"
+          placeholder="自定义规则名称"
           class="handle-input mr10"
         ></el-input>
       </el-col>
@@ -36,7 +36,9 @@
         <el-button type="primary" size="small" @click="handleSearch"
           >搜索</el-button
         >
-        <el-button size="small" @click="handleReset">重置</el-button>
+        <el-button size="small" @click="handleReset" color="#F2F3F5"
+          >重置</el-button
+        >
       </el-col>
     </el-row>
     <el-divider></el-divider>
@@ -52,6 +54,7 @@
             size="small"
             @click="handleModify(0)"
             :disabled="!multipleSelection.length"
+            color="#F2F3F5"
           >
             批量停用
           </el-button>
@@ -59,12 +62,14 @@
             size="small"
             @click="handleModify(1)"
             :disabled="!multipleSelection.length"
+            color="#F2F3F5"
             >批量发布</el-button
           >
         </el-button-group>
       </el-col>
     </el-row>
     <el-table
+      :header-cell-style="{ background: '#F6F7FB' }"
       :data="tableData"
       highlight-current-row
       ref="multipleTable"
@@ -134,8 +139,8 @@
     </el-table>
     <div class="pagination">
       <el-pagination
-        :current-page="listQuery.pageIndex"
-        :page-size="listQuery.pageSize"
+        v-model:currentPage="listQuery.pageNum"
+        v-model:page-size="listQuery.pageSize"
         layout=" prev, pager, next,  sizes,jumper"
         :total="pageTotal"
         @size-change="handleSizeChange"
@@ -213,7 +218,10 @@ const handlePageChange = (val) => {
   getList();
 };
 
-const handleSizeChange = (val) => {};
+const handleSizeChange = (val) => {
+  listQuery.pageSize = val;
+  getList();
+};
 
 const handleCreate = () => {
   router.push({
@@ -286,7 +294,7 @@ const handleReset = () => {
     ruleName: "",
     ruleCode: "",
     releaseStatus: null,
-    pageIndex: 1,
+    pageNum: 1,
     pageSize: 10,
   };
   Object.assign(listQuery, data);

@@ -1,17 +1,20 @@
 <template>
   <div class="vue-form-container">
     <el-scrollbar height="450px" style="width: 380px">
-      <el-form :model="formData" label-position="top" ref="formRefDom">
+      <el-form
+        :model="formData"
+        label-position="top"
+        :rules="rules"
+        ref="formRefDom"
+      >
         <el-form-item
           :label="item['fieldName']"
           v-for="item in props.checkedForm"
+          :prop="item['fieldCode']"
         >
           <el-input
             v-model="formData[item.fieldCode]"
-            v-if="
-              item.calibratorType === 'STRING_EQUALS' ||
-              item.calibratorType === 'UN_KNOWN'
-            "
+            v-if="item.calibratorType === 'STRING_EQUALS'"
             style="width: 340px"
           />
           <el-select
@@ -49,13 +52,19 @@
             "
           >
             <el-col :span="11">
-              <el-input v-model="formData[item.fieldCode]" />
+              <el-form-item :prop="item['fieldCode']">
+                <el-input v-model.number="formData[item.fieldCode]" />
+              </el-form-item>
             </el-col>
             <el-col :span="2" class="text-center">
               <span class="text-gray-500">-</span>
             </el-col>
             <el-col :span="11">
-              <el-input v-model="formData[item.fieldCode + '_second']" />
+              <el-form-item :prop="item['fieldCode'] + '_second'">
+                <el-input
+                  v-model.number="formData[item.fieldCode + '_second']"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form-item>
@@ -77,7 +86,7 @@ import {
 
 const formRefDom = ref("");
 
-const props = defineProps(["checkedForm", "formData"]);
+const props = defineProps(["checkedForm", "formData", "rules"]);
 const { formData } = toRefs(props);
 
 defineExpose({

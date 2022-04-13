@@ -1,4 +1,3 @@
-import request from "@/utils/request";
 import fetch from "@/utils/fetch";
 
 export const fetchTableData = (data) => {
@@ -25,7 +24,7 @@ export const modifyList = (data) => {
 };
 
 export const fetchDetail = (id) => {
-  return request({
+  return fetch({
     url: `/manager/viewOneRule/${id}`,
     method: "get",
   });
@@ -47,7 +46,7 @@ export const fetchObjectDetail = (id) => {
 };
 
 export const createRuleObject = (data) => {
-  return request({
+  return fetch({
     url: `/manager/saveOneRule`,
     method: "post",
     data,
@@ -55,7 +54,7 @@ export const createRuleObject = (data) => {
 };
 
 export const updateRuleObject = (data) => {
-  return request({
+  return fetch({
     url: `/manager/updateOneRule`,
     method: "post",
     data,
