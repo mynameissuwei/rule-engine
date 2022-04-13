@@ -116,6 +116,7 @@ const validatePass2 = (rule, value, callback) => {
 
 // 修改rules数据
 const modifyRule = (item) => {
+  console.log();
   let ruleObj = [];
   let isSelect =
     item.calibratorType === "VALUE_CONTAIN" ||
