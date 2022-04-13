@@ -28,7 +28,7 @@
 <script>
 import { provide, ref } from "vue";
 import PageHeader from "../../components/PageHeader.vue";
-import CheckRule from "views/CheckRule/index.vue";
+// import CheckRule from "views/CheckRule/index.vue";
 import CustomRule from "views/CustomRule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
 import { useRoute } from "vue-router";
@@ -40,7 +40,7 @@ export default {
   components: {
     RuleLayoutList,
     PageHeader,
-    CheckRule,
+    // CheckRule,
     CustomRule,
     ScriptRule,
     entityObject,

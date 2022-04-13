@@ -13,11 +13,11 @@ const router = createRouter({
       name: "home",
       component: () => import("views/dashboard/index.vue"),
     },
-    {
-      path: "/rule/create/:id?",
-      name: "createRule",
-      component: () => import("views/CheckRule/create.vue"),
-    },
+    // {
+    //   path: "/rule/create/:id?",
+    //   name: "createRule",
+    //   component: () => import("views/CheckRule/create.vue"),
+    // },
     {
       path: "/customRule/edit/:id?",
       name: "editCustomRule",
