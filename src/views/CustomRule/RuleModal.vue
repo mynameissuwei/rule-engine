@@ -20,7 +20,6 @@
             highlight-current-row
             v-loading="tableLoading"
             @current-change="handleCurrentChange"
-            height="445"
             :show-header="false"
           >
             <el-table-column prop="objectName" label="objectName" width="200" />
