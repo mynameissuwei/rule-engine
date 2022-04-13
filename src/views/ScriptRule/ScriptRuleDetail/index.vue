@@ -122,7 +122,6 @@ export default {
         scriptName: ScriptRuleFormDetailForm.form.scriptName
       }
       updateScriptRuleById(requestBody).then(response => {
-        console.log(response,30)
         if (response.data.code !== '0') {
           ElMessage.error(response.data.message)
           return;
