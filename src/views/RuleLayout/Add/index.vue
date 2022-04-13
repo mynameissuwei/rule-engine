@@ -54,7 +54,7 @@
       <el-button type="primary" size="small" @click="addRuleLayout"
         >保存</el-button
       >
-      <el-button type="primary" size="small" plain @click="scene = 'preview'"
+      <el-button type="primary" size="small" plain @click="cancelAddRuleLayout"
         >取消</el-button
       >
     </el-footer>
@@ -84,20 +84,24 @@ export default {
       name: [
         {
           required: true,
-          message: "Please input Activity name",
+          message: "Please input rule name",
           trigger: "blur",
         },
-        {
-          min: 3,
-          max: 5,
-          message: "Length should be 3 to 5",
-          trigger: "blur",
-        },
+        // {
+        //   min: 3,
+        //   max: 5,
+        //   message: 'Length should be 3 to 5',
+        //   trigger: 'blur',
+        // },
       ],
       code: {
         required: true,
       },
     });
+
+    const cancelAddRuleLayout = () => {
+      router.go(-1);
+    };
 
     const route = useRoute();
     const ruleGroupCode = route.query.ruleGroupCode;
@@ -151,6 +155,14 @@ export default {
 
     //对node进行排序 根据edge的指向
     const convertToRuleLayouts = (graphData) => {
+      if (graphData.edges.length == 0) {
+        return [
+          {
+            scriptCode: graphData.nodes[0].id,
+            scriptExecutionSort: 0,
+          },
+        ];
+      }
       return sortRule(graphData.edges).map((item, index) => {
         return {
           scriptCode: item,
@@ -182,9 +194,9 @@ export default {
           type: "success",
         });
         router.push({
-          path: "/",
+          path: "/home",
           query: {
-            ruleGroupCode: ruleGroupCode,
+            ...route.query,
             message: "four",
           },
         });
@@ -196,6 +208,7 @@ export default {
       handleRandomRuleLayoutCode,
       addRuleLayout,
       ruleGraph,
+      cancelAddRuleLayout,
     };
   },
 };

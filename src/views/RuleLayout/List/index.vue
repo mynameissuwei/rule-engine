@@ -19,7 +19,6 @@
               <el-form-item>
                 <el-select  placeholder="状态" v-model="ruleLayoutQueryForm.status">
                   <el-option value="PUBLISHED" label="发布"></el-option>
-                  <el-option value="STOP" label="停用"></el-option>
                   <el-option value="UNPUBLISHED" label="未发布"></el-option>
                 </el-select>
               </el-form-item>
@@ -34,7 +33,7 @@
       </div>
     </template>
     <el-row style="margin-top:10px">
-      <el-col :span="18" style="margin-left:10px">脚本规则编排（1/100）</el-col>
+      <el-col :span="18" style="margin-left:10px">脚本规则编排（{{pagination.currentPage}}/{{pagination.pageCount}}）</el-col>
       <el-col :span="5" style="margin-left: auto">
         <el-button type="primary" size="small" @click="addRuleLayoutDetail">新建</el-button>
         <el-button type="primary" size="small" plain @click="batchDisableRuleLayout"
@@ -64,7 +63,7 @@
           >
             编辑
           </el-button>
-          <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)" v-if="scope.row.status !== 'PUBLISH'">发布</el-button>
+          <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)" v-if="scope.row.status !== 'PUBLISHED'">发布</el-button>
           <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)" v-if="scope.row.status !== 'UNPUBLISHED'">停用</el-button>
           <el-button type="text" size="small" @click="deleteRuleLayout(scope.row.id)">删除</el-button>
 
@@ -89,33 +88,40 @@
 
 <script>
 import {reactive, onMounted, inject} from 'vue';
-import {useRouter,} from 'vue-router'
+import {useRouter,useRoute} from 'vue-router';
+import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
 export default {
   name: "RuleLayoutList",
   setup(){
     let ruleGroupCode = '';
     onMounted( () => {
-      ruleGroupCode = inject('ruleGroupCode', '0001');
+      //注入规则集code
+      ruleGroupCode = inject('ruleGroupCode').value;
       const params = {
         pageNum: pagination.currentPage,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
+        ruleGroupCode: ruleGroupCode,
       }
       pageRuleLayoutList(params).then(res => {
         const data = res.data;
         pagination.pageSize = data.pageSize;
         pagination.currentPage = data.pageNum;
-        pagination.total = data.totalCount
+        pagination.total = data.totalCount;
+        pagination.pageCount = data.totalPages;
         ruleLayoutList.push(...convertToRuleLayoutList(data.data))
       })
     });
 
     let RULE_LAYOUT_STATUS = {
-      'PUBLISH': '发布',
+      'PUBLISHED': '发布',
       'UNPUBLISHED': '未发布',
     }
 
     const convertToRuleLayoutList = (data) => {
+      if(!data){
+        return []
+      }
       return data.map(layout => {
         return {
           id: layout.id,
@@ -140,7 +146,8 @@ export default {
     const pagination = reactive({
       currentPage: 1,
       pageSize: 10,
-      total: 100
+      total: 100,
+      pageCount: 0
     })
 
     const handleSizeChange = (size) => {
@@ -160,6 +167,7 @@ export default {
         ruleLayoutName: ruleLayoutQueryForm.name,
         updatedByName: ruleLayoutQueryForm.keyword,
         ruleLayoutStatus: ruleLayoutQueryForm.status,
+        ruleGroupCode: ruleGroupCode
       }
       pageRuleLayoutList(params).then(res => {
         const data = res.data;
@@ -189,7 +197,7 @@ export default {
     const batchPublishRuleLayout = () => {
       const params = {
         list: selectedRuleLayoutIds,
-        ruleLayoutStatus: "PUBLISH"
+        ruleLayoutStatus: "PUBLISHED"
       }
       changeRuleLayoutStatus(params);
       searchRuleLayout();
@@ -208,7 +216,8 @@ export default {
         query: {
           ruleLayoutId: ruleLayoutId,
           ruleGroupCode: ruleGroupCode,
-          scene: 'preview'
+          scene: 'preview',
+          ...route.query
         }
       })
     }
@@ -219,16 +228,19 @@ export default {
         query: {
           ruleLayoutId: ruleLayoutId,
           ruleGroupCode: ruleGroupCode,
-          scene: 'update'
+          scene: 'update',
+          ...route.query
         }
       })
     }
+
+    const route = useRoute();
 
     const addRuleLayoutDetail = (ruleLayoutId) => {
       router.push({
         path: '/rule-layout/add',// 跳转到规则编排详情页面
         query: {
-          ruleGroupCode: ruleGroupCode,
+          ...route.query
         }
       })
     }
@@ -236,7 +248,7 @@ export default {
     const publishRuleLayout = (id) => {
       const params = {
         list: [id],
-        ruleLayoutStatus: "PUBLISH"
+        ruleLayoutStatus: "PUBLISHED"
       }
       changeRuleLayoutStatus(params);
       searchRuleLayout();
@@ -252,8 +264,13 @@ export default {
     }
 
     const deleteRuleLayout = (id) => {
-      removeRuleLayout({id});
-      searchRuleLayout();
+      removeRuleLayout({id}).then(res => {
+        if(res.data.code != "0"){
+          ElMessage.error(res.data.message)
+        }else{
+          searchRuleLayout();
+        }
+      })
     }
     return {
       ruleLayoutQueryForm,

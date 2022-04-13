@@ -148,10 +148,11 @@ export default {
           })
         }
         router.push({
-          path: '/',
+          path: '/home',
           query: {
             ruleGroupCode: ruleGroupCode,
-            message: 'four'
+            message: 'four',
+            ...route.query
           }
         })
       })
@@ -159,6 +160,14 @@ export default {
 
     //对node进行排序 根据edge的指向
     const convertToRuleLayouts = (graphData) => {
+      if(graphData.edges.length == 0){
+        return [
+          {
+            scriptCode: graphData.nodes[0].id,
+            scriptExecutionSort: 0
+          }
+        ]
+      }
       return sortRule(graphData.edges).map((item,index) => {
         return {
           scriptCode: item,
