@@ -25,12 +25,15 @@
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="代码片段：">
-          <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"
-                    :disabled="scene === 'preview'"
-                    show-word-limit
-                    maxlength="300000"
-                    type="textarea"
-          ></el-input>
+          <code-block ref="codeBlock"
+                      :script-content="ScriptRuleFormDetailForm.form.scriptContent"
+                      :disabled="scene === 'preview'"></code-block>
+<!--          <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"-->
+<!--                    :disabled="scene === 'preview'"-->
+<!--                    show-word-limit-->
+<!--                    maxlength="300000"-->
+<!--                    type="textarea"-->
+<!--          ></el-input>-->
         </el-form-item>
       </el-form>
     </el-main>
@@ -48,9 +51,11 @@ import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
 import router from "@/router";
 import {Base64} from "js-base64";
+import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
 
 export default {
   name: "index.vue",
+  components: {CodeBlock},
   setup() {
     const router = useRouter()
     const route = useRoute()
@@ -112,14 +117,17 @@ export default {
         }
     )
 
+    let codeBlock = ref();
     const updateScriptRule = () => {
+      let scriptParam = codeBlock.value.getScriptParam();
       let requestBody = {
         id:route.query.scriptRuleId,
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
         scriptContent: Base64.encode(ScriptRuleFormDetailForm.form.scriptContent),
-        scriptName: ScriptRuleFormDetailForm.form.scriptName
+        scriptName: ScriptRuleFormDetailForm.form.scriptName,
+        exampleValue: JSON.stringify(scriptParam)
       }
       updateScriptRuleById(requestBody).then(response => {
         console.log(response,30)
@@ -146,7 +154,8 @@ export default {
       rules,
       ScriptRuleFormDetailForm,
       scene,
-      updateScriptRule
+      updateScriptRule,
+      codeBlock
     }
   }
 }
@@ -173,7 +182,7 @@ export default {
   background-color: #FFFFFF;
   color: var(--el-text-color-primary);
   margin: 15px;
-  height:700px
+  height:550px
 }
 
 .edit-button {

@@ -19,33 +19,27 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="规则库代码:" prop="ruleGroupCode">
+<!--        <el-form-item label="规则库代码:" prop="ruleGroupCode">-->
+<!--          <el-input-->
+<!--              v-model="inputScriptRuleForm.form.ruleGroupCode"-->
+<!--              placeholder="请输入"-->
+<!--              show-word-limit-->
+<!--              maxlength="20"-->
+<!--              style="width: 800px;margin-left: 20px">-->
+<!--          </el-input>-->
+<!--        </el-form-item>-->
+        <el-form-item label="规则code:" prop="scriptCode">
           <el-input
-              v-model="inputScriptRuleForm.form.ruleGroupCode"
-              placeholder="请输入"
+              v-model="inputScriptRuleForm.form.scriptCode"
+              placeholder="纯英文格式，区分大小写"
               show-word-limit
-              maxlength="20"
-              style="width: 800px;margin-left: 20px">
+              maxlength="50"
+              style="width: 500px;margin-left: 20px;">
           </el-input>
-        </el-form-item>
-        <el-form-item label="规则代码:" prop="scriptCode">
-          <div>
-            <el-input
-                v-model="inputScriptRuleForm.form.scriptCode"
-                placeholder="纯英文格式，区分大小写"
-                show-word-limit
-                maxlength="50"
-                style="width: 800px;margin-left: 20px;margin-right: 10px">
-            </el-input>
-            <el-button
-                type="text"
-                @click="handleRandomRuleLayoutCode">
-              随机生成
-            </el-button>
-          </div>
+          <span style="margin-left: 10px;color: #4a9ff9" @click="handleRandomRuleLayoutCode">随机生成</span>
         </el-form-item>
         <el-form-item label="程序类型：" prop="programType">
-          <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'">
+          <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'"  style="margin-left: 20px">
             <el-option
                 label="GROOVY"
                 value="GROOVY"
@@ -62,16 +56,17 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="代码片段:" prop="scriptContent">
-          <el-input
-              v-model="inputScriptRuleForm.form.scriptContent"
-              placeholder="请输入"
-              show-word-limit
-              maxlength="300000"
-              type="textarea"
-              :autosize="{ minRows: 5 }"
-              style="width: 800px;margin-left: 20px">
-          </el-input>
+        <el-form-item label="脚本代码:" prop="scriptContent">
+          <code-block :script-content="inputScriptRuleForm.form.scriptContent" style="margin-left: 20px"></code-block>
+<!--          <el-input-->
+<!--              v-model="inputScriptRuleForm.form.scriptContent"-->
+<!--              placeholder="请输入"-->
+<!--              show-word-limit-->
+<!--              maxlength="300000"-->
+<!--              type="textarea"-->
+<!--              :autosize="{ minRows: 5 }"-->
+<!--              style="width: 800px;margin-left: 20px">-->
+<!--          </el-input>-->
         </el-form-item>
         <el-form-item>
           <el-button type="primary" style="margin: 20px" @click="addScriptRuleBtn">确认</el-button>
@@ -83,14 +78,16 @@
 </template>
 
 <script>
-import {reactive, onMounted } from "vue";
+import {reactive, onMounted, ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
 import {addScriptRule} from "../../../api/scriptRule";
 import {Base64} from "js-base64";
 import {randomRuleLayoutCode} from "@/api/ruleLayout";
+import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
 
 export default {
   name: "index.vue",
+  components: {CodeBlock},
   setup() {
 
     const router = useRouter();
@@ -117,7 +114,9 @@ export default {
         scriptContent:''
       }})
     //新增修改规则库
+    let codeBlock = ref();
     const addScriptRuleBtn = () => {
+      let scriptParam = codeBlock.value.getScriptParam();
       let requestBody = {
         programType: 1,
         ruleGroupCode: inputScriptRuleForm.form.ruleGroupCode,
@@ -125,7 +124,8 @@ export default {
         scriptCode: inputScriptRuleForm.form.scriptCode,
         scriptContent: Base64.encode(inputScriptRuleForm.form.scriptContent),
         scriptName: inputScriptRuleForm.form.scriptName,
-        ruleScriptStatus: "UNPUBLISHED"
+        ruleScriptStatus: "UNPUBLISHED",
+        exampleValue: JSON.stringify(scriptParam)
       }
       addScriptRule(requestBody).then(res =>{
         router.push({
@@ -160,7 +160,8 @@ export default {
       addScriptRuleBtn,
       handleRandomRuleLayoutCode,
       rules,
-      cancelAddScriptRule
+      cancelAddScriptRule,
+      codeBlock
     }
   }
 }
