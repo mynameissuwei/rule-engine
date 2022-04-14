@@ -1,5 +1,4 @@
 import { fetchAccount } from "@/api/user";
-import router from "@/router";
 
 const getDefaultState = () => {
   return {

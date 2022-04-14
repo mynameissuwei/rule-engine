@@ -3,7 +3,9 @@
     <div class="top-container">
       <div class="left">{{ leftText }}</div>
       <div class="right" v-if="showButton">
-        <el-button type="primary" size="small">编辑</el-button>
+        <el-button type="primary" size="small" @click="handleEditJump"
+          >编辑</el-button
+        >
       </div>
     </div>
   </div>
@@ -11,8 +13,8 @@
 
 <script>
 export default {
-  props: ['leftText', 'showButton']
-}
+  props: ["leftText", "showButton", "handleEditJump"],
+};
 </script>
 
 <style lang="scss" scoped>

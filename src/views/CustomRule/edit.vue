@@ -5,6 +5,7 @@
         id ? (isDetail ? '校验规则详情' : '编辑校验规则') : '新建校验规则'
       "
       :showButton="id ? (isDetail ? true : false) : false"
+      :handleEditJump="handleEditJump"
     />
     <div class="container" v-loading="spinLoadingRef">
       <div class="form-box">
@@ -196,7 +197,7 @@
 </template>
 
 <script>
-import { reactive, ref, toRefs, nextTick, onBeforeMount } from "vue";
+import { reactive, ref, toRefs, onBeforeMount } from "vue";
 import PageHeader from "comps/PageHeader.vue";
 import RuleHeader from "./RuleHeader.vue";
 import {
@@ -283,6 +284,14 @@ export default {
         dataMap.editId = id;
         dataMap.visible = true;
         editDataRef.value = editData;
+      },
+      handleEditJump() {
+        console.log("routerroiuter");
+        router.push({
+          name: "editCustomRule",
+          params: { id: dataMap.id },
+          query: { status: "edit" },
+        });
       },
       handleCancel() {
         dataMap.visible = false;
@@ -422,6 +431,7 @@ export default {
               tenantId: store.state.user.tenantId,
               userId: store.state.user.userId,
               userName: store.state.user.username,
+              ruleGroup: store.state.rule.ruleData,
             };
 
             const { success, message } = dataMap.id
@@ -435,6 +445,9 @@ export default {
               ElMessage.success(message);
               router.push({
                 name: "home",
+                query: {
+                  tab: "customRule",
+                },
               });
             }
             buttonLoadingRef.value = false;
@@ -472,6 +485,7 @@ export default {
         router.push({
           name: "home",
           params: { id: undefined },
+          query: { tab: "customRule" },
         });
       },
       initForm(data) {
@@ -485,6 +499,7 @@ export default {
       },
     });
     onBeforeMount(async () => {
+      console.log(store.state.rule.ruleData, "ruleDataDat");
       if (dataMap.id) {
         spinLoadingRef.value = true;
         const { success, data } = await fetchDetail(dataMap.id);

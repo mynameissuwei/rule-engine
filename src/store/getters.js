@@ -6,5 +6,6 @@ const getters = {
   nickName: (state) => state.user.nickName,
   hasTenant: (state) => state.user.hasTenant,
   tenantId: (state) => state.user.tenantId,
+  ruleData: (state) => state.rule.ruleData,
 };
 export default getters;

@@ -164,6 +164,7 @@ import rBadge from "@/components/rBadge.vue";
 import { ElMessageBox, ElMessage } from "@enn/element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
 import TestModal from "./TestModal.vue";
+import { useStore } from "vuex";
 
 const listQuery = reactive({
   ruleName: "",
@@ -180,14 +181,18 @@ const listLoading = ref(false);
 const multipleSelection = ref([]);
 const ruleIdRef = ref("");
 
+const store = useStore();
+
 // 获取表格数据
 const getList = () => {
   listLoading.value = true;
 
+  // console.log(store.state.rule.ruleData, "state");
   fetchTableData({
     ...listQuery,
     ruleName: listQuery.ruleName.trim(),
     ruleCode: listQuery.ruleCode.trim(),
+    groupId: store.state.rule.ruleData.id,
   }).then((res) => {
     tableData.value = res.data;
     pageTotal.value = res.totalCount;
