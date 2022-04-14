@@ -50,10 +50,21 @@ export default {
       type: Boolean,
       required: false
     },
+    exampleValue: {
+      type: String,
+      required: true,
+    }
   },
   setup(props){
     let script = ref('');
     let allowedInput = ref(true);
+
+    watch(
+        () => props.exampleValue,
+        (value, preValue) => {
+          variables = JSON.parse(value);
+        }
+    )
 
     watch(
         () => props.disabled,
@@ -125,8 +136,12 @@ export default {
       }
       getEntityObject(param).then(res => {
         console.log("getEntityObject ", res)
-        let objectsData = res.data.data;
-        objects = convertToObjectTreeData(objectsData);
+        let totalCount = res.data.totalCount;
+        param.pageSize = totalCount;
+        getEntityObject(param).then(res => {
+          let objectsData = res.data.data;
+          objects = convertToObjectTreeData(objectsData);
+        })
       })
     }
     let convertToObjectTreeData = (objectsData)=> {

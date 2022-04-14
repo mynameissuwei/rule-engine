@@ -33,7 +33,7 @@ import CustomRule from "views/customrule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
 import {useRoute} from "vue-router";
 import ScriptRule from "views/ScriptRule/index.vue";
-import entityObject from "views/EntityObject/index.vue"
+import EntityObject from "views/EntityObject/index.vue"
 
 export default {
   name: "tabs",
@@ -43,7 +43,7 @@ export default {
     CheckRule,
     CustomRule,
     ScriptRule,
-    entityObject
+    EntityObject
   },
   setup() {
     const message = ref("ScriptRule");

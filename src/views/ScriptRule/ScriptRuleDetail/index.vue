@@ -26,6 +26,7 @@
         </el-form-item>
         <el-form-item label="代码片段：">
           <code-block ref="codeBlock"
+                      :example-value="exampleValue"
                       :script-content="ScriptRuleFormDetailForm.form.scriptContent"
                       :disabled="scene === 'preview'"></code-block>
 <!--          <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"-->
@@ -94,9 +95,11 @@ export default {
       ]
     })
 
+    let exampleValue = reactive({});
     const getScriptRuleDataById = () => {
       let id = route.query.scriptRuleId
       queryScriptRuleById(id).then(response => {
+        exampleValue = response.data.data.exampleValue;
         ScriptRuleFormDetailForm.form.scriptName = response.data.data.scriptName
         ScriptRuleFormDetailForm.form.scriptCode = response.data.data.scriptCode
         ScriptRuleFormDetailForm.form.ruleGroupCode = response.data.data.ruleGroupCode
@@ -155,7 +158,8 @@ export default {
       ScriptRuleFormDetailForm,
       scene,
       updateScriptRule,
-      codeBlock
+      codeBlock,
+      exampleValue
     }
   }
 }

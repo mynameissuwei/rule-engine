@@ -57,16 +57,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="脚本代码:" prop="scriptContent">
-          <code-block :script-content="inputScriptRuleForm.form.scriptContent" style="margin-left: 20px"></code-block>
-<!--          <el-input-->
-<!--              v-model="inputScriptRuleForm.form.scriptContent"-->
-<!--              placeholder="请输入"-->
-<!--              show-word-limit-->
-<!--              maxlength="300000"-->
-<!--              type="textarea"-->
-<!--              :autosize="{ minRows: 5 }"-->
-<!--              style="width: 800px;margin-left: 20px">-->
-<!--          </el-input>-->
+          <code-block ref="codeBlock" :script-content="inputScriptRuleForm.form.scriptContent" style="margin-left: 20px"></code-block>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" style="margin: 20px" @click="addScriptRuleBtn">确认</el-button>
