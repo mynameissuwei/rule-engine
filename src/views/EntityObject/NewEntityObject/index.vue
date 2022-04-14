@@ -46,9 +46,9 @@
           </el-input>
         </el-form-item>
         <el-form-item label="对象下字段" prop="newEntityObjectTable">
-          <el-button type="primary" style="float: right" @click="addNewEntityObjectTable">添加行</el-button>
         </el-form-item>
       </el-form>
+      <el-button type="primary" style="float: right" @click="addNewEntityObjectTable">添加行</el-button>
     </div>
 
     <el-table
@@ -80,34 +80,12 @@
         <el-select v-model="newEntityObjectTable.tableData.fieldType">
           <el-option
               label="String"
-              value="String"
+              value="java.lang.String"
           >
           </el-option>
           <el-option
               label="Integer"
-              value="Integer"
-          >
-          </el-option>
-        </el-select>
-      </el-table-column>
-      <el-table-column
-          prop="fieldEnum"
-          label="规则取值类型"
-          min-width="100%">
-        <el-select v-model="newEntityObjectTable.tableData.fieldEnum" style="width: 100%;">
-          <el-option
-              label="枚举型"
-              value="枚举型"
-          >
-          </el-option>
-          <el-option
-              label="百分比"
-              value="百分比"
-          >
-          </el-option>
-          <el-option
-              label="数值型"
-              value="数值型"
+              value="java.lang.Integer"
           >
           </el-option>
         </el-select>
@@ -120,7 +98,7 @@
         </el-input>
       </el-table-column>
       <el-table-column
-          fixed="right"
+          align="center"
           label="操作"
           width=200%>
         <template #default="scope">
@@ -177,7 +155,7 @@ export default {
         fieldName: '',
         fieldCode: '',
         fieldType:'',
-        fieldEnum:''
+        fieldEnum:'',
       }
       ]
     })

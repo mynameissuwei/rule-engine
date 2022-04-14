@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive} from "vue";
 import { ElMessage, ElMessageBox } from "@enn/element-plus";
 import {
   deleteRuleRepository,

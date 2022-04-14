@@ -103,7 +103,6 @@
       </el-table-column>
     </el-table>
     <div class="demo-pagination-block">
-      <div class="entityObject_pagination_box">
         <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -116,7 +115,6 @@
         </el-pagination>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -299,11 +297,6 @@ export default {
       margin: 0px 9px;
     }
   }
-}
-
-.demo-pagination-block {
-  margin-top: 10px;
-  float: right;
 }
 
 .table-title-box {

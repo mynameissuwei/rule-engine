@@ -47,11 +47,10 @@ export function deleteEntityObject (ids){
 /**
  *查看实体对象详情
  */
-export function checkEntityObjectDetail (requestBody){
+export function checkEntityObjectDetail (id){
   return request({
     method:'post',
-    url:'/ruleEntityObject/detail/{id}',
-    data:requestBody
+    url:`/ruleEntityObject/detail/${id}`,
   })
 }
 

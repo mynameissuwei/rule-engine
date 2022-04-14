@@ -8,16 +8,16 @@
     </el-header>
     <el-main>
       <el-form :rules="rules" label-position="right" label-width="130px">
-        <el-form-item label="对象名称：" prop="name">
+        <el-form-item label="对象名称：" prop="ObjectName">
           <el-input v-model="entityObjectForm.form.ObjectName" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="对象代码：" prop="code">
+        <el-form-item label="对象代码：" prop="ObjectCode">
           <el-input v-model="entityObjectForm.form.ObjectCode" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="对象描述：" prop="des">
-          <el-input v-model="entityObjectForm.form.ObjectName" style="width: 400px;height: 30px"
+        <el-form-item label="对象描述：" prop="ObjectDesc">
+          <el-input v-model="entityObjectForm.form.ObjectDesc" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
       </el-form>
@@ -39,44 +39,22 @@
             prop="objectFieldCode"
             label="对象字段代码"
             min-width="100%">
-          <el-input v-model="updateEntityObjectTable.tableData.newObjectCode" v-if="scene === 'update'">
+          <el-input v-model="updateEntityObjectTable.tableData.fieldCode" v-if="scene === 'update'">
           </el-input>
         </el-table-column>
         <el-table-column
             prop="objectFieldType"
             label="对象字段类型"
             min-width="100%">
-          <el-select v-model="updateEntityObjectTable.tableData.objectFieldType" v-if="scene === 'update'">
+          <el-select v-model="updateEntityObjectTable.tableData.fieldType" v-if="scene === 'update'">
             <el-option
                 label="String"
-                value="String"
+                value="java.lang.String"
             >
             </el-option>
             <el-option
                 label="Integer"
-                value="Integer"
-            >
-            </el-option>
-          </el-select>
-        </el-table-column>
-        <el-table-column
-            prop="ruleValueType"
-            label="规则取值类型"
-            min-width="100%">
-          <el-select v-model="updateEntityObjectTable.tableData.ruleValueType" style="width: 100%;" v-if="scene === 'update'">
-            <el-option
-                label="枚举型"
-                value="枚举型"
-            >
-            </el-option>
-            <el-option
-                label="百分比"
-                value="百分比"
-            >
-            </el-option>
-            <el-option
-                label="数值型"
-                value="数值型"
+                value="java.lang.Integer"
             >
             </el-option>
           </el-select>
@@ -85,7 +63,7 @@
             prop="objectFieldEnumeration"
             label="对象字段枚举值（用分号隔开）"
             min-width="200%">
-          <el-input v-model="updateEntityObjectTable.tableData.objectFieldEnumeration" v-if="scene === 'update'">
+          <el-input v-model="updateEntityObjectTable.tableData.fieldEnum" v-if="scene === 'update'">
           </el-input>
         </el-table-column>
         <el-table-column
@@ -115,22 +93,16 @@
 <script>
 import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import {queryScriptRuleById} from "@/api/scriptRule";
+import {checkEntityObjectDetail} from "@/api/entityObject";
 
 export default {
   name: "index.vue",
   setup() {
     const router = useRouter()
     const route = useRoute()
-    //新建实体对象表格对象
     const updateEntityObjectTable = reactive({
-      tableData: [{
-        fieldName: '',
-        objectFieldCode: '',
-        objectFieldType:'',
-        ruleValueType:'',
-        objectFieldEnumeration:''
-      }
-      ]
+      tableData: []
     })
     const rules = reactive({
       ObjectName: [
@@ -147,7 +119,7 @@ export default {
           trigger: 'blur',
         }
       ],
-      ObjectDescription: [
+      ObjectDesc: [
         {
           required: true,
           message: 'Please input rule name',
@@ -156,18 +128,29 @@ export default {
       ]
     })
     const entityObjectForm = reactive({
-      ref: 'entityObjectFormRef',
       form:{
         ObjectName:'',
         ObjectCode:'',
-        ObjectDescription:''
+        ObjectDesc:''
       }
     })
 
     const scene = ref('preview');
 
+    const getEntityObjectDataById = () => {
+      let id = route.query.entityObjectId
+      checkEntityObjectDetail(id).then(response => {
+        entityObjectForm.form.ObjectName = response.data.data.objectName
+        entityObjectForm.form.ObjectCode = response.data.data.ObjectCode
+        entityObjectForm.form.ObjectDesc = response.data.data.ObjectDesc
+        updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldList
+        console.log(response,11)
+
+      })
+    }
 
     onMounted(() => {
+      getEntityObjectDataById()
         }
     )
     return{

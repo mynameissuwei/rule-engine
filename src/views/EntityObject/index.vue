@@ -95,7 +95,7 @@
       </el-table-column>
     </el-table>
     <!--实体对象分页组件-->
-    <div class="entityObject_pagination_box">
+    <div class="demo-pagination-block">
       <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -115,6 +115,7 @@ import {inject, onMounted, reactive} from "vue";
 import {deleteEntityObject, getEntityObject, updateEntityObjectStatus} from "../../api/entityObject";
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {useRouter} from "vue-router";
+import {Message} from "@element-plus/icons-vue";
 
 export default {
   name: "index.vue",
@@ -144,6 +145,16 @@ export default {
       pageSizes: [10, 20, 30, 40],
       current: 1
     })
+    //规则库分页函数
+    function handleSizeChange(pageSize) {
+      entityObjectPaginationConfig.pageSize = pageSize;
+      getEntityObjectData();
+    }
+
+    function handleCurrentChange(pageNumber) {
+      entityObjectPaginationConfig.current = pageNumber;
+      getEntityObjectData();
+    }
     //实体对象勾选对象、勾选函数
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
@@ -158,8 +169,18 @@ export default {
         ids: selectedRuleLayoutIds,
         status: 1
       }
-      updateEntityObjectStatus(params);
-      getEntityObjectData()
+      updateEntityObjectStatus(params).then((response)=>{
+        getEntityObjectData()
+        if (response.data.code !== '0') {
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          type: 'success',
+          message: '发布成功'
+        })
+          }
+      )
     }
 
     const batchDisPublishEntityObject = () => {
@@ -167,8 +188,18 @@ export default {
         ids: selectedRuleLayoutIds,
         status: 0
       }
-      updateEntityObjectStatus(params);
-      getEntityObjectData()
+      updateEntityObjectStatus(params).then((response)=>{
+            getEntityObjectData()
+            if (response.data.code !== '0') {
+              ElMessage.error(response.data.message)
+              return;
+            }
+            ElMessage({
+              type: 'success',
+              message: '停用成功'
+            })
+          }
+      )
     }
     //实体对象查询
     const entityObjectSearch = () => {
@@ -206,13 +237,6 @@ export default {
       })
     }
 
-    const handleSizeChange = (val) => {
-      console.log(`${val} items per page`)
-    }
-    const handleCurrentChange = (val) => {
-      console.log(`current page: ${val}`)
-    }
-
     //分页查询实体对象
     function getEntityObjectData() {
       let requestBody = {
@@ -229,18 +253,29 @@ export default {
     }
 
     const deleteEntityObjectBtn = (id) => {
-      deleteEntityObject(id).then(response => {
-        if (response.data.code !== '0') {
-          ElMessage.error(response.data.message)
-          return;
-        }
-        ElMessage({
-          message: '删除成功',
-          type: 'success',
-        })
-        getEntityObjectData()
+        ElMessageBox.confirm(
+            '要删除这条规则么，是否继续？',
+            'Warning',
+            {
+              cancelButtonText: '取消',
+              confirmButtonText: '删除',
+              type: 'warning',
+            }
+        ).then(()=>{
+          deleteEntityObject(id).then(response => {
+            getEntityObjectData()
+            if (response.data.code !== '0') {
+              ElMessage.error(response.data.message)
+              return;
+            }
+            ElMessage({
+              type: 'success',
+              message: 'Delete completed'
+            })
+          })
+        }).catch(
 
-      })
+        )
     }
 
     //编辑实体对象
@@ -248,7 +283,7 @@ export default {
       router.push({
         path: 'entityObjectDetail',
         query: {
-          id:id,
+          entityObjectId:id,
           ruleGroupCode: ruleGroupCode,
           ruleGroupName: ruleGroupName,
           ruleGroupDesc: ruleGroupDesc,
