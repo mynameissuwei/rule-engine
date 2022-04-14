@@ -39,15 +39,15 @@
               v-model="newEntityObjectForm.form.newObjectDescription"
               placeholder="请输入"
               show-word-limit
-              maxlength="300"
+              maxlength="100"
               type="textarea"
               :autosize="{ minRows: 5 }"
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-          <el-form-item label="对象下字段" prop="newEntityObjectTable">
-            <el-button type="primary" style="float: right">添加行</el-button>
-          </el-form-item>
+        <el-form-item label="对象下字段" prop="newEntityObjectTable">
+          <el-button type="primary" style="float: right" @click="addNewEntityObjectTable">添加行</el-button>
+        </el-form-item>
       </el-form>
     </div>
 
@@ -67,24 +67,57 @@
         </el-input>
       </el-table-column>
       <el-table-column
-          prop="objectFieldCode"
+          prop="fieldCode"
           label="对象字段代码"
           min-width="100%">
+        <el-input v-model="newEntityObjectTable.tableData.fieldCode">
+        </el-input>
       </el-table-column>
       <el-table-column
-          prop="objectFieldType"
+          prop="fieldType"
           label="对象字段类型"
           min-width="100%">
+        <el-select v-model="newEntityObjectTable.tableData.fieldType">
+          <el-option
+              label="String"
+              value="String"
+          >
+          </el-option>
+          <el-option
+              label="Integer"
+              value="Integer"
+          >
+          </el-option>
+        </el-select>
       </el-table-column>
       <el-table-column
-          prop="ruleValueType"
+          prop="fieldEnum"
           label="规则取值类型"
-          min-width="200%">
+          min-width="100%">
+        <el-select v-model="newEntityObjectTable.tableData.fieldEnum" style="width: 100%;">
+          <el-option
+              label="枚举型"
+              value="枚举型"
+          >
+          </el-option>
+          <el-option
+              label="百分比"
+              value="百分比"
+          >
+          </el-option>
+          <el-option
+              label="数值型"
+              value="数值型"
+          >
+          </el-option>
+        </el-select>
       </el-table-column>
       <el-table-column
           prop="objectFieldEnumeration"
           label="对象字段枚举值（用分号隔开）"
           min-width="200%">
+        <el-input v-model="newEntityObjectTable.tableData.fieldEnum">
+        </el-input>
       </el-table-column>
       <el-table-column
           fixed="right"
@@ -92,11 +125,11 @@
           width=200%>
         <template #default="scope">
           <el-button
-              type="text"
-              size="medium"
-              @click="delete(scope.row.id)">
-            删除
-          </el-button>
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)"
+          >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -112,17 +145,21 @@
       >
       </el-pagination>
     </div>
-    <el-button type="primary" size="small" @click="">保存</el-button>
+    <el-button type="primary" size="small" @click="addEntityObjectBtn">保存</el-button>
     <el-button type="primary" size="small" plain @click="">取消</el-button>
   </div>
 </template>
 
 <script>
 import {reactive} from "vue";
+import {addOrUpdateEntityObject} from "@/api/entityObject";
+import {useRoute, useRouter} from "vue-router";
 
 export default {
   name: "index.vue",
   setup() {
+    const router = useRouter()
+    const route = useRoute()
     //新建实体对象表单对象
     const newEntityObjectForm = reactive({
       ref: "newEntityObjectFormRef",
@@ -138,10 +175,22 @@ export default {
       ref: "newEntityObjectTableRef",
       tableData: [{
         fieldName: '',
-        columnName: '',
+        fieldCode: '',
+        fieldType:'',
+        fieldEnum:''
       }
       ]
     })
+    //添加行
+    function addNewEntityObjectTable() {
+      newEntityObjectTable.tableData.push({
+        fieldName: '',
+        objectFieldCode: '',
+        objectFieldType:'',
+        ruleValueType:'',
+        objectFieldEnumeration:''
+      })
+    }
     //新建实体对象分页对象
     let newEntityObjectPaginationConfig = reactive({
       pageSize: 10,
@@ -187,12 +236,32 @@ export default {
       }
       return newEntityObjectForm.form.newObjectCode = str;
     }
+
+    function addEntityObjectBtn() {
+      let requestBody ={
+        objectCode: newEntityObjectForm.form.newObjectCode,
+        objectDesc: newEntityObjectForm.form.newObjectDescription,
+        objectName: newEntityObjectForm.form.newObjectName,
+        ruleGroupCode: route.query.ruleGroupCode,
+        ruleObjectFieldReqVoList: newEntityObjectTable.tableData
+      }
+      addOrUpdateEntityObject(requestBody).then(response=>{
+          console.log(requestBody,10)}
+      )
+    }
+
+    const handleDelete = (index, row) => {
+
+    }
     return {
       newEntityObjectForm,
       newEntityObjectTable,
       newEntityObjectPaginationConfig,
       rules,
       randomObjectCode,
+      addNewEntityObjectTable,
+      handleDelete,
+      addEntityObjectBtn
     }
   }
 }

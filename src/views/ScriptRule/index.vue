@@ -19,7 +19,7 @@
           </el-input>
         </el-col>
         <el-col :span="7">
-          <el-select  placeholder="状态" v-model="scriptRuleForm.ruleScriptStatus">
+          <el-select placeholder="状态" v-model="scriptRuleForm.ruleScriptStatus">
             <el-option value="PUBLISHED" label="发布"></el-option>
             <el-option value="UNPUBLISHED" label="未发布"></el-option>
           </el-select>
@@ -41,12 +41,22 @@
     </el-form>
     <el-divider></el-divider>
     <el-row class="row-container">
-      <el-col :span="12">脚本规则 ({{scriptRulePaginationConfig.total}})</el-col>
+      <el-col :span="12">脚本规则 ({{ scriptRulePaginationConfig.total }})</el-col>
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="inputScriptRule">新建</el-button>
-          <el-button class="stop" size="small" @click="batchDisPublishScriptRule">停用</el-button>
-          <el-button class="publish" size="small" @click="batchPublishScriptRule">发布</el-button>
+          <el-button class="stop"
+                     size="small"
+                     @click="batchDisPublishScriptRule"
+                     :disabled="selectedRuleLayoutIds.length===0">
+            停用
+          </el-button>
+          <el-button class="publish"
+                     size="small"
+                     @click="batchPublishScriptRule"
+                     :disabled="selectedRuleLayoutIds.length===0">
+            发布
+          </el-button>
         </el-button-group>
       </el-col>
     </el-row>
@@ -59,8 +69,12 @@
         height="280px"
     >
       <el-table-column type="selection" width="55"/>
+      <el-table-column property="scriptName" label="脚本规则名称" min-width="100%">
+        <template #default="scope">
+          <div style="color:blue;cursor:pointer;">{{ scope.row.scriptName }}</div>
+        </template>
+      </el-table-column>
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
-      <el-table-column property="scriptName" label="脚本规则名称" min-width="100%"></el-table-column>
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
           <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
@@ -127,7 +141,7 @@ export default {
     let scriptRulePaginationConfig = reactive({
       pageSize: 10,
       total: 0,
-      pageSizes: [10, 20, 30, 40],
+      pageSizes: [10, 20, 50],
       current: 1
     })
     //跳转脚本规则录入页面
@@ -146,8 +160,8 @@ export default {
     }
 
     const resetForm = () => {
-      scriptRuleForm.scriptName=''
-      scriptRuleForm.ruleScriptStatus=''
+      scriptRuleForm.scriptName = ''
+      scriptRuleForm.ruleScriptStatus = ''
       scriptRuleForm.updatedByName = ''
       getPageScriptRuleData()
     }
@@ -166,10 +180,10 @@ export default {
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
       selectedRuleLayoutIds.length = 0;
-      selectedRuleLayoutIds.push(...layouts.map(layout=>(
+      selectedRuleLayoutIds.push(...layouts.map(layout => (
           {
-            id:layout.id,
-            scriptCode:layout.scriptCode
+            id: layout.id,
+            scriptCode: layout.scriptCode
           }
       )))
     }
@@ -214,11 +228,11 @@ export default {
       router.push({
         path: 'scriptRuleDetail',
         query: {
-          scriptRuleId:id,
+          scriptRuleId: id,
           ruleGroupCode: ruleGroupCode,
           ruleGroupName: ruleGroupName,
           ruleGroupDesc: ruleGroupDesc,
-          scene: 'preview'
+          scene: 'update'
         }
       })
     }
@@ -259,7 +273,8 @@ export default {
       batchPublishScriptRule,
       search,
       editScriptRule,
-      batchDisPublishScriptRule
+      batchDisPublishScriptRule,
+      selectedRuleLayoutIds
     }
   }
 }

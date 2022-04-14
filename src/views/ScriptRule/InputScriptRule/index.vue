@@ -19,6 +19,15 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
+        <el-form-item label="规则库代码:" prop="ruleGroupCode">
+          <el-input
+              v-model="inputScriptRuleForm.form.ruleGroupCode"
+              placeholder="请输入"
+              show-word-limit
+              maxlength="20"
+              style="width: 800px;margin-left: 20px">
+          </el-input>
+        </el-form-item>
         <el-form-item label="规则代码:" prop="scriptCode">
           <div>
             <el-input
@@ -35,8 +44,8 @@
             </el-button>
           </div>
         </el-form-item>
-        <el-form-item label="程序类型：" prop="programType">
-          <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'">
+        <el-form-item label="程序类型:" prop="programType">
+          <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'" style="width: 800px;margin-left: 20px;margin-right: 10px">
             <el-option
                 label="GROOVY"
                 value="GROOVY"

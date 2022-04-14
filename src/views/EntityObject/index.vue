@@ -148,9 +148,8 @@ export default {
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
       selectedRuleLayoutIds.length = 0;
-      selectedRuleLayoutIds.push(...layouts.map(layout => ({
-            id: layout.id
-          }
+      selectedRuleLayoutIds.push(...layouts.map(layout => (
+          parseInt(layout.id)
       )))
     }
     //修改实体对象发布状态
@@ -197,7 +196,14 @@ export default {
     }
     //新建实体对象
     const newEntityObject = () => {
-      router.push('newEntityObject')
+      router.push({
+        path: 'newEntityObject',
+        query: {
+          ruleGroupCode: ruleGroupCode,
+          ruleGroupName: ruleGroupName,
+          ruleGroupDesc: ruleGroupDesc,
+        }
+      })
     }
 
     const handleSizeChange = (val) => {

@@ -8,9 +8,12 @@
     </el-header>
     <el-main>
       <el-form :rules="rules" label-position="right" label-width="130px">
-        <el-form-item label="脚本规则名称：" prop="name">{{ ScriptRuleFormDetailForm.form.scriptName }}</el-form-item>
-        <el-form-item label="规则库名称：" prop="name">{{ ScriptRuleFormDetailForm.form.ruleGroupCode }}</el-form-item>
-        <el-form-item label="脚本规则代码：" prop="code">{{ ScriptRuleFormDetailForm.form.scriptCode }}</el-form-item>
+        <el-form-item label="脚本规则名称：" prop="scriptName">
+          <el-input v-model="ScriptRuleFormDetailForm.form.scriptName" style="width: 400px;height: 30px"
+                    :disabled="scene === 'preview'"></el-input>
+        </el-form-item>
+        <el-form-item label="规则库名称：" prop="ruleGroupCode">{{ ScriptRuleFormDetailForm.form.ruleGroupCode }}</el-form-item>
+        <el-form-item label="脚本规则代码：" prop="scriptCode">{{ ScriptRuleFormDetailForm.form.scriptCode }}</el-form-item>
         <el-form-item label="程序类型：">
           <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'">
             <el-option
@@ -28,7 +31,8 @@
           <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"
                     show-word-limit
-                    maxlength="300000"
+                    maxlength="100"
+                    :autosize="{ minRows: 5 }"
                     type="textarea"
           ></el-input>
         </el-form-item>
@@ -46,7 +50,6 @@ import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
-import router from "@/router";
 import {Base64} from "js-base64";
 
 export default {
@@ -114,22 +117,22 @@ export default {
 
     const updateScriptRule = () => {
       let requestBody = {
-        id:route.query.scriptRuleId,
+        id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
         scriptContent: Base64.encode(ScriptRuleFormDetailForm.form.scriptContent),
-        scriptName: ScriptRuleFormDetailForm.form.scriptName
+        scriptName: ScriptRuleFormDetailForm.form.scriptName,
       }
       updateScriptRuleById(requestBody).then(response => {
         if (response.data.code !== '0') {
           ElMessage.error(response.data.message)
           return;
         }
-          ElMessage({
-            message: '更新脚本规则成功',
-            type: 'success',
-          })
+        ElMessage({
+          message: '更新脚本规则成功',
+          type: 'success',
+        })
         router.push({
           path: 'home',
           query: {
@@ -139,7 +142,8 @@ export default {
           }
         })
 
-    })}
+      })
+    }
 
     return {
       rules,
@@ -172,7 +176,7 @@ export default {
   background-color: #FFFFFF;
   color: var(--el-text-color-primary);
   margin: 15px;
-  height:700px
+  height: 700px
 }
 
 .edit-button {
