@@ -93,7 +93,7 @@ export default {
 
     let exampleValue = reactive({});
     const getScriptRuleDataById = () => {
-      let id = route.query.scriptRuleId
+      let id = route.query.scriptRuleId;
       queryScriptRuleById(id).then(response => {
         exampleValue = response.data.data.exampleValue;
         ScriptRuleFormDetailForm.form.scriptName = response.data.data.scriptName
@@ -101,7 +101,7 @@ export default {
         ScriptRuleFormDetailForm.form.ruleGroupCode = response.data.data.ruleGroupCode
         ScriptRuleFormDetailForm.form.sceneDesc = response.data.data.sceneDesc
         ScriptRuleFormDetailForm.form.programType = response.data.data.programType
-        ScriptRuleFormDetailForm.form.scriptContent = response.data.data.scriptContent
+        ScriptRuleFormDetailForm.form.scriptContent = JSON.stringify(JSON.parse(response.data.data.scriptContent)).replaceAll("\"","")
       })
     }
 
@@ -112,19 +112,22 @@ export default {
     const ruleGroupDesc = route.query.ruleGroupDesc
 
     onMounted(() => {
-          getScriptRuleDataById()
+          getScriptRuleDataById();
+          scene.value = route.query.scene;
         }
     )
 
     let codeBlock = ref();
     const updateScriptRule = () => {
       let scriptParam = codeBlock.value.getScriptParam();
+      let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
+
       let requestBody = {
         id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
-        scriptContent: Base64.encode(ScriptRuleFormDetailForm.form.scriptContent),
+        scriptContent: Base64.encode(scriptContent),
         scriptName: ScriptRuleFormDetailForm.form.scriptName,
         exampleValue: JSON.stringify(scriptParam)
       }

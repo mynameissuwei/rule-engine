@@ -110,7 +110,7 @@ export default {
 
     let currentNode = reactive({});
     let nodeClick = (nodeObject,node,c) => {
-      let parentNode = node.parent;
+      let parentNode = node.parent.data;
       currentNode = nodeObject;
       showObject.value = false;
       let scriptInput = document.getElementById("script");
@@ -135,20 +135,21 @@ export default {
         timeAscOrDesc: "desc"
       }
       getEntityObject(param).then(res => {
-        console.log("getEntityObject ", res)
         let totalCount = res.data.totalCount;
         param.pageSize = totalCount;
         getEntityObject(param).then(res => {
           let objectsData = res.data.data;
-          objects = convertToObjectTreeData(objectsData);
+          objects.length = 0;
+          objects.push(...convertToObjectTreeData(objectsData));
+          console.log("getEntityObject ", objects)
         })
       })
     }
     let convertToObjectTreeData = (objectsData)=> {
       if(!objectsData || objectsData.length === 0) return [];
-      objectsData.map(objectData => {
+      return objectsData.map(objectData => {
         let children = null;
-        if(!objectData.ruleObjectFieldResVoList){
+        if(objectData.ruleObjectFieldResVoList){
           children = objectData.ruleObjectFieldResVoList.map(field => {
             return {
               id: field.fieldCode,
@@ -158,7 +159,7 @@ export default {
         }
         return {
           id: objectData.objectCode,
-          label: objectData.ObjectName,
+          label: objectData.objectName,
           children: children
         }
       })
@@ -170,7 +171,11 @@ export default {
       return variables;
     }
 
+    let getScriptContent = () => {
+      return script.value;
+    }
     return {
+      getScriptContent,
       script,
       allowedInput,
       showObject,
