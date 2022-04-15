@@ -285,7 +285,7 @@ export default {
     let testRuleLayoutCode = ref('');
     let testRuleLayout = (ruleLayoutCode) => {
       ruleTest.value.showRuleTest();
-      testRuleGroupCode.value = ruleLayoutCode;
+      testRuleGroupCode.value = ruleGroupCode;
       testRuleLayoutCode.value = ruleLayoutCode;
     }
     let ruleTest = ref();
