@@ -260,7 +260,7 @@ const getObjectList = async () => {
     pageSize: 10,
     pageNum: 1,
     timeAscOrDesc: "desc",
-    // status: 1,
+    status: 1,
   });
 
   objectListRef.value = data;
