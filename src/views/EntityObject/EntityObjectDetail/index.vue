@@ -20,7 +20,12 @@
           <el-input v-model="entityObjectForm.form.ObjectDesc" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
+        <el-form-item label="对象下字段" prop="newEntityObjectTable" >
+        </el-form-item>
       </el-form>
+      <div>
+        <el-button :disabled="scene === 'preview'" type="primary" style="float: right;" @click="addNewEntityObjectTable">添加行</el-button>
+      </div>
       <el-table
           :data="updateEntityObjectTable.tableData"
           style="width: 100%"
@@ -32,52 +37,61 @@
             prop="fieldName"
             label="字段名称"
             min-width="100%">
-          <el-input v-model="updateEntityObjectTable.tableData.fieldName" v-if="scene === 'update'">
-          </el-input>
+          <template #default="scope" >
+            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldName">
+            </el-input>
+          </template>
         </el-table-column>
         <el-table-column
-            prop="objectFieldCode"
+            prop="fieldCode"
             label="对象字段代码"
             min-width="100%">
-          <el-input v-model="updateEntityObjectTable.tableData.fieldCode" v-if="scene === 'update'">
-          </el-input>
+          <template #default="scope" >
+            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldCode">
+            </el-input>
+          </template>
         </el-table-column>
         <el-table-column
-            prop="objectFieldType"
+            align="center"
+            prop="fieldType"
             label="对象字段类型"
             min-width="100%">
-          <el-select v-model="updateEntityObjectTable.tableData.fieldType" v-if="scene === 'update'">
-            <el-option
-                label="String"
-                value="java.lang.String"
-            >
-            </el-option>
-            <el-option
-                label="Integer"
-                value="java.lang.Integer"
-            >
-            </el-option>
-          </el-select>
+          <template #default="scope" >
+            <el-select :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldType">
+              <el-option
+                  label="String"
+                  value="java.lang.String"
+              >
+              </el-option>
+              <el-option
+                  label="Integer"
+                  value="java.lang.Integer"
+              >
+              </el-option>
+            </el-select>
+          </template>
         </el-table-column>
         <el-table-column
             prop="objectFieldEnumeration"
             label="对象字段枚举值（用分号隔开）"
             min-width="200%">
-          <el-input v-model="updateEntityObjectTable.tableData.fieldEnum" v-if="scene === 'update'">
-          </el-input>
+          <template #default="scope" >
+            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldEnum">
+            </el-input>
+          </template>
         </el-table-column>
         <el-table-column
-            fixed="right"
+            align="center"
             label="操作"
-            width=200%
-        >
+            width=100%>
           <template #default="scope">
             <el-button
                 size="mini"
                 type="danger"
-                v-if="scene === 'update'"
-                @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button
+                :disabled="scene === 'preview'"
+                @click="handleDelete(scope.row.index)"
+            >删除
+            </el-button
             >
           </template>
         </el-table-column>
@@ -102,7 +116,15 @@ export default {
     const router = useRouter()
     const route = useRoute()
     const updateEntityObjectTable = reactive({
-      tableData: []
+      ref: "newEntityObjectTableRef",
+      tableData: [{
+        index: 0,
+        fieldName: '',
+        fieldCode: '',
+        fieldType: '',
+        fieldEnum: '',
+      }
+      ]
     })
     const rules = reactive({
       ObjectName: [
@@ -125,6 +147,12 @@ export default {
           message: 'Please input rule name',
           trigger: 'blur',
         }
+      ],
+      newEntityObjectTable: [
+        {
+          required: true,
+          trigger: 'blur',
+        }
       ]
     })
     const entityObjectForm = reactive({
@@ -137,16 +165,17 @@ export default {
 
     const scene = ref('preview');
 
-    const getEntityObjectDataById = () => {
+    const getEntityObjectDataById = (scope) => {
       let id = route.query.entityObjectId
       checkEntityObjectDetail(id).then(response => {
         entityObjectForm.form.ObjectName = response.data.data.objectName
-        entityObjectForm.form.ObjectCode = response.data.data.ObjectCode
-        entityObjectForm.form.ObjectDesc = response.data.data.ObjectDesc
-        updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldList
-        console.log(response,11)
+        entityObjectForm.form.ObjectCode = response.data.data.objectCode
+        entityObjectForm.form.ObjectDesc = response.data.data.objectDesc
 
       })
+    }
+    const handleDelete = (index) => {
+      updateEntityObjectTable.tableData.splice(index)
     }
 
     onMounted(() => {
@@ -157,7 +186,8 @@ export default {
       scene,
       entityObjectForm,
       rules,
-      updateEntityObjectTable
+      updateEntityObjectTable,
+      handleDelete
     }
   }
 }

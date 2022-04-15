@@ -27,11 +27,6 @@
                 maxlength="20"
                 style="width: 800px;margin-left: 20px;margin-right: 10px">
             </el-input>
-            <el-button
-                type="text"
-                @click="randomObjectCode">
-              随机生成
-            </el-button>
           </div>
         </el-form-item>
         <el-form-item label="对象描述:" prop="newObjectDescription">
@@ -48,11 +43,12 @@
         <el-form-item label="对象下字段" prop="newEntityObjectTable">
         </el-form-item>
       </el-form>
-      <el-button type="primary" style="float: right" @click="addNewEntityObjectTable">添加行</el-button>
+    </div>
+    <div>
+      <el-button type="primary" style="float: right;" @click="addNewEntityObjectTable">添加行</el-button>
     </div>
 
     <el-table
-        :ref="newEntityObjectTable.ref"
         :data="newEntityObjectTable.tableData"
         style="width: 100%"
         size="max"
@@ -63,21 +59,27 @@
           prop="fieldName"
           label="字段名称"
           min-width="100%">
-        <el-input v-model="newEntityObjectTable.tableData.fieldName">
-        </el-input>
+        <template #default="scope" >
+          <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldName">
+          </el-input>
+        </template>
       </el-table-column>
       <el-table-column
           prop="fieldCode"
           label="对象字段代码"
           min-width="100%">
-        <el-input v-model="newEntityObjectTable.tableData.fieldCode">
-        </el-input>
+        <template #default="scope" >
+          <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldCode">
+          </el-input>
+        </template>
       </el-table-column>
       <el-table-column
+          align="center"
           prop="fieldType"
           label="对象字段类型"
           min-width="100%">
-        <el-select v-model="newEntityObjectTable.tableData.fieldType">
+        <template #default="scope" >
+        <el-select v-model="newEntityObjectTable.tableData[scope.row.index].fieldType">
           <el-option
               label="String"
               value="java.lang.String"
@@ -89,30 +91,34 @@
           >
           </el-option>
         </el-select>
+        </template>
       </el-table-column>
       <el-table-column
           prop="objectFieldEnumeration"
           label="对象字段枚举值（用分号隔开）"
           min-width="200%">
-        <el-input v-model="newEntityObjectTable.tableData.fieldEnum">
-        </el-input>
+        <template #default="scope" >
+          <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldEnum">
+          </el-input>
+        </template>
       </el-table-column>
       <el-table-column
           align="center"
           label="操作"
-          width=200%>
+          width=100%>
         <template #default="scope">
           <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-          >删除</el-button
+              @click="handleDelete(scope.row.index)"
+          >删除
+          </el-button
           >
         </template>
       </el-table-column>
     </el-table>
     <div class="pagination_box">
-      <el-pagination
+<!--      <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="newEntityObjectPaginationConfig.current"
@@ -121,10 +127,10 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="newEntityObjectPaginationConfig.total"
       >
-      </el-pagination>
+      </el-pagination>-->
+      <el-button type="primary" size="small" @click="addEntityObjectBtn" style="margin-right: 10px">保存</el-button>
+      <el-button type="primary" size="small" plain @click="cancelAdd" style="float: right; margin-right: 300px">取消</el-button>
     </div>
-    <el-button type="primary" size="small" @click="addEntityObjectBtn">保存</el-button>
-    <el-button type="primary" size="small" plain @click="">取消</el-button>
   </div>
 </template>
 
@@ -132,12 +138,16 @@
 import {reactive} from "vue";
 import {addOrUpdateEntityObject} from "@/api/entityObject";
 import {useRoute, useRouter} from "vue-router";
+import {ElMessage} from "@enn/element-plus";
 
 export default {
   name: "index.vue",
   setup() {
     const router = useRouter()
     const route = useRoute()
+    const ruleGroupCode = route.query.ruleGroupCode
+    const ruleGroupName = route.query.ruleGroupName
+    const ruleGroupDesc = route.query.ruleGroupDesc
     //新建实体对象表单对象
     const newEntityObjectForm = reactive({
       ref: "newEntityObjectFormRef",
@@ -152,30 +162,41 @@ export default {
     const newEntityObjectTable = reactive({
       ref: "newEntityObjectTableRef",
       tableData: [{
+        index: 0,
         fieldName: '',
         fieldCode: '',
-        fieldType:'',
-        fieldEnum:'',
+        fieldType: '',
+        fieldEnum: '',
       }
       ]
     })
+
     //添加行
     function addNewEntityObjectTable() {
       newEntityObjectTable.tableData.push({
+        index: newEntityObjectTable.tableData.length,
         fieldName: '',
-        objectFieldCode: '',
-        objectFieldType:'',
-        ruleValueType:'',
-        objectFieldEnumeration:''
+        fieldCode: '',
+        fieldType: '',
+        fieldEnum: ''
       })
     }
-    //新建实体对象分页对象
+
+/*    //新建实体对象分页对象
     let newEntityObjectPaginationConfig = reactive({
       pageSize: 10,
-      total: 0,
+      total: newEntityObjectTable.tableData.length,
       pageSizes: [10, 20, 30, 40],
       current: 1
     })
+    // 分页函数
+    function handleSizeChange(pageSize) {
+      newEntityObjectPaginationConfig.pageSize = pageSize
+    }
+
+    function handleCurrentChange(pageNumber) {
+      newEntityObjectPaginationConfig.current = pageNumber
+    }*/
     //实体对象表单校验
     const rules = reactive({
       newObjectName: [
@@ -192,13 +213,6 @@ export default {
           trigger: 'blur',
         }
       ],
-      newObjectDescription: [
-        {
-          required: true,
-          message: 'Please input Object description',
-          trigger: 'blur',
-        }
-      ],
       newEntityObjectTable: [
         {
           required: true,
@@ -206,45 +220,66 @@ export default {
         }
       ]
     })
-    const randomObjectCode = () => {
-      let expect = 10;
-      let str = Math.random().toString(36).substring(2);
-      while (str.length < expect) {
-        str = Math.random().toString(36).substring(2)
-      }
-      return newEntityObjectForm.form.newObjectCode = str;
-    }
 
     function addEntityObjectBtn() {
-      let requestBody ={
+      let requestBody = {
         objectCode: newEntityObjectForm.form.newObjectCode,
         objectDesc: newEntityObjectForm.form.newObjectDescription,
         objectName: newEntityObjectForm.form.newObjectName,
         ruleGroupCode: route.query.ruleGroupCode,
         ruleObjectFieldReqVoList: newEntityObjectTable.tableData
       }
-      addOrUpdateEntityObject(requestBody).then(response=>{
-          console.log(requestBody,10)}
-      )
+      addOrUpdateEntityObject(requestBody).then(response => {
+        if (response.data.code !== '0') {
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          message: '新建实体对象成功',
+          type: 'success',
+        })
+        router.push({
+          path: 'home',
+          query: {
+            ruleGroupCode: ruleGroupCode,
+            ruleGroupName: ruleGroupName,
+            ruleGroupDesc: ruleGroupDesc
+          }
+        })
+
+      })
+    }
+    const cancelAdd = () => {
+      router.push({
+        path:"home",
+        query: {
+          ...route.query
+        }
+      })
     }
 
-    const handleDelete = (index, row) => {
-
+    const handleDelete = (index) => {
+      newEntityObjectTable.tableData.splice(index)
     }
     return {
       newEntityObjectForm,
       newEntityObjectTable,
-      newEntityObjectPaginationConfig,
+      //newEntityObjectPaginationConfig,
       rules,
-      randomObjectCode,
       addNewEntityObjectTable,
       handleDelete,
-      addEntityObjectBtn
+      addEntityObjectBtn,
+      //handleSizeChange,
+      //handleCurrentChange,
+      cancelAdd
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-
+.pagination_box{
+  margin-top: 10px;
+  float: right;
+}
 </style>
