@@ -4,9 +4,9 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
-          path: "/",
-          component: () => import("../views/ruleRepository/ruleRepository.vue"),
-          name: "RuleRepository"
+      path: "/",
+      component: () => import("../views/ruleRepository/ruleRepository.vue"),
+      name: "RuleRepository",
     },
     {
       path: "/home",
@@ -18,11 +18,16 @@ const router = createRouter({
     //   name: "createRule",
     //   component: () => import("views/CheckRule/create.vue"),
     // },
-    // {
-    //   path: "/customRule/edit/:id?",
-    //   name: "editCustomRule",
-    //   component: () => import("views/CustomRule/edit.vue"),
-    // },
+    {
+      path: "/customRule/edit/:id?",
+      name: "editCustomRule",
+      component: () => import("views/CustomRule/edit.vue"),
+    },
+    {
+      path: "/customRule/test",
+      name: "testCustomRule",
+      component: () => import("views/CustomRule/test.vue"),
+    },
     {
       path: "/rule-graph",
       name: "ruleGraph",
@@ -104,6 +109,14 @@ const router = createRouter({
       hidden:true,
       meta: {
         title: "脚本规则详情"
+      }
+    },{
+      path: "/entityObjectDetail",
+      component: () => import("../views/EntityObject/EntityObjectDetail/index.vue"),
+      name: "EntityObjectDetail",
+      hidden:true,
+      meta: {
+        title: "实体对象详情"
       }
     }
 

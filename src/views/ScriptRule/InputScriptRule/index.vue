@@ -40,6 +40,7 @@
         </el-form-item>
         <el-form-item label="程序类型：" prop="programType">
           <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'"  style="margin-left: 20px">
+
             <el-option
                 label="GROOVY"
                 value="GROOVY"

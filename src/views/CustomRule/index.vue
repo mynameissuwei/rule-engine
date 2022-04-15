@@ -4,7 +4,7 @@
       <el-col :span="7">
         <el-input
           v-model="listQuery.ruleName"
-          placeholder="脚本规则名称"
+          placeholder="自定义规则名称"
           class="handle-input mr10"
         ></el-input>
       </el-col>
@@ -36,12 +36,14 @@
         <el-button type="primary" size="small" @click="handleSearch"
           >搜索</el-button
         >
-        <el-button size="small" @click="handleReset">重置</el-button>
+        <el-button size="small" @click="handleReset" color="#F2F3F5"
+          >重置</el-button
+        >
       </el-col>
     </el-row>
     <el-divider></el-divider>
     <el-row class="row-container">
-      <el-col :span="12">自定义规则 (100）</el-col>
+      <el-col :span="12">自定义规则 ({{ pageTotal }})</el-col>
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="handleCreate"
@@ -52,6 +54,7 @@
             size="small"
             @click="handleModify(0)"
             :disabled="!multipleSelection.length"
+            color="#F2F3F5"
           >
             批量停用
           </el-button>
@@ -59,17 +62,20 @@
             size="small"
             @click="handleModify(1)"
             :disabled="!multipleSelection.length"
+            color="#F2F3F5"
             >批量发布</el-button
           >
         </el-button-group>
       </el-col>
     </el-row>
     <el-table
+      :header-cell-style="{ background: '#F6F7FB' }"
       :data="tableData"
       highlight-current-row
       ref="multipleTable"
       @selection-change="handleSelectionChange"
       v-loading="listLoading"
+      max-height="450"
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="ruleName" label="规则名字">
@@ -90,7 +96,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="被调用次数" sortable>
+      <el-table-column label="被调用次数" sortable prop="callCount">
         <template #default="scope">
           {{
             scope.row.callCount == null ? "0/次" : scope.row.callCount + "/次"
@@ -133,14 +139,20 @@
     </el-table>
     <div class="pagination">
       <el-pagination
-        :current-page="listQuery.pageIndex"
-        :page-size="listQuery.pageSize"
+        v-model:currentPage="listQuery.pageNum"
+        v-model:page-size="listQuery.pageSize"
         layout=" prev, pager, next,  sizes,jumper"
         :total="pageTotal"
         @size-change="handleSizeChange"
         @current-change="handlePageChange"
       ></el-pagination>
     </div>
+    <test-modal
+      v-if="testVisible"
+      :visible="testVisible"
+      :handleCancel="handleCancel"
+      :ruleId="ruleIdRef"
+    ></test-modal>
   </div>
 </template>
 
@@ -148,10 +160,11 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { fetchTableData, deleteList, modifyList } from "@/api/customrule";
-import { cloneDeep } from "lodash";
 import rBadge from "@/components/rBadge.vue";
 import { ElMessageBox, ElMessage } from "@enn/element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
+import TestModal from "./TestModal.vue";
+import { useStore } from "vuex";
 
 const listQuery = reactive({
   ruleName: "",
@@ -163,45 +176,37 @@ const listQuery = reactive({
 const tableData = ref([]);
 const pageTotal = ref(0);
 const router = useRouter();
-const editVisible = ref(false);
+const testVisible = ref(false);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
+const ruleIdRef = ref("");
+
+const store = useStore();
 
 // 获取表格数据
 const getList = () => {
   listLoading.value = true;
 
+  // console.log(store.state.rule.ruleData, "state");
   fetchTableData({
     ...listQuery,
+    ruleName: listQuery.ruleName.trim(),
+    ruleCode: listQuery.ruleCode.trim(),
+    groupId: store.state.rule.ruleData.id,
   }).then((res) => {
-    // const data = {
-    //   success: true,
-    //   code: '0',
-    //   message: '',
-    //   pageNum: 0,
-    //   pageSize: 10,
-    //   totalPages: 1,
-    //   totalCount: 9,
-    //   data: [
-    //     {
-    //       ruleId: '1',
-    //       ruleName: '测试一条规则',
-    //       ruleCode: 'RL0001',
-    //       releaseStatus: '1',
-    //       callCount: 0,
-    //       updatedUserName: '翟某某',
-    //       updatedDate: '2022-03-09 14:59:23',
-    //       updatedById: '1',
-    //       status: 1
-    //     }
-    //   ]
-    // }
-
-    const data = res.data;
-    tableData.value = data.data;
-    pageTotal.value = data.totalCount;
+    tableData.value = res.data;
+    pageTotal.value = res.totalCount;
     listLoading.value = false;
   });
+};
+
+const testFuc = () => {
+  console.log("debugger;");
+  testVisible.value = true;
+};
+
+const handleCancel = () => {
+  testVisible.value = false;
 };
 
 const handleSelectionChange = (val) => {
@@ -218,43 +223,56 @@ const handlePageChange = (val) => {
   getList();
 };
 
-const handleSizeChange = (val) => {};
+const handleSizeChange = (val) => {
+  listQuery.pageSize = val;
+  getList();
+};
 
 const handleCreate = () => {
   router.push({
     name: "editCustomRule",
     params: { id: undefined },
+    query: {
+      status: "create",
+    },
   });
 };
 
-const handleTest = (value) => {
-  console.log(value, "vali");
-};
-
 const handleModify = (status, row) => {
-  const ids = row
-    ? [row.ruleId]
-    : multipleSelection.value.map((item) => item.ruleId);
-  const res = modifyList({
-    ids,
-    releaseStatus: status,
-  })
-    .then((res) => {
-      getList();
-      if (!row) {
-        multipleSelection.value = [];
-      }
-      ElMessage({
-        type: "success",
-        message: status == 0 ? "停用成功" : "发布成功",
-      });
-    })
-    .catch((erro) => {
-      ElMessage({
+  if (row) ruleIdRef.value = row.ruleId;
+
+  if (status == "2") {
+    testFuc();
+  } else {
+    const ids = row
+      ? [row.ruleId]
+      : multipleSelection.value.map((item) => item.ruleId);
+
+    ElMessageBox.confirm(
+      `你确定要${status == 0 ? "停用" : "发布"}该规则么?`,
+      "警告",
+      {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
         type: "warning",
-        message: status == 0 ? "停用失败" : "发布失败",
+        buttonSize: "small",
+      }
+    ).then(() => {
+      modifyList({
+        ids,
+        releaseStatus: status,
+      }).then(() => {
+        getList();
+        if (!row) {
+          multipleSelection.value = [];
+        }
+        ElMessage({
+          type: "success",
+          message: status == 0 ? "停用成功" : "发布成功",
+        });
       });
     });
+  }
 };
 
 // 删除操作
@@ -264,29 +282,24 @@ const handleDelete = (row) => {
     cancelButtonText: "取消",
     type: "warning",
     buttonSize: "small",
-  })
-    .then(async () => {
-      await deleteList(row.ruleId);
+  }).then(async () => {
+    const { success, message } = await deleteList(row.ruleId);
+    if (success) {
       await getList();
       ElMessage({
         type: "success",
-        message: "删除成功",
+        message: message,
       });
-    })
-    .catch(() => {
-      ElMessage({
-        type: "info",
-        message: "删除失败",
-      });
-    });
+    }
+  });
 };
 
 const handleReset = () => {
   const data = {
     ruleName: "",
     ruleCode: "",
-    status: null,
-    pageIndex: 1,
+    releaseStatus: null,
+    pageNum: 1,
     pageSize: 10,
   };
   Object.assign(listQuery, data);
@@ -298,6 +311,7 @@ const handleEdit = (row) => {
   router.push({
     name: "editCustomRule",
     params: { id: row.ruleId },
+    query: { status: "edit" },
   });
 };
 const handleDetail = (row) => {

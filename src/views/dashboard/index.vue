@@ -1,18 +1,18 @@
 <template>
   <div>
     <page-header></page-header>
-    <el-tabs v-model="message">
+    <el-tabs v-model="message" @tab-click="handleTabClick">
       <el-tab-pane label="实体对象" name="entityObject">
         <entity-object></entity-object>
       </el-tab-pane>
-      <el-tab-pane label="校验规则" name="first">
+      <!-- <el-tab-pane label="校验规则" name="first">
         <check-rule></check-rule>
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane label="脚本规则" name="ScriptRule">
         <ScriptRule></ScriptRule>
       </el-tab-pane>
-      <el-tab-pane label="自定义规则" name="third">
-        <template v-if="message === 'third'">
+      <el-tab-pane label="自定义规则" name="customRule">
+        <template v-if="message === 'customRule'">
           <custom-rule></custom-rule>
         </template>
       </el-tab-pane>
@@ -26,38 +26,55 @@
 </template>
 
 <script>
-import {provide, ref} from "vue";
+import { onMounted, provide, ref } from "vue";
 import PageHeader from "../../components/PageHeader.vue";
-import CheckRule from "views/checkrule/index.vue";
-import CustomRule from "views/customrule/index.vue";
+// import CheckRule from "views/checkrule/index.vue";
+import CustomRule from "views/CustomRule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
-import {useRoute} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import ScriptRule from "views/ScriptRule/index.vue";
-import EntityObject from "views/EntityObject/index.vue"
+import EntityObject from "views/EntityObject/index.vue";
 
 export default {
   name: "tabs",
   components: {
     RuleLayoutList,
     PageHeader,
-    CheckRule,
+    // CheckRule,
     CustomRule,
     ScriptRule,
     EntityObject
   },
   setup() {
-    const message = ref("ScriptRule");
-    const router = useRoute();
-    const id = ref(router.query.id)
-    const name = ref(router.query.ruleGroupName);
-    const ruleGroupCode = ref(router.query.ruleGroupCode);
-    const description = ref(router.query.ruleGroupDesc);
-    provide('id',id)
-    provide('ruleGroupName',name);
-    provide('ruleGroupCode',ruleGroupCode);
-    provide('ruleGroupDesc',description)
+    const message = ref("entityObject");
+    const route = useRoute();
+    const router = useRouter();
+    const id = ref(route.query.id);
+    const name = ref(route.query.ruleGroupName);
+    const ruleGroupCode = ref(route.query.ruleGroupCode);
+    const description = ref(route.query.ruleGroupDesc);
+
+    onMounted(() => {
+      let tabValue = route.query.tab;
+      if (tabValue) message.value = tabValue;
+    });
+
+    const handleTabClick = (tab) => {
+      router.push({
+        query: {
+          ...route.query,
+          tab: tab.props.name,
+        },
+      });
+    };
+
+    provide("id", id);
+    provide("ruleGroupName", name);
+    provide("ruleGroupCode", ruleGroupCode);
+    provide("ruleGroupDesc", description);
     return {
       message,
+      handleTabClick,
     };
   },
 };
