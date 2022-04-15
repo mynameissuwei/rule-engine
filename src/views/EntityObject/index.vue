@@ -242,6 +242,7 @@ export default {
       let requestBody = {
         pageNum: entityObjectPaginationConfig.current,
         pageSize: entityObjectPaginationConfig.pageSize,
+        ruleGroupCode: ruleGroupCode,
         timeAscOrDesc: "asc"
       }
       getEntityObject(requestBody).then(response => {
