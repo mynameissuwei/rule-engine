@@ -10,6 +10,7 @@
         <el-input
           v-model="searchValueRef"
           class="input-class"
+          clearable
           placeholder="关键字名称"
           :prefix-icon="Search"
         />
@@ -78,6 +79,7 @@ import { cloneDeep } from "lodash";
 const searchValueRef = ref("");
 const currentRowRef = ref(null);
 const objectListRef = ref([]);
+const objectArrayRef = ref([]);
 const objectDetailRef = ref([]);
 const tableLoading = ref(false);
 const checkBoxLoading = ref(false);
@@ -88,6 +90,13 @@ const checkListRef = ref([]);
 const checkedForm = ref([]);
 const rules = reactive({});
 const formData = ref({});
+
+watch(searchValueRef, (newVal, oldVal) => {
+  let result = objectArrayRef.value.filter(
+    (item) => item.objectName.toLowerCase().indexOf(newVal) != -1
+  );
+  objectListRef.value = result;
+});
 
 let valueContains = ["INTEGER_RANGE", "DOUBLE_RANGE", "NUMBER_RANGE"];
 
@@ -116,7 +125,6 @@ const validatePass2 = (rule, value, callback) => {
 
 // 修改rules数据
 const modifyRule = (item) => {
-  console.log();
   let ruleObj = [];
   let isSelect =
     item.calibratorType === "VALUE_CONTAIN" ||
@@ -221,8 +229,9 @@ const props = defineProps([
 const emits = defineEmits(["pushRule"]);
 
 // 点击table每一行高亮
-const handleCurrentChange = async (currentRow, oldCurrentRow) => {
+const handleCurrentChange = async (checkedRow, oldCurrentRow) => {
   checkBoxLoading.value = true;
+  let currentRow = checkedRow ? checkedRow : currentRowRef.value;
   const { id } = currentRow;
   const res = await fetchObjectDetail(id);
   if (currentRow.hasOwnProperty("checkList")) {
@@ -251,9 +260,11 @@ const getObjectList = async () => {
     pageSize: 10,
     pageNum: 1,
     timeAscOrDesc: "desc",
+    // status: 1,
   });
 
   objectListRef.value = data;
+  objectArrayRef.value = data;
   tableLoading.value = false;
 };
 
@@ -282,7 +293,7 @@ const changeRuleObject = (data) => {
 // 提交按钮
 const onSubmit = async () => {
   const formRefDom = formRef.value.formRefDom;
-  console.log(formRefDom, "formRefDomformRefDom");
+
   await formRefDom.validate(async (valid, fields) => {
     if (valid) {
       let ruleObject = changeRuleObject(objectListRef.value);
@@ -293,7 +304,6 @@ const onSubmit = async () => {
         emits("pushRule", ruleObject);
       }
     } else {
-      console.log("error submit!", fields);
     }
   });
 };
@@ -310,7 +320,7 @@ onMounted(async () => {
     let currentRow = objectListRef.value.find((item) =>
       item.hasOwnProperty("checkList")
     );
-    console.log(result, currentRow, "currentRowcurrentRow");
+
     singleTableRef.value.setCurrentRow(currentRow);
   }
 });

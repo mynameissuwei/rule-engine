@@ -24,11 +24,6 @@ const router = createRouter({
       component: () => import("views/CustomRule/edit.vue"),
     },
     {
-      path: "/customRule/test",
-      name: "testCustomRule",
-      component: () => import("views/CustomRule/test.vue"),
-    },
-    {
       path: "/rule-graph",
       name: "ruleGraph",
       component: () => import("@/views/RuleGraph/index.vue"),
@@ -50,76 +45,86 @@ const router = createRouter({
     },
     {
       path: "/newEntityObject",
-      component: () => import("../views/EntityObject/NewEntityObject/index.vue"),
+      component: () =>
+        import("../views/EntityObject/NewEntityObject/index.vue"),
       name: "NewEntityObject",
       meta: {
-        title: "新建实体对象"
-      }
-    },{
+        title: "新建实体对象",
+      },
+    },
+    {
       path: "/newRuleRepository",
       component: () => import("../views/ruleRepository/newRuleRepository.vue"),
       name: "NewRuleRepository",
       meta: {
-        title: "新建规则库"
-      }
-    },{
+        title: "新建规则库",
+      },
+    },
+    {
       path: "/inputScriptRule",
       component: () => import("../views/ScriptRule/InputScriptRule/index.vue"),
       name: "InputScriptRule",
       meta: {
-        title: "新建脚本规则"
-      }
+        title: "新建脚本规则",
+      },
     },
     {
       path: "/newEntityObject",
-      component: () => import("../views/EntityObject/NewEntityObject/index.vue"),
+      component: () =>
+        import("../views/EntityObject/NewEntityObject/index.vue"),
       name: "NewEntityObject",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "新建实体对象"
-      }
-    },{
+        title: "新建实体对象",
+      },
+    },
+    {
       path: "/newRuleRepository",
       component: () => import("../views/ruleRepository/newRuleRepository.vue"),
       name: "NewRuleRepository",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "新建规则库"
-      }
-    },{
+        title: "新建规则库",
+      },
+    },
+    {
       path: "/inputScriptRule",
       component: () => import("../views/ScriptRule/InputScriptRule/index.vue"),
       name: "InputScriptRule",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "新建脚本规则"
-      }
-    },{
+        title: "新建脚本规则",
+      },
+    },
+    {
       path: "/updateRuleRepository",
-      component: () => import("../views/ruleRepository/updateRuleRepository.vue"),
+      component: () =>
+        import("../views/ruleRepository/updateRuleRepository.vue"),
       name: "UpdateRuleRepository",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "修改规则库信息"
-      }
-    },{
+        title: "修改规则库信息",
+      },
+    },
+    {
       path: "/scriptRuleDetail",
       component: () => import("../views/ScriptRule/ScriptRuleDetail/index.vue"),
       name: "ScriptRuleDetail",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "脚本规则详情"
-      }
-    },{
+        title: "脚本规则详情",
+      },
+    },
+    {
       path: "/entityObjectDetail",
-      component: () => import("../views/EntityObject/EntityObjectDetail/index.vue"),
+      component: () =>
+        import("../views/EntityObject/EntityObjectDetail/index.vue"),
       name: "EntityObjectDetail",
-      hidden:true,
+      hidden: true,
       meta: {
-        title: "实体对象详情"
-      }
-    }
-
+        title: "实体对象详情",
+      },
+    },
   ],
 });
 

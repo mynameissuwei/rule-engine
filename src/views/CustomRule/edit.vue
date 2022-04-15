@@ -2,7 +2,7 @@
   <div>
     <rule-header
       :leftText="
-        id ? (isDetail ? '校验规则详情' : '编辑校验规则') : '新建校验规则'
+        id ? (isDetail ? '自定义规则详情' : '编辑自定义规则') : '新建自定义规则'
       "
       :showButton="id ? (isDetail ? true : false) : false"
       :handleEditJump="handleEditJump"
@@ -15,6 +15,8 @@
               v-model="form.ruleName"
               placeholder="可使用中英文、数字组合"
               :disabled="isDetail"
+              maxlength="50"
+              show-word-limit
               style="width: 340px; margin-right: 10px"
             ></el-input>
             <el-tooltip
@@ -31,10 +33,12 @@
               v-model="form.scenarioName"
               placeholder="请输入"
               :disabled="isDetail"
+              maxlength="100"
+              show-word-limit
               style="width: 340px"
             ></el-input>
           </el-form-item>
-          <el-form-item label="规则编辑">
+          <el-form-item label="规则编辑" required>
             <div>
               <el-button
                 size="small"
@@ -249,22 +253,8 @@ export default {
         ruleName: [
           { required: true, message: "请输入规则名称", trigger: "blur" },
           {
-            min: 1,
-            max: 10,
-            message: "长度在 1 到 50 个字符",
-            trigger: "blur",
-          },
-          {
             pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
             message: "只能输入中文、数字、英文",
-            trigger: "blur",
-          },
-        ],
-        scenarioName: [
-          {
-            min: 0,
-            max: 100,
-            message: "最大长度100字符",
             trigger: "blur",
           },
         ],
@@ -434,7 +424,7 @@ export default {
               ruleGroup: store.state.rule.ruleData,
             };
 
-            const { success, message } = dataMap.id
+            const { success, message, ...res } = dataMap.id
               ? await updateRuleObject({
                   id: Number(dataMap.id),
                   ...result,

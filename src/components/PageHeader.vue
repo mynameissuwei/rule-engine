@@ -3,13 +3,14 @@
     <div class="top-container">
       <div class="left">{{ name }}</div>
       <div class="right">
-        <el-button type="primary"
-                   class="gray-button"
-                   plain size="small"
-                   @click="gotoUpdateRuleRepository"
-        >修改
-        </el-button
-        >
+        <el-button
+          type="primary"
+          class="gray-button"
+          plain
+          size="small"
+          @click="gotoUpdateRuleRepository"
+          >修改
+        </el-button>
       </div>
     </div>
     <div class="bottom-container">
@@ -22,45 +23,53 @@
       <div class="right">
         <span class="left-title">规则库编码：</span>
         <span class="right-title"> {{ code }} </span>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script>
-import {inject, onMounted} from "vue";
-import {useRouter} from "vue-router";
+import { inject, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "pageHeader",
   setup() {
+    const store = useStore();
+    const {
+      id,
+      ruleGroupCode: code,
+      ruleGroupDesc: description,
+      ruleGroupName: name,
+    } = store.state.rule.ruleData;
     //provide、inject
-    const name = inject('ruleGroupName')
-    const code = inject('ruleGroupCode')
-    const description = inject('ruleGroupDesc')
-    const id = inject('id')
+    // const name = inject("ruleGroupName");
+    // const code = inject("ruleGroupCode");
+    // const description = inject("ruleGroupDesc");
+    // const id = inject("id");
 
     const router = useRouter();
     //跳转到修改规则库页面
     const gotoUpdateRuleRepository = () => {
       router.push({
-        path:'updateRuleRepository',
-        query:{
-          id:id.value,
-          name:name.value,
-          code:code.value,
-          description:description.value
-        }
-      })
-    }
+        path: "updateRuleRepository",
+        query: {
+          id,
+          name,
+          code,
+          description,
+        },
+      });
+    };
     return {
       name,
       code,
       description,
-      gotoUpdateRuleRepository
-    }
-  }
-}
+      gotoUpdateRuleRepository,
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

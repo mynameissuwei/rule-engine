@@ -55,7 +55,8 @@
           <el-button
             type="text"
             size="medium"
-            @click="deleteRuleRepositoryBtn(scope.row.id)">
+            @click="deleteRuleRepositoryBtn(scope.row.id)"
+          >
             删除
           </el-button>
         </template>
@@ -78,7 +79,7 @@
 </template>
 
 <script>
-import { onMounted, reactive} from "vue";
+import { onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "@enn/element-plus";
 import {
   deleteRuleRepository,
@@ -112,7 +113,9 @@ export default {
         store.dispatch("rule/setRuleData", ruleData);
         router.push({
           path: "home",
-          query: ruleData,
+          query: {
+            tab: "entityObject",
+          },
         });
       }
     };
@@ -129,34 +132,30 @@ export default {
     };
     //删除规则库、消息弹出框
     const deleteRuleRepositoryBtn = (id) => {
-      ElMessageBox.confirm(
-          '要删除这条规则么，是否继续？',
-          'Warning',
-          {
-            cancelButtonText: '取消',
-            confirmButtonText: '删除',
-            type: 'warning',
-          }
-      )
-          .then(() => {
-            deleteRuleRepositoryData(id)
-            getRuleRepositoryData()
-            ElMessage({
-              type: 'success',
-              message: 'Delete completed'
-            })
-          })
-          .catch(() => {
-            ElMessage({
-              type: 'info',
-              message: 'Delete canceled',
-            })
-          })
-    }
+      ElMessageBox.confirm("要删除这条规则么，是否继续？", "Warning", {
+        cancelButtonText: "取消",
+        confirmButtonText: "删除",
+        type: "warning",
+      })
+        .then(() => {
+          deleteRuleRepositoryData(id);
+          getRuleRepositoryData();
+          ElMessage({
+            type: "success",
+            message: "Delete completed",
+          });
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "Delete canceled",
+          });
+        });
+    };
 
     //分页展示规则库列表
     function getRuleRepositoryData() {
-      let {pageNum, pageSize} = {
+      let { pageNum, pageSize } = {
         pageNum: ruleRepositoryPaginationConfig.current,
         pageSize: ruleRepositoryPaginationConfig.pageSize,
       };
@@ -172,8 +171,7 @@ export default {
 
     //删除规则库
     function deleteRuleRepositoryData(id) {
-      deleteRuleRepository(id).then(response => {
-      })
+      deleteRuleRepository(id).then((response) => {});
     }
 
     //规则库分页函数

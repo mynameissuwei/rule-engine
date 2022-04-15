@@ -5,13 +5,15 @@
         <el-input
           v-model="listQuery.ruleName"
           placeholder="自定义规则名称"
+          clearable
           class="handle-input mr10"
         ></el-input>
       </el-col>
       <el-col :span="7">
         <el-input
-          v-model="listQuery.ruleCode"
-          placeholder="规则编码"
+          v-model="listQuery.updatedByName"
+          placeholder="最后修改人"
+          clearable
           class="handle-input mr10"
         ></el-input>
       </el-col>
@@ -78,7 +80,7 @@
       max-height="450"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="ruleName" label="规则名字">
+      <el-table-column prop="ruleName" label="规则名称">
         <template #default="scope">
           <span class="actionClass" @click="handleDetail(scope.row)">{{
             scope.row.ruleName
@@ -168,7 +170,7 @@ import { useStore } from "vuex";
 
 const listQuery = reactive({
   ruleName: "",
-  ruleCode: "",
+  updatedByName: "",
   releaseStatus: null,
   pageNum: 1,
   pageSize: 10,
@@ -191,7 +193,7 @@ const getList = () => {
   fetchTableData({
     ...listQuery,
     ruleName: listQuery.ruleName.trim(),
-    ruleCode: listQuery.ruleCode.trim(),
+    updatedByName: listQuery.updatedByName.trim(),
     groupId: store.state.rule.ruleData.id,
   }).then((res) => {
     tableData.value = res.data;
@@ -297,7 +299,7 @@ const handleDelete = (row) => {
 const handleReset = () => {
   const data = {
     ruleName: "",
-    ruleCode: "",
+    updatedByName: "",
     releaseStatus: null,
     pageNum: 1,
     pageSize: 10,
