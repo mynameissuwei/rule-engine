@@ -95,7 +95,7 @@
               type="text"
               icon="el-icon-delete"
               class="red"
-              @click="Test(scope.$index, scope.row)"
+              @click="testScriptRule(scope.row.scriptCode, scope.row.ruleGroupCode)"
           >测试
           </el-button
           >
@@ -115,16 +115,21 @@
         </el-pagination>
       </div>
     </div>
+  <RuleTest ref="ruleTest"
+            :rule-group-code="testRuleGroupCode"
+            :rule-layout-code="testRuleLayoutCode"></RuleTest>
 </template>
 
 <script>
-import {onMounted, reactive, inject} from "vue";
-import {useRouter} from "vue-router";
+import {onMounted, reactive, ref, inject, provide} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
-
+import {changeRuleLayoutStatus} from "@/api/ruleLayout";
+import RuleTest from "views/RuleTest/index.vue";
 
 export default {
   name: "index.vue",
+  components: {RuleTest},
   setup() {
     const router = useRouter();
     const scriptRuleForm = reactive({
@@ -222,6 +227,7 @@ export default {
     }
 
     //编辑脚本规则
+
     const editScriptRule = (id) => {
       router.push({
         path: 'scriptRuleDetail',
@@ -259,7 +265,18 @@ export default {
       getPageScriptRuleData()
     })
 
+
+    let testRuleGroupCode = ref('');
+    let testRuleLayoutCode = ref('');
+    let testScriptRule = (scriptCode, ruleGroupCode) => {
+      ruleTest.value.showRuleTest();
+      testRuleGroupCode.value = ruleGroupCode;
+      testRuleLayoutCode.value = scriptCode;
+    }
+
+    let ruleTest = ref();
     return {
+      ruleTest,
       handleSizeChange,
       handleCurrentChange,
       scriptRuleTable,
@@ -272,7 +289,10 @@ export default {
       search,
       editScriptRule,
       batchDisPublishScriptRule,
-      selectedRuleLayoutIds
+      testScriptRule,
+      testRuleLayoutCode,
+      testRuleGroupCode,
+      selectedRuleLayoutIds,
     }
   }
 }

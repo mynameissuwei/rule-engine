@@ -66,6 +66,7 @@
           <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)" v-if="scope.row.status !== 'PUBLISHED'">发布</el-button>
           <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)" v-if="scope.row.status !== 'UNPUBLISHED'">停用</el-button>
           <el-button type="text" size="small" @click="deleteRuleLayout(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="testRuleLayout(scope.row.code)">测试</el-button>
 
         </template>
       </el-table-column>
@@ -84,15 +85,22 @@
     </el-pagination>
   </el-card>
 
+  <RuleTest ref="ruleTest"
+            :rule-group-code="testRuleGroupCode"
+            :rule-layout-code="testRuleLayoutCode"></RuleTest>
+
+
 </template>
 
 <script>
-import {reactive, onMounted, inject} from 'vue';
+import {reactive, onMounted, inject, ref} from 'vue';
 import {useRouter,useRoute} from 'vue-router';
 import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
+import RuleTest from "views/RuleTest/index.vue";
 export default {
   name: "RuleLayoutList",
+  components: {RuleTest},
   setup(){
     let ruleGroupCode = '';
     onMounted( () => {
@@ -272,6 +280,15 @@ export default {
         }
       })
     }
+
+    let testRuleGroupCode = ref('');
+    let testRuleLayoutCode = ref('');
+    let testRuleLayout = (ruleLayoutCode) => {
+      ruleTest.value.showRuleTest();
+      testRuleGroupCode.value = ruleGroupCode;
+      testRuleLayoutCode.value = ruleLayoutCode;
+    }
+    let ruleTest = ref();
     return {
       ruleLayoutQueryForm,
       ruleLayoutList,
@@ -289,7 +306,10 @@ export default {
       disableRuleLayout,
       deleteRuleLayout,
       editRuleLayoutDetail,
-      addRuleLayoutDetail
+      addRuleLayoutDetail,
+      testRuleLayout,
+      testRuleGroupCode,
+      ruleTest
     }
   }
 }

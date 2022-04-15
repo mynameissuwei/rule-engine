@@ -28,13 +28,10 @@
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="代码片段：">
-          <el-input v-model="ScriptRuleFormDetailForm.form.scriptContent" style="width: 400px;height: 30px"
-                    :disabled="scene === 'preview'"
-                    show-word-limit
-                    maxlength="100"
-                    :autosize="{ minRows: 5 }"
-                    type="textarea"
-          ></el-input>
+          <code-block ref="codeBlock"
+                      :example-value="exampleValue"
+                      :script-content="ScriptRuleFormDetailForm.form.scriptContent"
+                      :disabled="scene === 'preview'"></code-block>
         </el-form-item>
       </el-form>
     </el-main>
@@ -51,9 +48,11 @@ import {useRoute, useRouter} from "vue-router";
 import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
 import {Base64} from "js-base64";
+import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
 
 export default {
   name: "index.vue",
+  components: {CodeBlock},
   setup() {
     const router = useRouter()
     const route = useRoute()
@@ -92,15 +91,17 @@ export default {
       ]
     })
 
+    let exampleValue = reactive({});
     const getScriptRuleDataById = () => {
-      let id = route.query.scriptRuleId
+      let id = route.query.scriptRuleId;
       queryScriptRuleById(id).then(response => {
+        exampleValue = response.data.data.exampleValue;
         ScriptRuleFormDetailForm.form.scriptName = response.data.data.scriptName
         ScriptRuleFormDetailForm.form.scriptCode = response.data.data.scriptCode
         ScriptRuleFormDetailForm.form.ruleGroupCode = response.data.data.ruleGroupCode
         ScriptRuleFormDetailForm.form.sceneDesc = response.data.data.sceneDesc
         ScriptRuleFormDetailForm.form.programType = response.data.data.programType
-        ScriptRuleFormDetailForm.form.scriptContent = response.data.data.scriptContent
+        ScriptRuleFormDetailForm.form.scriptContent = JSON.stringify(JSON.parse(response.data.data.scriptContent)).replaceAll("\"","")
       })
     }
 
@@ -111,18 +112,24 @@ export default {
     const ruleGroupDesc = route.query.ruleGroupDesc
 
     onMounted(() => {
-          getScriptRuleDataById()
+          getScriptRuleDataById();
+          scene.value = route.query.scene;
         }
     )
 
+    let codeBlock = ref();
     const updateScriptRule = () => {
+      let scriptParam = codeBlock.value.getScriptParam();
+      let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
+
       let requestBody = {
         id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
         sceneDesc: ScriptRuleFormDetailForm.form.sceneDesc,
         scriptCode: ScriptRuleFormDetailForm.form.scriptCode,
-        scriptContent: Base64.encode(ScriptRuleFormDetailForm.form.scriptContent),
+        scriptContent: Base64.encode(scriptContent),
         scriptName: ScriptRuleFormDetailForm.form.scriptName,
+        exampleValue: JSON.stringify(scriptParam)
       }
       updateScriptRuleById(requestBody).then(response => {
         if (response.data.code !== '0') {
@@ -149,7 +156,9 @@ export default {
       rules,
       ScriptRuleFormDetailForm,
       scene,
-      updateScriptRule
+      updateScriptRule,
+      codeBlock,
+      exampleValue
     }
   }
 }
@@ -176,7 +185,7 @@ export default {
   background-color: #FFFFFF;
   color: var(--el-text-color-primary);
   margin: 15px;
-  height: 700px
+  height:550px
 }
 
 .edit-button {

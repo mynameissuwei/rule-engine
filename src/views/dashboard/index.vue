@@ -28,12 +28,12 @@
 <script>
 import { onMounted, provide, ref } from "vue";
 import PageHeader from "../../components/PageHeader.vue";
-// import CheckRule from "views/CheckRule/index.vue";
+// import CheckRule from "views/checkrule/index.vue";
 import CustomRule from "views/CustomRule/index.vue";
 import RuleLayoutList from "views/RuleLayout/List/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import ScriptRule from "views/ScriptRule/index.vue";
-import entityObject from "views/EntityObject/index.vue";
+import EntityObject from "views/EntityObject/index.vue";
 
 export default {
   name: "tabs",
@@ -43,7 +43,7 @@ export default {
     // CheckRule,
     CustomRule,
     ScriptRule,
-    entityObject,
+    EntityObject
   },
   setup() {
     const message = ref("entityObject");
