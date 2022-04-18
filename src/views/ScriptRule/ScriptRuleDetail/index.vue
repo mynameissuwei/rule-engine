@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="container">
     <el-header>
       <span style="float: left">脚本规则 - {{ ScriptRuleFormDetailForm.form.scriptName }}</span>
       <el-button v-if="scene==='preview'" type="primary" size="small"

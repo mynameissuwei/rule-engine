@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="height: 90%">
+  <div class="container">
     <div style="margin: 100px 400px">
       <!--新建规则库表单-->
       <el-form
@@ -63,7 +63,7 @@ export default {
       newRuleRepositoryName: [
         {
           required: true,
-          message: 'Please input rule name',
+          message: '请输入规则库名称',
           trigger: 'blur',
         },
         // {
@@ -101,7 +101,7 @@ export default {
             router.push({
               path: '/',
             })
-            getRuleRepository
+            getRuleRepository()
           }
       )
     }

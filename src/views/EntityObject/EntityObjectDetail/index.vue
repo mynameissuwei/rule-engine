@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="container">
     <el-header>
       <span style="float: left">实体对象 - {{ entityObjectForm.form.ObjectName }}</span>
       <el-button v-if="scene==='preview'" type="primary" size="small"

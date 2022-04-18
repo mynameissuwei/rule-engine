@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="height: 90%">
+  <div class="container">
     <div style="margin: 100px 400px">
       <!--新建规则库表单-->
       <el-form
@@ -88,6 +88,7 @@ export default {
       scriptName: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
       ruleGroupCode: [{ required: true, message: "请输入规则库名称", trigger: "blur" }],
       scriptCode: [{ required: true, message: "请输入规则代码", trigger: "blur" }],
+      scriptContent: [{ required: true, message: "请输入代码片段", trigger: "blur" }],
     };
 
     const route = useRoute();
@@ -132,7 +133,7 @@ export default {
       )
     }
 
-    const ruleGroupCode = route.query.ruleGroupCode
+    const ruleGroupCode = store.state.rule.ruleData.ruleGroupCode
     const handleRandomRuleLayoutCode = () => {
       randomRuleLayoutCode(ruleGroupCode).then(res => {
         inputScriptRuleForm.form.scriptCode = res.data.data

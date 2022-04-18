@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="height: 90%">
+  <div class="container">
     <div style="margin: 100px 400px">
       <!--新建规则库表单-->
       <el-form
@@ -66,6 +66,7 @@ export default {
     const updateRuleRepositoryForm = reactive({
       ref: "newRuleRepositoryFormRef",
       form: {
+        id:'',
         RuleRepositoryName: '',
         RuleRepositoryCode: '',
         RuleRepositoryDescription: ''
@@ -77,6 +78,7 @@ export default {
       let requestBody = {
         id: store.state.rule.ruleData.id,
         ruleGroupName: updateRuleRepositoryForm.form.RuleRepositoryName,
+        ruleGroupCode: updateRuleRepositoryForm.form.RuleRepositoryCode,
         ruleRepositoryCode: updateRuleRepositoryForm.form.RuleRepositoryCode,
         ruleGroupDescription: updateRuleRepositoryForm.form.RuleRepositoryDescription
       }
@@ -86,23 +88,19 @@ export default {
               return;
             }
             let ruleData = {
-              id: response.data.data.id,
-              ruleGroupName: response.data.data.ruleGroupName,
-              ruleGroupCode: response.data.data.ruleGroupCode,
-              ruleGroupDesc: response.data.data.ruleGroupDescription,
+              id:requestBody.id,
+              ruleGroupCode:requestBody.ruleGroupCode,
+              ruleGroupName: requestBody.ruleGroupName,
+              ruleGroupDesc: requestBody.ruleGroupDescription,
             };
+            console.log(ruleData,11)
             store.dispatch("rule/setRuleData", ruleData);
             ElMessage({
               message: '修改规则库成功',
               type: 'success',
             })
             router.push({
-              path: 'home',
-              query: {
-                name: updateRuleRepositoryForm.form.RuleRepositoryName,
-                code: updateRuleRepositoryForm.form.RuleRepositoryCode,
-                description: updateRuleRepositoryForm.form.RuleRepositoryDescription
-              }
+              path: 'home'
             })
           }
       )
@@ -139,6 +137,7 @@ export default {
     }
 
     onMounted(() => {
+      updateRuleRepositoryForm.form.id = store.state.rule.ruleData.id
       updateRuleRepositoryForm.form.RuleRepositoryName = store.state.rule.ruleData.ruleGroupName
       updateRuleRepositoryForm.form.RuleRepositoryCode = store.state.rule.ruleData.ruleGroupCode
       updateRuleRepositoryForm.form.RuleRepositoryDescription = store.state.rule.ruleData.ruleGroupDesc

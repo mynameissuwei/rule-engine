@@ -2,7 +2,7 @@
   <template>
     <!-- <ChildComponent :method="checkRuleRepositoryInfo"/> -->
   </template>
-  <div class="container" style="height: 90%">
+  <div class="container">
     <el-row class="handle-box" :gutter="40">
       <el-col
         :span="23"

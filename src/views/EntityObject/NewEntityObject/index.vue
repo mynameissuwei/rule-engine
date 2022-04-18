@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="height: 90%">
+  <div class="container">
     <div style="margin: 50px 100px">
       <el-form
           :ref="newEntityObjectForm.ref"
