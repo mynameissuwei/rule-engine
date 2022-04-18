@@ -98,18 +98,18 @@ import {useRouter,useRoute} from 'vue-router';
 import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
 import RuleTest from "views/RuleTest/index.vue";
+import {useStore} from "vuex";
 export default {
   name: "RuleLayoutList",
   components: {RuleTest},
   setup(){
+    const store = useStore()
     let ruleGroupCode = '';
     onMounted( () => {
-      //注入规则集code
-      ruleGroupCode = inject('ruleGroupCode').value;
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,
-        ruleGroupCode: ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
       }
       pageRuleLayoutList(params).then(res => {
         const data = res.data;
@@ -175,7 +175,7 @@ export default {
         ruleLayoutName: ruleLayoutQueryForm.name,
         updatedByName: ruleLayoutQueryForm.keyword,
         ruleLayoutStatus: ruleLayoutQueryForm.status,
-        ruleGroupCode: ruleGroupCode
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode
       }
       pageRuleLayoutList(params).then(res => {
         const data = res.data;
@@ -223,7 +223,6 @@ export default {
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
           ruleLayoutId: ruleLayoutId,
-          ruleGroupCode: ruleGroupCode,
           scene: 'preview',
           ...route.query
         }
@@ -235,7 +234,6 @@ export default {
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
           ruleLayoutId: ruleLayoutId,
-          ruleGroupCode: ruleGroupCode,
           scene: 'update',
           ...route.query
         }
@@ -285,7 +283,7 @@ export default {
     let testRuleLayoutCode = ref('');
     let testRuleLayout = (ruleLayoutCode) => {
       ruleTest.value.showRuleTest();
-      testRuleGroupCode.value = ruleGroupCode;
+      testRuleGroupCode.value = store.state.rule.ruleData.ruleGroupCode;
       testRuleLayoutCode.value = ruleLayoutCode;
     }
     let ruleTest = ref();

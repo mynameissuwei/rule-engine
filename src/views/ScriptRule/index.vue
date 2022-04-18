@@ -276,7 +276,7 @@ export default {
     let testRuleLayoutCode = ref('');
     let testScriptRule = (scriptCode, ruleGroupCode) => {
       ruleTest.value.showRuleTest();
-      testRuleGroupCode.value = ruleGroupCode;
+      testRuleGroupCode.value = store.state.rule.ruleData.ruleGroupCode;
       testRuleLayoutCode.value = scriptCode;
     }
 

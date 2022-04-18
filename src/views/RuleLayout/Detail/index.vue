@@ -45,6 +45,7 @@ import { useRoute,useRouter } from 'vue-router';
 import RuleGraph from "../../RuleGraph/index.vue";
 import  {ruleLayoutDetail, saveRuleLayout, editRuleLayout} from '@/api/ruleLayout'
 import {ElMessage} from "@enn/element-plus";
+import {useStore} from "vuex";
 export default {
   name: "RuleLayoutDetail",
   components: {RuleGraph},
@@ -52,9 +53,9 @@ export default {
   },
   setup(props){
 
+    const store = useStore();
     const route = useRoute();
     const ruleLayoutId = route.query.ruleLayoutId
-    const ruleGroupCode = route.query.ruleGroupCode
 
     const ruleLayoutInfo = reactive({
       code: '',
@@ -135,7 +136,7 @@ export default {
       const ruleLayouts = convertToRuleLayouts(graphData)
       const params = {
         list: ruleLayouts,
-        ruleGroupCode: ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         ruleLayoutCode: ruleLayoutInfo.code,
         ruleLayoutName: ruleLayoutInfo.name,
         sceneDesc: ruleLayoutInfo.scene
@@ -150,7 +151,6 @@ export default {
         router.push({
           path: '/home',
           query: {
-            ruleGroupCode: ruleGroupCode,
             message: 'four',
             ...route.query
           }
