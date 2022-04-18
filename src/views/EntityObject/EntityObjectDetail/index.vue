@@ -109,10 +109,12 @@ import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {queryScriptRuleById} from "@/api/scriptRule";
 import {checkEntityObjectDetail} from "@/api/entityObject";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
   setup() {
+    const store = useStore();
     const router = useRouter()
     const route = useRoute()
     const updateEntityObjectTable = reactive({

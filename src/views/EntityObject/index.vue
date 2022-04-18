@@ -116,14 +116,13 @@ import {deleteEntityObject, getEntityObject, updateEntityObjectStatus} from "../
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {useRouter} from "vue-router";
 import {Message} from "@element-plus/icons-vue";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
   setup() {
+    const store = useStore();
     const router = useRouter()
-    const ruleGroupCode = inject("ruleGroupCode").value
-    const ruleGroupName = inject("ruleGroupName").value
-    const ruleGroupDesc = inject("ruleGroupDesc").value
     //实体对象查询对象
     const entityObjectForm = reactive({
       objectName: "",
@@ -207,7 +206,7 @@ export default {
         objectName: entityObjectForm.objectName,
         timeAscOrDesc: entityObjectForm.timeAscOrDesc,
         updatedByName: entityObjectForm.updatedByName,
-        ruleGroupCode: ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         pageNum: entityObjectPaginationConfig.current,
         pageSize: entityObjectPaginationConfig.pageSize,
       }
@@ -228,12 +227,7 @@ export default {
     //新建实体对象
     const newEntityObject = () => {
       router.push({
-        path: 'newEntityObject',
-        query: {
-          ruleGroupCode: ruleGroupCode,
-          ruleGroupName: ruleGroupName,
-          ruleGroupDesc: ruleGroupDesc,
-        }
+        path: 'newEntityObject'
       })
     }
 
@@ -242,7 +236,7 @@ export default {
       let requestBody = {
         pageNum: entityObjectPaginationConfig.current,
         pageSize: entityObjectPaginationConfig.pageSize,
-        ruleGroupCode: ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         timeAscOrDesc: "asc"
       }
       getEntityObject(requestBody).then(response => {
@@ -285,9 +279,6 @@ export default {
         path: 'entityObjectDetail',
         query: {
           entityObjectId:id,
-          ruleGroupCode: ruleGroupCode,
-          ruleGroupName: ruleGroupName,
-          ruleGroupDesc: ruleGroupDesc,
           scene: 'preview'
         }
       })

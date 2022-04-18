@@ -76,12 +76,13 @@ import {addScriptRule} from "../../../api/scriptRule";
 import {Base64} from "js-base64";
 import {randomRuleLayoutCode} from "@/api/ruleLayout";
 import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
   components: {CodeBlock},
   setup() {
-
+    const store = useStore();
     const router = useRouter();
     const rules = {
       scriptName: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
@@ -91,7 +92,7 @@ export default {
 
     const route = useRoute();
     onMounted(()=>{
-      inputScriptRuleForm.form.ruleGroupCode = route.query.ruleGroupCode;
+      inputScriptRuleForm.form.ruleGroupCode = store.state.rule.ruleData.ruleGroupCode;
     })
 
     //新建规则库表单对象

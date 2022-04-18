@@ -67,11 +67,14 @@
         style="margin-top: 10px;width: 100%;align:center"
         @selection-change="handleSelectionChange"
         height="280px"
+        @cell-click="scriptRuleDetailBtn"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="scriptName" label="脚本规则名称" min-width="100%">
         <template #default="scope">
-          <div style="color:blue;cursor:pointer;">{{ scope.row.scriptName }}</div>
+          <div style="color: blue; cursor: pointer">
+            {{ scope.row.scriptName }}
+          </div>
         </template>
       </el-table-column>
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
@@ -126,12 +129,14 @@ import {useRoute, useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
 import {changeRuleLayoutStatus} from "@/api/ruleLayout";
 import RuleTest from "views/RuleTest/index.vue";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
   components: {RuleTest},
   setup() {
     const router = useRouter();
+    const store = useStore();
     const scriptRuleForm = reactive({
       scriptName: '',
       updatedByName: '',
@@ -140,6 +145,19 @@ export default {
     const scriptRuleTable = reactive({
       tableData: [],
     })
+    //脚本规则详情
+    let scriptRuleDetailBtn = (row,column,event,cell) => {
+      if (column.label === "脚本规则名称"){
+        router.push({
+          path: "scriptRuleDetail",
+          query: {
+            scriptRuleId: row.id,
+            scene: 'preview'
+          },
+        });
+      }
+    }
+
     //脚本规则分页对象
     let scriptRulePaginationConfig = reactive({
       pageSize: 10,
@@ -148,17 +166,9 @@ export default {
       current: 1
     })
     //跳转脚本规则录入页面
-    const ruleGroupCode = inject("ruleGroupCode").value
-    const ruleGroupName = inject("ruleGroupName").value
-    const ruleGroupDesc = inject("ruleGroupDesc").value
     const inputScriptRule = () => {
       router.push({
-        path: 'inputScriptRule',
-        query: {
-          ruleGroupCode: ruleGroupCode,
-          ruleGroupName: ruleGroupName,
-          ruleGroupDesc: ruleGroupDesc
-        }
+        path: 'inputScriptRule'
       })
     }
 
@@ -196,7 +206,7 @@ export default {
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
-        ruleGroupCode: ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
             scriptRuleTable.tableData = response.data.data
@@ -215,7 +225,7 @@ export default {
         scriptName: scriptRuleForm.scriptName,
         ruleScriptStatus: scriptRuleForm.ruleScriptStatus,
         updatedByName: scriptRuleForm.updatedByName,
-        ruleGroupCode: ruleGroupCode
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode
       }
       pageScriptRule(params).then(response => {
             scriptRuleTable.tableData = response.data.data
@@ -227,15 +237,11 @@ export default {
     }
 
     //编辑脚本规则
-
     const editScriptRule = (id) => {
       router.push({
         path: 'scriptRuleDetail',
         query: {
           scriptRuleId: id,
-          ruleGroupCode: ruleGroupCode,
-          ruleGroupName: ruleGroupName,
-          ruleGroupDesc: ruleGroupDesc,
           scene: 'update'
         }
       })
@@ -293,6 +299,7 @@ export default {
       testRuleLayoutCode,
       testRuleGroupCode,
       selectedRuleLayoutIds,
+      scriptRuleDetailBtn
     }
   }
 }

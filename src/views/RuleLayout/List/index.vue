@@ -33,7 +33,7 @@
       </div>
     </template>
     <el-row style="margin-top:10px">
-      <el-col :span="18" style="margin-left:10px">脚本规则编排（{{pagination.currentPage}}/{{pagination.pageCount}}）</el-col>
+      <el-col :span="18" style="margin-left:10px">脚本规则编排（{{pagination.total}}）</el-col>
       <el-col :span="5" style="margin-left: auto">
         <el-button type="primary" size="small" @click="addRuleLayoutDetail">新建</el-button>
         <el-button type="primary" size="small" plain @click="batchDisableRuleLayout"

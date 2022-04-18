@@ -139,15 +139,14 @@ import {reactive} from "vue";
 import {addOrUpdateEntityObject} from "@/api/entityObject";
 import {useRoute, useRouter} from "vue-router";
 import {ElMessage} from "@enn/element-plus";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
   setup() {
+    const store = useStore();
     const router = useRouter()
     const route = useRoute()
-    const ruleGroupCode = route.query.ruleGroupCode
-    const ruleGroupName = route.query.ruleGroupName
-    const ruleGroupDesc = route.query.ruleGroupDesc
     //新建实体对象表单对象
     const newEntityObjectForm = reactive({
       ref: "newEntityObjectFormRef",
@@ -226,7 +225,7 @@ export default {
         objectCode: newEntityObjectForm.form.newObjectCode,
         objectDesc: newEntityObjectForm.form.newObjectDescription,
         objectName: newEntityObjectForm.form.newObjectName,
-        ruleGroupCode: route.query.ruleGroupCode,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         ruleObjectFieldReqVoList: newEntityObjectTable.tableData
       }
       addOrUpdateEntityObject(requestBody).then(response => {
@@ -239,12 +238,7 @@ export default {
           type: 'success',
         })
         router.push({
-          path: 'home',
-          query: {
-            ruleGroupCode: ruleGroupCode,
-            ruleGroupName: ruleGroupName,
-            ruleGroupDesc: ruleGroupDesc
-          }
+          path: 'home'
         })
 
       })

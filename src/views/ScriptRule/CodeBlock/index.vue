@@ -39,6 +39,7 @@
 import {onMounted, ref, watch, reactive} from 'vue';
 import {useRoute} from 'vue-router';
 import {getEntityObject} from "@/api/entityObject";
+import {useStore} from "vuex";
 export default {
   name: "CodeBlock",
   props: {
@@ -80,8 +81,8 @@ export default {
         }
     )
 
-    let route = useRoute();
-    let ruleGroupCode = route.query.ruleGroupCode;
+    const store = useStore();
+    let ruleGroupCode = store.state.rule.ruleData.ruleGroupCode;
 
     onMounted(()=>{
       allowedInput.value = props.disabled;

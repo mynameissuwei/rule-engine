@@ -55,14 +55,13 @@ import {addRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import router from "../../router";
 import {ElMessage} from "@enn/element-plus";
 import {useRoute} from "vue-router";
+import {useStore} from "vuex";
 
 export default {
   name: "updateRuleRepository.vue",
   setup() {
-    const ruleGroupCode = route.query.ruleGroupCode
-    const ruleGroupName = route.query.ruleGroupName
-    const ruleGroupDesc = route.query.ruleGroupDesc
-    const route = useRoute();
+    const store = useStore();
+    const route = useRoute()
     //新建规则库表单对象
     const updateRuleRepositoryForm = reactive({
       ref: "newRuleRepositoryFormRef",
@@ -76,17 +75,23 @@ export default {
     //新增修改规则库
     function addRuleRepositoryBtn() {
       let requestBody = {
-        id: route.query.id,
+        id: store.state.rule.ruleData.id,
         ruleGroupName: updateRuleRepositoryForm.form.RuleRepositoryName,
         ruleRepositoryCode: updateRuleRepositoryForm.form.RuleRepositoryCode,
         ruleGroupDescription: updateRuleRepositoryForm.form.RuleRepositoryDescription
       }
-      console.log(requestBody.id,10)
       addRuleRepository(requestBody).then(response => {
             if (response.data.code !== '0') {
               ElMessage.error(response.data.message)
               return;
             }
+            let ruleData = {
+              id: response.data.data.id,
+              ruleGroupName: response.data.data.ruleGroupName,
+              ruleGroupCode: response.data.data.ruleGroupCode,
+              ruleGroupDesc: response.data.data.ruleGroupDescription,
+            };
+            store.dispatch("rule/setRuleData", ruleData);
             ElMessage({
               message: '修改规则库成功',
               type: 'success',
@@ -120,8 +125,8 @@ export default {
         // },
       ],
       RuleRepositoryCode: {
-              required: true
-            }
+        required: true
+      }
     })
 
     const cancel = () => {
@@ -134,9 +139,9 @@ export default {
     }
 
     onMounted(() => {
-      updateRuleRepositoryForm.form.RuleRepositoryName = route.query.name
-      updateRuleRepositoryForm.form.RuleRepositoryCode = route.query.code
-      updateRuleRepositoryForm.form.RuleRepositoryDescription = route.query.description
+      updateRuleRepositoryForm.form.RuleRepositoryName = store.state.rule.ruleData.ruleGroupName
+      updateRuleRepositoryForm.form.RuleRepositoryCode = store.state.rule.ruleData.ruleGroupCode
+      updateRuleRepositoryForm.form.RuleRepositoryDescription = store.state.rule.ruleData.ruleGroupDesc
 
     })
 

@@ -67,11 +67,6 @@ export default {
         },
       });
     };
-
-    provide("id", id);
-    provide("ruleGroupName", name);
-    provide("ruleGroupCode", ruleGroupCode);
-    provide("ruleGroupDesc", description);
     return {
       message,
       handleTabClick,

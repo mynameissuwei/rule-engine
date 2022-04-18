@@ -37,7 +37,7 @@
     </el-main>
     <el-footer v-if="scene === 'update'">
       <el-button type="primary" size="small" @click="updateScriptRule">保存</el-button>
-      <el-button type="primary" size="small" plain @click="scene = 'preview'">取消</el-button>
+      <el-button type="primary" size="small" plain @click="cancel">取消</el-button>
     </el-footer>
   </el-container>
 </template>
@@ -49,6 +49,7 @@ import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
 import {Base64} from "js-base64";
 import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
+import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
@@ -107,10 +108,6 @@ export default {
 
     const scene = ref('preview');
 
-    const ruleGroupCode = route.query.ruleGroupCode
-    const ruleGroupName = route.query.ruleGroupName
-    const ruleGroupDesc = route.query.ruleGroupDesc
-
     onMounted(() => {
           getScriptRuleDataById();
           scene.value = route.query.scene;
@@ -141,14 +138,17 @@ export default {
           type: 'success',
         })
         router.push({
-          path: 'home',
-          query: {
-            ruleGroupCode: ruleGroupCode,
-            ruleGroupName: ruleGroupName,
-            ruleGroupDesc: ruleGroupDesc
-          }
+          path: 'home'
         })
+      })
+    }
 
+    const cancel = () => {
+      router.push({
+        path: 'home',
+        query: {
+          tab: 'ScriptRule'
+        },
       })
     }
 
@@ -158,7 +158,8 @@ export default {
       scene,
       updateScriptRule,
       codeBlock,
-      exampleValue
+      exampleValue,
+      cancel
     }
   }
 }
