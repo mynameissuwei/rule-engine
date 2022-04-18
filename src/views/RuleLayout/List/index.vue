@@ -101,7 +101,7 @@ import {useRouter,useRoute} from 'vue-router';
 import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
 import {useStore} from "vuex";
-import TestModal from "views/customrule/TestModal.vue"
+import TestModal from "views/CustomRule/TestModal.vue"
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
 export default {
   name: "RuleLayoutList",

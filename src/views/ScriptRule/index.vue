@@ -129,10 +129,10 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref, inject, provide} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
-import TestModal from "views/customrule/TestModal.vue"
+import TestModal from "views/CustomRule/TestModal.vue"
 import {useStore} from "vuex";
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
 import {ElMessage} from "@enn/element-plus";
