@@ -98,7 +98,7 @@
               type="text"
               icon="el-icon-delete"
               class="red"
-              @click="testScriptRule(scope.row.scriptCode, scope.row.ruleGroupCode)"
+              @click="testScriptRule(scope.row.scriptCode)"
           >测试
           </el-button
           >
@@ -117,23 +117,28 @@
         >
         </el-pagination>
       </div>
-    </div>
-  <RuleTest ref="ruleTest"
-            :rule-group-code="testRuleGroupCode"
-            :rule-layout-code="testRuleLayoutCode"></RuleTest>
+  </div>
+  <TestModal
+      v-if="testVisible"
+      :visible="testVisible"
+      :handleCancel="handleCancel"
+      :changeLeftEditor="getScriptParam"
+      :changeRightEditor="testScript"
+  ></TestModal>
 </template>
 
 <script>
 import {onMounted, reactive, ref, inject, provide} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
-import {changeRuleLayoutStatus} from "@/api/ruleLayout";
-import RuleTest from "views/RuleTest/index.vue";
+import TestModal from "views/customrule/TestModal.vue"
 import {useStore} from "vuex";
+import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
+import {ElMessage} from "@enn/element-plus";
 
 export default {
   name: "index.vue",
-  components: {RuleTest},
+  components: {TestModal},
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -272,17 +277,38 @@ export default {
     })
 
 
-    let testRuleGroupCode = ref('');
-    let testRuleLayoutCode = ref('');
-    let testScriptRule = (scriptCode, ruleGroupCode) => {
-      ruleTest.value.showRuleTest();
-      testRuleGroupCode.value = store.state.rule.ruleData.ruleGroupCode;
-      testRuleLayoutCode.value = scriptCode;
+    let testVisible = ref(false);
+    let scriptCodeRef = ref('');
+    let getScriptParam = async () => {
+      const res = await scriptRuleParam({
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
+        ruleLayoutCode: scriptCodeRef.value,
+        // ruleGroupCode: "FFyX88RJ",
+        // ruleLayoutCode: "20220406183002"
+      });
+      if(res.data.code !== '0'){
+        ElMessage.error(res.data.message);
+        return;
+      }
+      return JSON.parse(res.data.data);
+    }
+    let testScript = async (param) => {
+      const res = await scriptRuleTest(param);
+      if(res.data.code !== '0'){
+        return res.data
+      }
+      return res.data.data;
+    }
+    let testScriptRule = (scriptCode) => {
+      testVisible.value = true;
+      scriptCodeRef.value = scriptCode;
     }
 
-    let ruleTest = ref();
+    const handleCancel = () => {
+      testVisible.value = false;
+    };
     return {
-      ruleTest,
+      handleCancel,
       handleSizeChange,
       handleCurrentChange,
       scriptRuleTable,
@@ -296,10 +322,11 @@ export default {
       editScriptRule,
       batchDisPublishScriptRule,
       testScriptRule,
-      testRuleLayoutCode,
-      testRuleGroupCode,
       selectedRuleLayoutIds,
-      scriptRuleDetailBtn
+      scriptRuleDetailBtn,
+      testVisible,
+      getScriptParam,
+      testScript
     }
   }
 }

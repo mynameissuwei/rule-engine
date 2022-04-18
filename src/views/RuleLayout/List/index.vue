@@ -85,10 +85,13 @@
     </el-pagination>
   </el-card>
 
-  <RuleTest ref="ruleTest"
-            :rule-group-code="testRuleGroupCode"
-            :rule-layout-code="testRuleLayoutCode"></RuleTest>
-
+  <TestModal
+      v-if="testVisible"
+      :visible="testVisible"
+      :handleCancel="handleCancel"
+      :changeLeftEditor="getRuleLayoutParam"
+      :changeRightEditor="testLayout"
+  ></TestModal>
 
 </template>
 
@@ -97,14 +100,14 @@ import {reactive, onMounted, inject, ref} from 'vue';
 import {useRouter,useRoute} from 'vue-router';
 import {ElMessage} from "@enn/element-plus";
 import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
-import RuleTest from "views/RuleTest/index.vue";
 import {useStore} from "vuex";
+import TestModal from "views/customrule/TestModal.vue"
+import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
 export default {
   name: "RuleLayoutList",
-  components: {RuleTest},
+  components: {TestModal},
   setup(){
     const store = useStore()
-    let ruleGroupCode = '';
     onMounted( () => {
       const params = {
         pageNum: pagination.currentPage,
@@ -279,14 +282,38 @@ export default {
       })
     }
 
-    let testRuleGroupCode = ref('');
-    let testRuleLayoutCode = ref('');
-    let testRuleLayout = (ruleLayoutCode) => {
-      ruleTest.value.showRuleTest();
-      testRuleGroupCode.value = store.state.rule.ruleData.ruleGroupCode;
-      testRuleLayoutCode.value = ruleLayoutCode;
+
+
+    let testVisible = ref(false);
+    let scriptCodeRef = ref('');
+    let getRuleLayoutParam = async () => {
+      const res = await scriptRuleParam({
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
+        ruleLayoutCode: scriptCodeRef.value,
+        // ruleGroupCode: "FFyX88RJ",
+        // ruleLayoutCode: "20220406183002"
+      });
+      if(res.data.code !== '0'){
+        ElMessage.error(res.data.message);
+        return;
+      }
+      return JSON.parse(res.data.data);
     }
-    let ruleTest = ref();
+    let testLayout = async (param) => {
+      const res = await scriptRuleTest(param);
+      if(res.data.code !== '0'){
+        return res.data
+      }
+      return res.data.data;
+    }
+    let testRuleLayout = (ruleLayoutCode) => {
+      testVisible.value = true;
+      scriptCodeRef.value = ruleLayoutCode;
+    }
+
+    const handleCancel = () => {
+      testVisible.value = false;
+    };
     return {
       ruleLayoutQueryForm,
       ruleLayoutList,
@@ -306,8 +333,10 @@ export default {
       editRuleLayoutDetail,
       addRuleLayoutDetail,
       testRuleLayout,
-      testRuleGroupCode,
-      ruleTest
+      handleCancel,
+      getRuleLayoutParam,
+      testLayout,
+      testVisible
     }
   }
 }
