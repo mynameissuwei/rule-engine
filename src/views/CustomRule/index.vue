@@ -87,9 +87,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规则编号">
-        <template #default="scope">{{ scope.row.ruleCode }}</template>
-      </el-table-column>
+      <el-table-column prop="ruleCode" label="规则编号" />
       <el-table-column label="规则状态">
         <template #default="scope">
           <r-badge :color="scope.row.releaseStatus == 0 ? 'gray' : 'green'" />
@@ -98,21 +96,18 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="被调用次数" sortable prop="callCount">
-        <template #default="scope">
-          {{
-            scope.row.callCount == null ? "0/次" : scope.row.callCount + "/次"
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column label="最后修改人" align="center">
-        <template #default="scope">
-          {{ scope.row.updatedUserName }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="date" label="最后修改时间" sortable>
-        <template #default="scope">{{ scope.row.updatedDate }}</template>
-      </el-table-column>
+      <el-table-column
+        label="被调用次数"
+        sortable
+        prop="callCount"
+        :formatter="callCountFormatter"
+      />
+      <el-table-column
+        label="最后修改人"
+        prop="updatedUserName"
+        align="center"
+      />
+      <el-table-column prop="updatedDate" label="最后修改时间" sortable />
       <el-table-column label="操作" width="180" align="center">
         <template #default="scope">
           <span @click="handleEdit(scope.row)" class="actionClass">编辑</span>
@@ -154,7 +149,7 @@
       :visible="testVisible"
       :handleCancel="handleCancel"
       :changeLeftEditor="changeLeftEditor"
-      :changeRightEditor="upDateTestData"
+      :changeRightEditor="changeRightEditor"
     ></test-modal>
   </div>
 </template>
@@ -190,16 +185,28 @@ const testVisible = ref(false);
 
 const changeLeftEditor = async () => {
   const res = await fetchTestData(ruleIdRef.value);
-  return res.data;
+  const data = {
+    authorization: res.data.authorization,
+    ruleCode: res.data.ruleCode,
+    content: JSON.parse(res.data.content),
+  };
+  return data;
 };
 
 const changeRightEditor = async (leftEditValue) => {
-  const res = await upDateTestData(leftEditValue);
+  const res = await upDateTestData({
+    ...leftEditValue,
+    content: JSON.stringify(leftEditValue.content),
+  });
   return res.data;
 };
 
 const handleCancel = () => {
   testVisible.value = false;
+};
+
+const callCountFormatter = (row, column) => {
+  return row.callCount == null ? "0/次" : row.callCount + "/次";
 };
 
 // 获取表格数据

@@ -61,16 +61,7 @@
 </template>
 
 <script setup>
-import {
-  reactive,
-  onMounted,
-  defineProps,
-  ref,
-  defineEmits,
-  computed,
-  toRef,
-  watch,
-} from "vue";
+import { reactive, onMounted, defineProps, ref, defineEmits, watch } from "vue";
 import { fetchObjectList, fetchObjectDetail } from "@/api/customrule";
 import { Search } from "@element-plus/icons-vue";
 import FormilyForm from "./FormilyForm.vue";
