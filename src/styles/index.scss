@@ -14,7 +14,8 @@ body,
 }
 
 body {
-  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, 'microsoft yahei', arial, STHeiTi, sans-serif;
+  font-family: "PingFang SC", "Helvetica Neue", Helvetica, "microsoft yahei",
+    arial, STHeiTi, sans-serif;
 }
 
 a {
@@ -26,7 +27,7 @@ a {
     visibility: hidden;
     display: block;
     font-size: 0;
-    content: ' ';
+    content: " ";
     clear: both;
     height: 0;
   }
@@ -38,7 +39,9 @@ a {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
-  min-height: calc(100vh - 300px);
+  height: calc(100vh - 240px);
+  position: relative;
+  overflow: auto;
 
   .table-header {
     background: #f6f7fb !important;

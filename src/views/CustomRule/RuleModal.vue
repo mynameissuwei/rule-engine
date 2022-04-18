@@ -23,7 +23,7 @@
             @current-change="handleCurrentChange"
             :show-header="false"
           >
-            <el-table-column prop="objectName" label="objectName" width="200" />
+            <el-table-column prop="objectName" label="objectName" width="140" />
           </el-table>
         </div>
       </div>
@@ -75,6 +75,7 @@ import { fetchObjectList, fetchObjectDetail } from "@/api/customrule";
 import { Search } from "@element-plus/icons-vue";
 import FormilyForm from "./FormilyForm.vue";
 import { cloneDeep } from "lodash";
+import { useStore } from "vuex";
 
 const searchValueRef = ref("");
 const currentRowRef = ref(null);
@@ -90,6 +91,9 @@ const checkListRef = ref([]);
 const checkedForm = ref([]);
 const rules = reactive({});
 const formData = ref({});
+
+const store = useStore();
+const ruleData = store.state.rule.ruleData;
 
 watch(searchValueRef, (newVal, oldVal) => {
   let result = objectArrayRef.value.filter(
@@ -261,6 +265,7 @@ const getObjectList = async () => {
     pageNum: 1,
     timeAscOrDesc: "desc",
     status: 1,
+    ruleGroupCode: ruleData.ruleGroupCode,
   });
 
   objectListRef.value = data;

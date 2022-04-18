@@ -49,11 +49,7 @@
               >
                 + 添加规则
               </el-button>
-              <el-scrollbar
-                height="570px"
-                style="padding-right: 20px"
-                :always="true"
-              >
+              <el-scrollbar style="padding-right: 20px" :always="true">
                 <div class="rule-container" v-for="(item, index) in ruleSet">
                   <div class="rule-top">
                     <span class="rule-left">
@@ -514,7 +510,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  display: flex;
+  height: calc(100vh - 200px);
 }
 .rule-container {
   margin-top: 10px;
