@@ -84,6 +84,7 @@
           <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
         </template>
       </el-table-column>
+      <el-table-column prop="transferCount" label="被调用次数" min-width="100%"></el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
       <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
@@ -209,6 +210,7 @@ export default {
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
+        console.log(response,11)
             scriptRuleTable.tableData = response.data.data
             scriptRulePaginationConfig.current = response.data.pageNum || 1
             scriptRulePaginationConfig.pageSize = response.data.pageSize

@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="container">
     <el-header>
       <span style="float: left">新建脚本规则编排</span>
     </el-header>
