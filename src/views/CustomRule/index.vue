@@ -153,7 +153,8 @@
       v-if="testVisible"
       :visible="testVisible"
       :handleCancel="handleCancel"
-      :ruleId="ruleIdRef"
+      :changeLeftEditor="changeLeftEditor"
+      :changeRightEditor="upDateTestData"
     ></test-modal>
   </div>
 </template>
@@ -167,6 +168,7 @@ import { ElMessageBox, ElMessage } from "@enn/element-plus";
 import { MoreFilled } from "@element-plus/icons-vue";
 import TestModal from "./TestModal.vue";
 import { useStore } from "vuex";
+import { fetchTestData, upDateTestData } from "@/api/customrule";
 
 const listQuery = reactive({
   ruleName: "",
@@ -178,18 +180,33 @@ const listQuery = reactive({
 const tableData = ref([]);
 const pageTotal = ref(0);
 const router = useRouter();
-const testVisible = ref(false);
 const listLoading = ref(false);
 const multipleSelection = ref([]);
 const ruleIdRef = ref("");
 
 const store = useStore();
 
+const testVisible = ref(false);
+
+const changeLeftEditor = async () => {
+  const res = await fetchTestData(ruleIdRef.value);
+  return res.data;
+};
+
+const changeRightEditor = async (leftEditValue) => {
+  const res = await upDateTestData(leftEditValue);
+  return res.data;
+};
+
+const handleCancel = () => {
+  testVisible.value = false;
+};
+
 // 获取表格数据
 const getList = () => {
   listLoading.value = true;
 
-  // console.log(store.state.rule.ruleData, "state");
+  //
   fetchTableData({
     ...listQuery,
     ruleName: listQuery.ruleName.trim(),
@@ -203,12 +220,7 @@ const getList = () => {
 };
 
 const testFuc = () => {
-  console.log("debugger;");
   testVisible.value = true;
-};
-
-const handleCancel = () => {
-  testVisible.value = false;
 };
 
 const handleSelectionChange = (val) => {

@@ -21,9 +21,10 @@
         @click="onSubmit"
         v-loading="buttonLoading"
         size="small"
-        >确定</el-button
+        >测试</el-button
       >
-      <el-button @click="props.handleCancel" size="small">取 消</el-button>
+      <el-button @click="reset" size="small">重置</el-button>
+      <el-button @click="props.handleCancel" size="small">取消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -36,7 +37,6 @@ import "codemirror/theme/idea.css";
 import "codemirror/theme/material-palenight.css";
 import "codemirror/mode/javascript/javascript";
 
-import { fetchTestData, upDateTestData } from "@/api/customrule";
 import {
   defineProps,
   onMounted,
@@ -47,7 +47,12 @@ import {
   watch,
 } from "vue";
 
-const props = defineProps(["visible", "ruleId", "handleCancel"]);
+const props = defineProps([
+  "visible",
+  "handleCancel",
+  "changeLeftEditor",
+  "changeRightEditor",
+]);
 const emit = defineEmits(["change", "input"]);
 const buttonLoading = ref(false);
 
@@ -61,8 +66,7 @@ var leftEditor = {};
 var rightEditor = {};
 
 const getData = async () => {
-  const res = await fetchTestData(props.ruleId);
-  const { data } = res;
+  const data = await props.changeLeftEditor();
   leftContentRef.value = data;
 };
 
@@ -124,9 +128,14 @@ const initEditor = (editor, refDom, contentRef) => {
 };
 const onSubmit = async () => {
   buttonLoading.value = true;
-  const res = await upDateTestData(JSON.parse(leftContentRef.value));
-  rightContentRef.value = res.data;
+  const data = await props.changeRightEditor(JSON.parse(leftContentRef.value));
+  rightContentRef.value = data;
   buttonLoading.value = false;
+};
+
+const reset = async () => {
+  await getData();
+  rightContentRef.value = null;
 };
 
 onMounted(async () => {
