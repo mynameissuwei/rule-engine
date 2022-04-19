@@ -1,56 +1,84 @@
 <template>
-  <el-card class="box-card" :body-style="{padding: '0px', height:'574px'}">
-    <template #header>
-      <div class="card-header">
-
-        <el-form>
-          <el-row :gutter="24">
-            <el-col :span="7">
-              <el-form-item>
-                <el-input placeholder="脚本规则编排名称" v-model="ruleLayoutQueryForm.name"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="7">
-              <el-form-item>
-                <el-input placeholder="最后修改人关键词" v-model="ruleLayoutQueryForm.keyword"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <el-form-item>
-                <el-select  placeholder="状态" v-model="ruleLayoutQueryForm.status">
-                  <el-option value="PUBLISHED" label="发布"></el-option>
-                  <el-option value="UNPUBLISHED" label="未发布"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4" style="margin-left: auto">
-              <el-button type="primary" size="small" @click="searchRuleLayout">查询</el-button>
-              <el-button type="primary" size="small" plain @click="resetForm">重置</el-button>
-            </el-col>
-          </el-row>
-
-        </el-form>
-      </div>
-    </template>
-    <el-row style="margin-top:10px">
-      <el-col :span="18" style="margin-left:10px">脚本规则编排（{{pagination.total}}）</el-col>
-      <el-col :span="5" style="margin-left: auto">
-        <el-button type="primary" size="small" @click="addRuleLayoutDetail">新建</el-button>
-        <el-button type="primary" size="small" plain @click="batchDisableRuleLayout"
-                   :disabled="selectedRuleLayoutIds.length===0">停用</el-button>
-        <el-button type="primary" size="small" plain @click="batchPublishRuleLayout"
-                   :disabled="selectedRuleLayoutIds.length===0">发布</el-button>
+  <div class="container">
+    <el-form>
+      <el-row class="handle-box" :gutter="20">
+        <el-col :span="7">
+          <el-input
+              v-model="ruleLayoutQueryForm.name"
+              placeholder="脚本规则编排名称"
+              style="width: 100%;"
+              clearable>
+          </el-input>
+        </el-col>
+        <el-col :span="7">
+          <el-input
+              v-model="ruleLayoutQueryForm.keyword"
+              placeholder="最后修改人关键词"
+              clearable>
+          </el-input>
+        </el-col>
+        <el-col :span="7">
+          <el-select placeholder="状态" v-model="ruleLayoutQueryForm.status">
+            <el-option value="PUBLISHED" label="发布"></el-option>
+            <el-option value="UNPUBLISHED" label="未发布"></el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="3" style="text-align: right">
+          <el-button
+              type="primary"
+              size="small"
+              @click="searchRuleLayout">
+            查询
+          </el-button>
+          <el-button
+              size="small"
+              @click="resetForm">
+            重置
+          </el-button>
+        </el-col>
+      </el-row>
+    </el-form>
+    <el-divider></el-divider>
+    <el-row class="row-container">
+      <el-col :span="12">脚本规则编排（{{ pagination.total }}）</el-col>
+      <el-col :span="12" class="right">
+        <el-button-group>
+          <el-button type="primary" size="small" @click="addRuleLayoutDetail">新建</el-button>
+          <el-button class="stop"
+                     size="small"
+                     @click="batchDisableRuleLayout"
+                     :disabled="selectedRuleLayoutIds.length===0">
+            停用
+          </el-button>
+          <el-button class="publish"
+                     size="small"
+                     @click="batchPublishRuleLayout"
+                     :disabled="selectedRuleLayoutIds.length===0">
+            发布
+          </el-button>
+        </el-button-group>
       </el-col>
     </el-row>
-    <el-table :data="ruleLayoutList" style="margin-top: 10px;width: 100%;align:center" @selection-change="handleSelectionChange" height="400px">
-      <el-table-column type="selection" width="55" />
+
+
+    <el-table :data="ruleLayoutList" style="margin-top: 10px;width: 100%;align:center"
+              @selection-change="handleSelectionChange" height="400px">
+      <el-table-column type="selection" width="55"/>
       <el-table-column label="规则编排名称" prop="name">
         <template #default="scope">
-          <span style="margin-left: 10px;color: #409EFF" @click="previewRuleLayoutDetail(scope.row.id)">{{ scope.row.name }}</span>
+          <span style="margin-left: 10px;color: #409EFF"
+                @click="previewRuleLayoutDetail(scope.row.id)">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="规则编排code" prop="code"></el-table-column>
-      <el-table-column label="状态" prop="statusName"></el-table-column>
+      <el-table-column label="状态" prop="statusName">
+        <template #default="scope">
+          <r-badge :color="scope.row.status == 'UNPUBLISHED' ? 'gray' : 'green'" />
+          <span>
+            {{ scope.row.status == 'UNPUBLISHED' ? "未发布" : "已发布" }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="是否正在使用" prop="isUsing"></el-table-column>
       <el-table-column label="最后修改人" prop="lastModify"></el-table-column>
       <el-table-column label="最后修改时间" prop="lastModifyTime"></el-table-column>
@@ -63,8 +91,12 @@
           >
             编辑
           </el-button>
-          <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)" v-if="scope.row.status !== 'PUBLISHED'">发布</el-button>
-          <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)" v-if="scope.row.status !== 'UNPUBLISHED'">停用</el-button>
+          <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)"
+                     v-if="scope.row.status !== 'PUBLISHED'">发布
+          </el-button>
+          <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)"
+                     v-if="scope.row.status !== 'UNPUBLISHED'">停用
+          </el-button>
           <el-button type="text" size="small" @click="deleteRuleLayout(scope.row.id)">删除</el-button>
           <el-button type="text" size="small" @click="testRuleLayout(scope.row.code)">测试</el-button>
 
@@ -83,32 +115,32 @@
         style="display:flex;justify-content: flex-end;align-items: center; margin-top: 10px"
     >
     </el-pagination>
-  </el-card>
-
-  <TestModal
-      v-if="testVisible"
-      :visible="testVisible"
-      :handleCancel="handleCancel"
-      :changeLeftEditor="getRuleLayoutParam"
-      :changeRightEditor="testLayout"
-  ></TestModal>
-
+    <TestModal
+        v-if="testVisible"
+        :visible="testVisible"
+        :handleCancel="handleCancel"
+        :changeLeftEditor="getRuleLayoutParam"
+        :changeRightEditor="testLayout"
+    ></TestModal>
+  </div>
 </template>
 
 <script>
 import {reactive, onMounted, inject, ref} from 'vue';
-import {useRouter,useRoute} from 'vue-router';
+import {useRouter, useRoute} from 'vue-router';
 import {ElMessage} from "@enn/element-plus";
-import { pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout } from '@/api/ruleLayout'
+import {pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout} from '@/api/ruleLayout'
 import {useStore} from "vuex";
 import TestModal from "views/CustomRule/TestModal.vue"
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
+import rBadge from "@/components/rBadge.vue"
+
 export default {
   name: "RuleLayoutList",
-  components: {TestModal},
-  setup(){
+  components: {TestModal,rBadge},
+  setup() {
     const store = useStore()
-    onMounted( () => {
+    onMounted(() => {
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,
@@ -130,7 +162,7 @@ export default {
     }
 
     const convertToRuleLayoutList = (data) => {
-      if(!data){
+      if (!data) {
         return []
       }
       return data.map(layout => {
@@ -217,7 +249,7 @@ export default {
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
       selectedRuleLayoutIds.length = 0;
-      selectedRuleLayoutIds.push(...layouts.map(layout=>layout.id))
+      selectedRuleLayoutIds.push(...layouts.map(layout => layout.id))
     }
 
     const router = useRouter();
@@ -274,14 +306,13 @@ export default {
 
     const deleteRuleLayout = (id) => {
       removeRuleLayout({id}).then(res => {
-        if(res.data.code != "0"){
+        if (res.data.code != "0") {
           ElMessage.error(res.data.message)
-        }else{
+        } else {
           searchRuleLayout();
         }
       })
     }
-
 
 
     let testVisible = ref(false);
@@ -293,7 +324,7 @@ export default {
         // ruleGroupCode: "FFyX88RJ",
         // ruleLayoutCode: "20220406183002"
       });
-      if(res.data.code !== '0'){
+      if (res.data.code !== '0') {
         ElMessage.error(res.data.message);
         return;
       }
@@ -301,7 +332,7 @@ export default {
     }
     let testLayout = async (param) => {
       const res = await scriptRuleTest(param);
-      if(res.data.code !== '0'){
+      if (res.data.code !== '0') {
         return res.data
       }
       return res.data.data;
@@ -342,14 +373,24 @@ export default {
 }
 </script>
 
-<style scoped>
-
-.box-card {
-  margin-left: 10px;
+<style scoped lang="scss">
+.handle-box {
+  margin: 21px 24px 22px 21px;
 }
+.row-container {
+  margin-bottom: 19px;
 
-.el-card.is-always-shadow.box-card {
-  margin-right: 10px;
+  .right {
+    text-align: right;
+
+    .stop {
+      margin: 0px 9px;
+    }
+
+    .publish {
+      margin: 0px 9px;
+    }
+  }
 }
 
 .el-table thead {

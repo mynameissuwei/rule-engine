@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div style="margin: 100px 400px">
+    <div style="margin: 50px 200px">
       <!--新建规则库表单-->
       <el-form
           :ref="inputScriptRuleForm.ref"
@@ -161,6 +161,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.container {
+  height: calc(100vh - 100px);
+}
 </style>

@@ -215,6 +215,9 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  height: calc(100vh - 50px);
+}
 .el-header,
 .el-footer {
   background-color: #ffffff;

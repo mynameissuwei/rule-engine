@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 实体对象查询输入框-->
     <el-form>
-      <el-row class="handle-box" :gutter="40">
+      <el-row class="handle-box" :gutter="20">
         <el-col :span="7">
           <el-input
               v-model="entityObjectForm.objectName"

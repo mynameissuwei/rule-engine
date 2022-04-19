@@ -196,6 +196,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.container {
+  height: calc(100vh - 50px);
+}
 .mask {
   width: 1045px;
   height: 600px;

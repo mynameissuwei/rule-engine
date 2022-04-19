@@ -233,6 +233,9 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  height: calc(100vh - 50px);
+}
 
 .mask{
   width:1045px;

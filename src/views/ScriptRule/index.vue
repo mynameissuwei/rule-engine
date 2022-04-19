@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 脚本规则查询输入框-->
     <el-form>
-      <el-row class="handle-box" :gutter="40">
+      <el-row class="handle-box" :gutter="20">
         <el-col :span="7">
           <el-input
               v-model="scriptRuleForm.scriptName"
@@ -66,7 +66,9 @@
         :data="scriptRuleTable.tableData"
         style="margin-top: 10px;width: 100%;align:center"
         @selection-change="handleSelectionChange"
-        height="280px"
+        max-height="210"
+        :header-cell-style="{ background: '#F6F7FB' }"
+        highlight-current-row
         @cell-click="scriptRuleDetailBtn"
     >
       <el-table-column type="selection" width="55"/>
@@ -80,11 +82,13 @@
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
-          <span v-if="scope.row.ruleScriptStatus === 'UNPUBLISHED'">未发布</span>
-          <span v-if="scope.row.ruleScriptStatus === 'PUBLISHED'">发布</span>
+          <r-badge :color="scope.row.ruleScriptStatus == 'UNPUBLISHED' ? 'gray' : 'green'" />
+          <span>
+            {{ scope.row.ruleScriptStatus == 'UNPUBLISHED' ? "未发布" : "已发布" }}
+          </span>
         </template>
       </el-table-column>
-      <el-table-column prop="transferCount" label="被调用次数" min-width="100%"></el-table-column>
+      <el-table-column prop="transferCount" label="被调用次数" min-width="100%" :formatter="countFormatter"></el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
       <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
@@ -136,10 +140,11 @@ import TestModal from "views/CustomRule/TestModal.vue"
 import {useStore} from "vuex";
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
 import {ElMessage} from "@enn/element-plus";
+import rBadge from "@/components/rBadge.vue"
 
 export default {
   name: "index.vue",
-  components: {TestModal},
+  components: {TestModal,rBadge},
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -265,6 +270,11 @@ export default {
       getPageScriptRuleData()
     }
 
+
+    const countFormatter = (row, column) => {
+      return row.callCount == null ? "0次" : row.callCount + "次";
+    };
+
     const batchDisPublishScriptRule = () => {
       const params = {
         list: selectedRuleLayoutIds,
@@ -328,7 +338,8 @@ export default {
       scriptRuleDetailBtn,
       testVisible,
       getScriptParam,
-      testScript
+      testScript,
+      countFormatter
     }
   }
 }
@@ -338,7 +349,6 @@ export default {
 .handle-box {
   margin: 21px 24px 22px 21px;
 }
-
 .row-container {
   margin-bottom: 19px;
 

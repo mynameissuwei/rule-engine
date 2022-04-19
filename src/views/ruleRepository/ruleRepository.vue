@@ -43,8 +43,6 @@
         min-width="200%"
       >
       </el-table-column>
-      <el-table-column prop="role" label="角色" min-width="100%" align="center">
-      </el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
@@ -203,4 +201,8 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container{
+  height: calc(100vh - 100px);
+}
+</style>
