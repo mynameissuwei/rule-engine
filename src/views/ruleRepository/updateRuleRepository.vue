@@ -155,5 +155,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.container{
+  height: calc(100vh - 100px);
+}
 </style>

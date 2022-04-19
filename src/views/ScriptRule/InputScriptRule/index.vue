@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div style="margin: 100px 400px">
+    <div style="margin: 50px 200px">
       <!--新建规则库表单-->
       <el-form
           :ref="inputScriptRuleForm.ref"
@@ -60,13 +60,16 @@
         <el-form-item label="脚本代码:" prop="scriptContent">
           <code-block ref="codeBlock" :script-content="inputScriptRuleForm.form.scriptContent" style="margin-left: 20px"></code-block>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" style="margin: 20px" @click="addScriptRuleBtn">确认</el-button>
-          <el-button @click="cancelAddScriptRule">取消</el-button>
-        </el-form-item>
       </el-form>
     </div>
   </div>
+  <el-footer class="footerContainer">
+    <el-button-group>
+      <el-button type="primary" size="small" @click="addScriptRuleBtn">确认</el-button>
+      <el-button size="small" plain @click="cancelAddScriptRule" style="margin: 0px 20px">取消
+      </el-button>
+    </el-button-group>
+  </el-footer>
 </template>
 
 <script>
@@ -162,6 +165,15 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.container {
+  height: calc(100vh - 100px);
+}
+.el-header,
+.el-footer {
+  background-color: #FFFFFF;
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 60px;
+}
 </style>

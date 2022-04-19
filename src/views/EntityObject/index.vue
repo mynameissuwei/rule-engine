@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 实体对象查询输入框-->
     <el-form>
-      <el-row class="handle-box" :gutter="40">
+      <el-row class="handle-box" :gutter="20">
         <el-col :span="7">
           <el-input
               v-model="entityObjectForm.objectName"
@@ -56,10 +56,10 @@
     <!--实体对象表-->
     <el-table
         :data="entityObjectTable.tableData"
-        :border="entityObjectTable.border"
-        :header-cell-style="{'text-align': 'center'}"
         style="width: 100%"
-        height="280px"
+        height="210"
+        :header-cell-style="{ background: '#F6F7FB' }"
+        highlight-current-row
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"/>
@@ -133,7 +133,6 @@ export default {
     let entityObjectTable = reactive({
       ref: true,
       tableData: [],
-      border: true,
       show: true,
       loading: false,
     })
