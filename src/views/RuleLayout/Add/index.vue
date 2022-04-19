@@ -50,15 +50,14 @@
         </el-form-item>
       </el-form>
     </el-main>
-    <el-footer>
-      <el-button type="primary" size="small" @click="addRuleLayout"
-        >保存</el-button
-      >
-      <el-button type="primary" size="small" plain @click="cancelAddRuleLayout"
-        >取消</el-button
-      >
-    </el-footer>
   </el-container>
+  <el-footer class="footerContainer">
+    <el-button-group>
+      <el-button type="primary" size="small" @click="addRuleLayout">保存</el-button>
+      <el-button size="small" plain @click="cancelAddRuleLayout" style="margin: 0px 20px">取消
+      </el-button>
+    </el-button-group>
+  </el-footer>
 </template>
 
 <script>

@@ -59,7 +59,7 @@
           prop="fieldName"
           label="字段名称"
           min-width="100%">
-        <template #default="scope" >
+        <template #default="scope">
           <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldName">
           </el-input>
         </template>
@@ -68,7 +68,7 @@
           prop="fieldCode"
           label="对象字段代码"
           min-width="100%">
-        <template #default="scope" >
+        <template #default="scope">
           <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldCode">
           </el-input>
         </template>
@@ -78,26 +78,26 @@
           prop="fieldType"
           label="对象字段类型"
           min-width="100%">
-        <template #default="scope" >
-        <el-select v-model="newEntityObjectTable.tableData[scope.row.index].fieldType">
-          <el-option
-              label="String"
-              value="java.lang.String"
-          >
-          </el-option>
-          <el-option
-              label="Integer"
-              value="java.lang.Integer"
-          >
-          </el-option>
-        </el-select>
+        <template #default="scope">
+          <el-select v-model="newEntityObjectTable.tableData[scope.row.index].fieldType">
+            <el-option
+                label="String"
+                value="java.lang.String"
+            >
+            </el-option>
+            <el-option
+                label="Integer"
+                value="java.lang.Integer"
+            >
+            </el-option>
+          </el-select>
         </template>
       </el-table-column>
       <el-table-column
           prop="objectFieldEnumeration"
           label="对象字段枚举值（用分号隔开）"
           min-width="200%">
-        <template #default="scope" >
+        <template #default="scope">
           <el-input v-model="newEntityObjectTable.tableData[scope.row.index].fieldEnum">
           </el-input>
         </template>
@@ -118,20 +118,25 @@
       </el-table-column>
     </el-table>
     <div class="pagination_box">
-<!--      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="newEntityObjectPaginationConfig.current"
-          :page-sizes="newEntityObjectPaginationConfig.pageSizes"
-          :page-size="newEntityObjectPaginationConfig.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="newEntityObjectPaginationConfig.total"
-      >
-      </el-pagination>-->
-      <el-button type="primary" size="small" @click="addEntityObjectBtn" style="margin-right: 10px">保存</el-button>
-      <el-button type="primary" size="small" plain @click="cancelAdd" style="float: right; margin-right: 300px">取消</el-button>
+      <!--      <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="newEntityObjectPaginationConfig.current"
+                :page-sizes="newEntityObjectPaginationConfig.pageSizes"
+                :page-size="newEntityObjectPaginationConfig.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="newEntityObjectPaginationConfig.total"
+            >
+            </el-pagination>-->
     </div>
   </div>
+  <el-footer class="footerContainer">
+    <el-button-group>
+      <el-button type="primary" size="small" @click="addEntityObjectBtn">保存</el-button>
+      <el-button size="small" plain @click="cancelAdd" style="margin: 0px 20px">取消
+      </el-button>
+    </el-button-group>
+  </el-footer>
 </template>
 
 <script>
@@ -181,21 +186,21 @@ export default {
       })
     }
 
-/*    //新建实体对象分页对象
-    let newEntityObjectPaginationConfig = reactive({
-      pageSize: 10,
-      total: newEntityObjectTable.tableData.length,
-      pageSizes: [10, 20, 30, 40],
-      current: 1
-    })
-    // 分页函数
-    function handleSizeChange(pageSize) {
-      newEntityObjectPaginationConfig.pageSize = pageSize
-    }
+    /*    //新建实体对象分页对象
+        let newEntityObjectPaginationConfig = reactive({
+          pageSize: 10,
+          total: newEntityObjectTable.tableData.length,
+          pageSizes: [10, 20, 30, 40],
+          current: 1
+        })
+        // 分页函数
+        function handleSizeChange(pageSize) {
+          newEntityObjectPaginationConfig.pageSize = pageSize
+        }
 
-    function handleCurrentChange(pageNumber) {
-      newEntityObjectPaginationConfig.current = pageNumber
-    }*/
+        function handleCurrentChange(pageNumber) {
+          newEntityObjectPaginationConfig.current = pageNumber
+        }*/
     //实体对象表单校验
     const rules = reactive({
       newObjectName: [
@@ -243,9 +248,10 @@ export default {
 
       })
     }
+
     const cancelAdd = () => {
       router.push({
-        path:"home",
+        path: "home",
         query: {
           ...route.query
         }
@@ -275,8 +281,16 @@ export default {
 .container {
   height: calc(100vh - 100px);
 }
-.pagination_box{
+
+.pagination_box {
   margin-top: 10px;
   float: right;
+}
+.el-header,
+.el-footer {
+  background-color: #FFFFFF;
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 60px;
 }
 </style>

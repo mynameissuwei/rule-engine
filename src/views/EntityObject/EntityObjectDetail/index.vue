@@ -97,11 +97,14 @@
         </el-table-column>
       </el-table>
     </el-main>
-    <el-footer v-if="scene === 'update'">
-      <el-button type="primary" size="small" @click="">保存</el-button>
-      <el-button type="primary" size="small" plain @click="scene = 'preview'">取消</el-button>
-    </el-footer>
   </el-container>
+  <el-footer class="footerContainer" v-if="scene === 'update'">
+    <el-button-group>
+      <el-button type="primary" size="small" @click="">保存</el-button>
+      <el-button size="small" plain @click="" style="margin: 0px 20px">取消
+      </el-button>
+    </el-button-group>
+  </el-footer>
 </template>
 
 <script>
