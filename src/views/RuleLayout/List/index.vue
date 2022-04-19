@@ -59,10 +59,8 @@
         </el-button-group>
       </el-col>
     </el-row>
-
-
     <el-table :data="ruleLayoutList" style="margin-top: 10px;width: 100%;align:center"
-              @selection-change="handleSelectionChange" height="400px">
+              @selection-change="handleSelectionChange" height="210">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="规则编排名称" prop="name">
         <template #default="scope">
