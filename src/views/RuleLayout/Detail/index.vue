@@ -181,9 +181,11 @@ export default {
       const edges = graphData.edges;
       const nodes = graphData.nodes;
       if(nodes.length == 0){
+        ElMessage.error("没有要保存的节点")
         throw new Error("没有要保存的节点");
       }
       if(nodes.length !== 1 && nodes.length - edges.length > 1){
+        ElMessage.error("节点没有闭合")
         throw new Error("节点没有闭合");
       }
 

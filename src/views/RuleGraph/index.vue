@@ -56,7 +56,8 @@
 
 <script>
 import {onMounted, reactive, ref, toRefs, inject, watch, computed} from 'vue';
-import {useRoute} from 'vue-router'
+import {useRoute} from 'vue-router';
+import {useStore} from "vuex";
 import {
   getTextWidth, initGraph,
   OPERATION_TYPE, generateNodePorts, generateNodeRemoveTools, generateEdgeRemoveTools
@@ -86,8 +87,8 @@ export default {
 
     let graph;
 
-    const route = useRoute();
-    let ruleGroupCode = route.query.ruleGroupCode;
+    const store = useStore();
+    let ruleGroupCode = store.state.rule.ruleData.ruleGroupCode;
     let rulesData = reactive([])
     const ruleName = ref('')
     //获取脚本规则列表
@@ -205,6 +206,7 @@ export default {
 
     const selectedRules = reactive([])
     const handleSelectionChange = (rules) => {
+      selectedRules.length = 0;
       selectedRules.push(...rules);
     }
 

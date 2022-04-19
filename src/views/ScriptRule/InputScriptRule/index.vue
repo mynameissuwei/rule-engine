@@ -111,12 +111,13 @@ export default {
     let codeBlock = ref();
     const addScriptRuleBtn = () => {
       let scriptParam = codeBlock.value.getScriptParam();
+      let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
       let requestBody = {
         programType: 1,
         ruleGroupCode: inputScriptRuleForm.form.ruleGroupCode,
         sceneDesc: inputScriptRuleForm.form.sceneDesc,
         scriptCode: inputScriptRuleForm.form.scriptCode,
-        scriptContent: Base64.encode(inputScriptRuleForm.form.scriptContent),
+        scriptContent: Base64.encode(scriptContent),
         scriptName: inputScriptRuleForm.form.scriptName,
         ruleScriptStatus: "UNPUBLISHED",
         exampleValue: JSON.stringify(scriptParam)
