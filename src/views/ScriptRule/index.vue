@@ -96,7 +96,7 @@
           <el-button
               type="text"
               icon="el-icon-edit"
-              @click="editScriptRule(scope.row.id)"
+              @click="editScriptRule(scope.row)"
           >编辑
           </el-button>
           <el-button
@@ -249,11 +249,15 @@ export default {
     }
 
     //编辑脚本规则
-    const editScriptRule = (id) => {
+    const editScriptRule = (row) => {
+      if(row.ruleScriptStatus==="PUBLISHED"){
+        ElMessage.info("已发布的脚本规则不能编辑");
+        return
+      }
       router.push({
         path: 'scriptRuleDetail',
         query: {
-          scriptRuleId: id,
+          scriptRuleId: row.id,
           scene: 'update'
         }
       })

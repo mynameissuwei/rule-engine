@@ -85,7 +85,7 @@
           <el-button
               type="text"
               size="small"
-              @click.prevent="editRuleLayoutDetail(scope.row.id)"
+              @click.prevent="editRuleLayoutDetail(scope.row)"
           >
             编辑
           </el-button>
@@ -262,11 +262,16 @@ export default {
       })
     }
 
-    const editRuleLayoutDetail = (ruleLayoutId) => {
+    const editRuleLayoutDetail = (row) => {
+      console.log("row",row)
+      if(row.status==="PUBLISHED"){
+        ElMessage.info("已发布的脚本规则编排不能编辑");
+        return
+      }
       router.push({
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
-          ruleLayoutId: ruleLayoutId,
+          ruleLayoutId: row.id,
           scene: 'update',
           ...route.query
         }
