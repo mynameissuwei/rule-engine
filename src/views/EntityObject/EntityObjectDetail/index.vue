@@ -116,7 +116,6 @@
 <script>
 import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {queryScriptRuleById} from "@/api/scriptRule";
 import {addOrUpdateEntityObject, checkEntityObjectDetail} from "@/api/entityObject";
 import {useStore} from "vuex";
 import {ElMessage} from "@enn/element-plus";

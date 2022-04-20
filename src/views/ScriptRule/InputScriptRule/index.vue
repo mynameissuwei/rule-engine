@@ -75,7 +75,7 @@
 <script>
 import {reactive, onMounted, ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
-import {addScriptRule} from "../../../api/scriptRule";
+import {addScriptRule} from "@/api/scriptRule";
 import {Base64} from "js-base64";
 import {randomRuleLayoutCode} from "@/api/ruleLayout";
 import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";

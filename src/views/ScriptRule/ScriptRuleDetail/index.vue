@@ -52,7 +52,6 @@ import {queryScriptRuleById, updateScriptRuleById} from "@/api/scriptRule";
 import {ElMessage} from "@enn/element-plus";
 import {Base64} from "js-base64";
 import CodeBlock from "views/ScriptRule/CodeBlock/index.vue";
-import {useStore} from "vuex";
 
 export default {
   name: "index.vue",
@@ -122,7 +121,6 @@ export default {
     const updateScriptRule = () => {
       let scriptParam = codeBlock.value.getScriptParam();
       let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
-
       let requestBody = {
         id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
