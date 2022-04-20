@@ -278,7 +278,7 @@ export default {
         path: 'entityObjectDetail',
         query: {
           entityObjectId:id,
-          scene: 'preview'
+          scene: 'update'
         }
       })
     }

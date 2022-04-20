@@ -20,11 +20,13 @@
           <el-input v-model="entityObjectForm.form.ObjectDesc" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="对象下字段" prop="newEntityObjectTable" >
+        <el-form-item label="对象下字段" prop="newEntityObjectTable">
         </el-form-item>
       </el-form>
       <div>
-        <el-button :disabled="scene === 'preview'" type="primary" style="float: right;" @click="addNewEntityObjectTable">添加行</el-button>
+        <el-button :disabled="scene === 'preview'" type="primary" style="float: right;"
+                   @click="addEntityObjectTable">添加行
+        </el-button>
       </div>
       <el-table
           :data="updateEntityObjectTable.tableData"
@@ -37,8 +39,9 @@
             prop="fieldName"
             label="字段名称"
             min-width="100%">
-          <template #default="scope" >
-            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldName">
+          <template #default="scope">
+            <el-input :disabled="scene === 'preview'"
+                      v-model="updateEntityObjectTable.tableData[scope.row.index].fieldName">
             </el-input>
           </template>
         </el-table-column>
@@ -46,8 +49,9 @@
             prop="fieldCode"
             label="对象字段代码"
             min-width="100%">
-          <template #default="scope" >
-            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldCode">
+          <template #default="scope">
+            <el-input :disabled="scene === 'preview'"
+                      v-model="updateEntityObjectTable.tableData[scope.row.index].fieldCode">
             </el-input>
           </template>
         </el-table-column>
@@ -56,8 +60,9 @@
             prop="fieldType"
             label="对象字段类型"
             min-width="100%">
-          <template #default="scope" >
-            <el-select :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldType">
+          <template #default="scope">
+            <el-select :disabled="scene === 'preview'"
+                       v-model="updateEntityObjectTable.tableData[scope.row.index].fieldType">
               <el-option
                   label="String"
                   value="java.lang.String"
@@ -75,8 +80,9 @@
             prop="objectFieldEnumeration"
             label="对象字段枚举值（用分号隔开）"
             min-width="200%">
-          <template #default="scope" >
-            <el-input :disabled="scene === 'preview'" v-model="updateEntityObjectTable.tableData[scope.row.index].fieldEnum">
+          <template #default="scope">
+            <el-input :disabled="scene === 'preview'"
+                      v-model="updateEntityObjectTable.tableData[scope.row.index].fieldEnum">
             </el-input>
           </template>
         </el-table-column>
@@ -100,8 +106,8 @@
   </el-container>
   <el-footer class="footerContainer" v-if="scene === 'update'">
     <el-button-group>
-      <el-button type="primary" size="small" @click="">保存</el-button>
-      <el-button size="small" plain @click="" style="margin: 0px 20px">取消
+      <el-button type="primary" size="small" @click="addOrUpdateEntityObjectBtn">保存</el-button>
+      <el-button size="small" plain @click="cancel" style="margin: 0px 20px">取消
       </el-button>
     </el-button-group>
   </el-footer>
@@ -111,8 +117,9 @@
 import {onMounted, reactive, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {queryScriptRuleById} from "@/api/scriptRule";
-import {checkEntityObjectDetail} from "@/api/entityObject";
+import {addOrUpdateEntityObject, checkEntityObjectDetail} from "@/api/entityObject";
 import {useStore} from "vuex";
+import {ElMessage} from "@enn/element-plus";
 
 export default {
   name: "index.vue",
@@ -133,25 +140,23 @@ export default {
     })
     const rules = reactive({
       ObjectName: [
+        {required: true, message: "请输入实体对象名称", trigger: "blur"},
         {
-          required: true,
-          message: 'Please input rule name',
-          trigger: 'blur',
-        }
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
       ],
       ObjectCode: [
         {
           required: true,
           message: 'Please input rule name',
           trigger: 'blur',
-        }
-      ],
-      ObjectDesc: [
-        {
-          required: true,
-          message: 'Please input rule name',
-          trigger: 'blur',
-        }
+        }, {
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
       ],
       newEntityObjectTable: [
         {
@@ -161,38 +166,87 @@ export default {
       ]
     })
     const entityObjectForm = reactive({
-      form:{
-        ObjectName:'',
-        ObjectCode:'',
-        ObjectDesc:''
+      form: {
+        objectName: '',
+        objectCode: '',
+        objectDesc: ''
       }
     })
 
-    const scene = ref('preview');
+    //添加行
+    function addEntityObjectTable() {
+      updateEntityObjectTable.tableData.push({
+        index: updateEntityObjectTable.tableData.length,
+        fieldName: '',
+        fieldCode: '',
+        fieldType: '',
+        fieldEnum: ''
+      })
+    }
 
-    const getEntityObjectDataById = (scope) => {
+    const scene = ref('update');
+
+    const getEntityObjectDataById = () => {
+      let count = 0;
       let id = route.query.entityObjectId
       checkEntityObjectDetail(id).then(response => {
+        console.log(response,1111)
         entityObjectForm.form.ObjectName = response.data.data.objectName
         entityObjectForm.form.ObjectCode = response.data.data.objectCode
         entityObjectForm.form.ObjectDesc = response.data.data.objectDesc
-
+        updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldResVoList.map(field =>{
+          field.index = count++;
+          return field
+        })
       })
     }
     const handleDelete = (index) => {
-      updateEntityObjectTable.tableData.splice(index)
+      updateEntityObjectTable.tableData.splice(index,1)
+    }
+
+    const addOrUpdateEntityObjectBtn = () => {
+      let requestBody = {
+        id:route.query.entityObjectId,
+        objectCode: entityObjectForm.form.objectCode,
+        objectDesc: entityObjectForm.form.objectDesc,
+        objectName: entityObjectForm.form.objectName,
+        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
+        ruleObjectFieldReqVoList: updateEntityObjectTable.tableData
+      }
+      addOrUpdateEntityObject(requestBody).then((response) =>{
+        if (response.data.code !== '0') {
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          message: '更新实体对象成功',
+          type: 'success',
+        })
+        router.push({
+          path: 'home'
+        })
+      })
+    }
+
+    const cancel = () => {
+      router.push({
+        path: 'home',
+      })
     }
 
     onMounted(() => {
-      getEntityObjectDataById()
+          getEntityObjectDataById()
         }
     )
-    return{
+    return {
       scene,
       entityObjectForm,
       rules,
       updateEntityObjectTable,
-      handleDelete
+      handleDelete,
+      addOrUpdateEntityObjectBtn,
+      cancel,
+      addEntityObjectTable
     }
   }
 }
@@ -202,6 +256,7 @@ export default {
 .container {
   height: calc(100vh - 50px);
 }
+
 .mask {
   width: 1045px;
   height: 600px;
@@ -222,7 +277,7 @@ export default {
   background-color: #FFFFFF;
   color: var(--el-text-color-primary);
   margin: 15px;
-  height:700px
+  height: 700px
 }
 
 .edit-button {

@@ -77,7 +77,8 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="是否正在使用" prop="isUsing"></el-table-column>
+      <el-table-column label="被调用次数" prop="transferCount" :formatter="countFormatter">
+      </el-table-column>
       <el-table-column label="最后修改人" prop="lastModify"></el-table-column>
       <el-table-column label="最后修改时间" prop="lastModifyTime"></el-table-column>
       <el-table-column label="操作" prop="operation">
@@ -85,7 +86,7 @@
           <el-button
               type="text"
               size="small"
-              @click.prevent="editRuleLayoutDetail(scope.row.id)"
+              @click.prevent="editRuleLayoutDetail(scope.row)"
           >
             编辑
           </el-button>
@@ -262,12 +263,16 @@ export default {
       })
     }
 
-    const editRuleLayoutDetail = (ruleLayoutId) => {
+    const editRuleLayoutDetail = (row) => {
+      if(row.status==="PUBLISHED"){
+        ElMessage.info("已发布的脚本规则编排不能编辑");
+        return
+      }
       router.push({
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
           ...route.query,
-          ruleLayoutId: ruleLayoutId,
+          ruleLayoutId: row.id,
           scene: 'update',
         }
       })
@@ -343,6 +348,10 @@ export default {
     const handleCancel = () => {
       testVisible.value = false;
     };
+    const countFormatter = (row, column) => {
+      return row.transferCount == null ? "0次" : row.transferCount + "次";
+    };
+
     return {
       ruleLayoutQueryForm,
       ruleLayoutList,
@@ -365,7 +374,8 @@ export default {
       handleCancel,
       getRuleLayoutParam,
       testLayout,
-      testVisible
+      testVisible,
+      countFormatter
     }
   }
 }

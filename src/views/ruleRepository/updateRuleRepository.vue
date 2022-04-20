@@ -110,17 +110,12 @@ export default {
     //输入框校验规则
     const rules = reactive({
       RuleRepositoryName: [
+        { required: true, message: "请输入规则库名称", trigger: "blur" },
         {
-          required: true,
-          message: 'Please input rule name',
-          trigger: 'blur',
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
         },
-        // {
-        //   min: 3,
-        //   max: 5,
-        //   message: 'Length should be 3 to 5',
-        //   trigger: 'blur',
-        // },
       ],
       RuleRepositoryCode: {
         required: true
