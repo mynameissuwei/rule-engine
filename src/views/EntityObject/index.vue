@@ -209,6 +209,7 @@ export default {
       let requestBody = {
         objectName: entityObjectForm.objectName,
         status:entityObjectForm.status,
+        timeAscOrDesc: "desc"
         updatedByName: entityObjectForm.updatedByName,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         pageNum: entityObjectPaginationConfig.current,
