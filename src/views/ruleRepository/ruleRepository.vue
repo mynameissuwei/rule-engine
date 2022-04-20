@@ -136,17 +136,13 @@ export default {
         type: "warning",
       })
         .then(() => {
-          deleteRuleRepositoryData(id);
+          deleteRuleRepositoryData(id)
           getRuleRepositoryData();
-          ElMessage({
-            type: "success",
-            message: "Delete completed",
-          });
         })
         .catch(() => {
           ElMessage({
             type: "info",
-            message: "Delete canceled",
+            message: "已取消删除",
           });
         });
     };
@@ -169,7 +165,16 @@ export default {
 
     //删除规则库
     function deleteRuleRepositoryData(id) {
-      deleteRuleRepository(id).then((response) => {});
+      deleteRuleRepository(id).then((response) => {
+        if (response.data.code !== '0') {
+          ElMessage.error(response.data.message)
+          return;
+        }
+        ElMessage({
+          type: "success",
+          message: "删除成功",
+        });
+      });
     }
 
     //规则库分页函数

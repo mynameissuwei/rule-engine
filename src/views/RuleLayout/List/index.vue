@@ -77,7 +77,8 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="是否正在使用" prop="isUsing"></el-table-column>
+      <el-table-column label="被调用次数" prop="transferCount" :formatter="countFormatter">
+      </el-table-column>
       <el-table-column label="最后修改人" prop="lastModify"></el-table-column>
       <el-table-column label="最后修改时间" prop="lastModifyTime"></el-table-column>
       <el-table-column label="操作" prop="operation">
@@ -145,6 +146,7 @@ export default {
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
       }
       pageRuleLayoutList(params).then(res => {
+        console.log(res,12)
         const data = res.data;
         pagination.pageSize = data.pageSize;
         pagination.currentPage = data.pageNum;
@@ -348,6 +350,10 @@ export default {
     const handleCancel = () => {
       testVisible.value = false;
     };
+    const countFormatter = (row, column) => {
+      return row.transferCount == null ? "0次" : row.transferCount + "次";
+    };
+
     return {
       ruleLayoutQueryForm,
       ruleLayoutList,
@@ -370,7 +376,8 @@ export default {
       handleCancel,
       getRuleLayoutParam,
       testLayout,
-      testVisible
+      testVisible,
+      countFormatter
     }
   }
 }

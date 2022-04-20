@@ -276,7 +276,7 @@ export default {
 
 
     const countFormatter = (row, column) => {
-      return row.callCount == null ? "0次" : row.callCount + "次";
+      return row.transferCount == null ? "0次" : row.transferCount + "次";
     };
 
     const batchDisPublishScriptRule = () => {

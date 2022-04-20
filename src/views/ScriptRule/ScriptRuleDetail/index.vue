@@ -73,11 +73,12 @@ export default {
     )
     const rules = reactive({
       scriptName: [
+        { required: true, message: "请输入规则名称", trigger: "blur" },
         {
-          required: true,
-          message: 'Please input rule name',
-          trigger: 'blur',
-        }
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
       ],
       ruleGroupCode: [
         {

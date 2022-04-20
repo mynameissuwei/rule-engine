@@ -28,7 +28,7 @@
 <!--              style="width: 800px;margin-left: 20px">-->
 <!--          </el-input>-->
 <!--        </el-form-item>-->
-        <el-form-item label="规则code:" prop="scriptCode">
+<!--        <el-form-item label="规则code:" prop="scriptCode">
           <el-input
               v-model="inputScriptRuleForm.form.scriptCode"
               placeholder="纯英文格式，区分大小写"
@@ -37,7 +37,7 @@
               style="width: 500px;margin-left: 20px;">
           </el-input>
           <span style="margin-left: 10px;color: #4a9ff9" @click="handleRandomRuleLayoutCode">随机生成</span>
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="程序类型：" prop="programType">
           <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'"  style="margin-left: 20px">
 
@@ -88,7 +88,14 @@ export default {
     const store = useStore();
     const router = useRouter();
     const rules = {
-      scriptName: [{ required: true, message: "请输入规则名称", trigger: "blur" }],
+      scriptName: [
+        { required: true, message: "请输入规则名称", trigger: "blur" },
+        {
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
+      ],
       ruleGroupCode: [{ required: true, message: "请输入规则库名称", trigger: "blur" }],
       scriptCode: [{ required: true, message: "请输入规则代码", trigger: "blur" }],
       scriptContent: [{ required: true, message: "请输入代码片段", trigger: "blur" }],
@@ -138,11 +145,11 @@ export default {
     }
 
     const ruleGroupCode = store.state.rule.ruleData.ruleGroupCode
-    const handleRandomRuleLayoutCode = () => {
+/*    const handleRandomRuleLayoutCode = () => {
       randomRuleLayoutCode(ruleGroupCode).then(res => {
         inputScriptRuleForm.form.scriptCode = res.data.data
       })
-    }
+    }*/
 
     const cancelAddScriptRule = () => {
       router.push({
@@ -156,7 +163,7 @@ export default {
     return {
       inputScriptRuleForm,
       addScriptRuleBtn,
-      handleRandomRuleLayoutCode,
+      //handleRandomRuleLayoutCode,
       rules,
       cancelAddScriptRule,
       codeBlock

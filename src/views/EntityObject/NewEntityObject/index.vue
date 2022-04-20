@@ -204,18 +204,24 @@ export default {
     //实体对象表单校验
     const rules = reactive({
       newObjectName: [
+        { required: true, message: "请输入实体对象名称", trigger: "blur" },
         {
-          required: true,
-          message: 'Please input Object name',
-          trigger: 'blur',
-        }
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
       ],
       newObjectCode: [
         {
           required: true,
-          message: 'Please input object code',
+          message: '请输入实体对象编码',
           trigger: 'blur',
-        }
+        },
+        {
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
+        },
       ],
       newEntityObjectTable: [
         {
@@ -259,7 +265,7 @@ export default {
     }
 
     const handleDelete = (index) => {
-      newEntityObjectTable.tableData.splice(index)
+      newEntityObjectTable.tableData.splice(index,1)
     }
     return {
       newEntityObjectForm,

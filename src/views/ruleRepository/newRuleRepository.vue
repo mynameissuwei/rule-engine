@@ -3,7 +3,7 @@
     <div style="margin: 100px 400px">
       <!--新建规则库表单-->
       <el-form
-          :ref="newRuleRepositoryForm.ref"
+          ref="newRuleRepositoryFormRef"
           :label-position="right"
           label-width="100px"
           :model="newRuleRepositoryForm.form"
@@ -31,7 +31,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="margin: 20px" @click="addRuleRepositoryBtn">确认</el-button>
+          <el-button type="primary" style="margin: 20px" @click="addRuleRepositoryBtn()">确认</el-button>
           <el-button @click="gotoRuleRepository">取消</el-button>
         </el-form-item>
       </el-form>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {addRuleRepository, getRuleRepository} from "../../api/ruleRepository";
 import router from "../../router";
 import {ElMessage} from "@enn/element-plus";
@@ -48,6 +48,7 @@ import {ElMessage} from "@enn/element-plus";
 export default {
   name: "newRuleRepository",
   setup() {
+    const newRuleRepositoryFormRef = ref("")
     //新建规则库表单对象
     const newRuleRepositoryForm = reactive({
       ref: "newRuleRepositoryFormRef",
@@ -61,21 +62,13 @@ export default {
     //输入框校验规则
     const rules = reactive({
       newRuleRepositoryName: [
+        {required: true, message: "请输入规则库名称", trigger: "blur"},
         {
-          required: true,
-          message: '请输入规则库名称',
-          trigger: 'blur',
+          pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+          message: "只能输入中文、数字、英文",
+          trigger: "blur",
         },
-        // {
-        //   min: 3,
-        //   max: 5,
-        //   message: 'Length should be 3 to 5',
-        //   trigger: 'blur',
-        // },
       ],
-      /*      code: {
-              required: true
-            }*/
     })
 
     //取消新建
@@ -85,32 +78,37 @@ export default {
 
     //新增修改规则库
     function addRuleRepositoryBtn() {
-      let requestBody = {
-        ruleGroupName: newRuleRepositoryForm.form.newRuleRepositoryName,
-        ruleGroupDescription: newRuleRepositoryForm.form.newRuleRepositoryDescription
-      }
-      addRuleRepository(requestBody).then(response => {
-            if (response.data.code !== '0') {
-              ElMessage.error(response.data.message)
-              return;
-            }
-            ElMessage({
-              message: '新增规则库成功',
-              type: 'success',
-            })
-            router.push({
-              path: '/',
-            })
-            getRuleRepository()
+      newRuleRepositoryFormRef.value.validate((valid) => {
+        if (valid) {
+          let requestBody = {
+            ruleGroupName: newRuleRepositoryForm.form.newRuleRepositoryName,
+            ruleGroupDescription: newRuleRepositoryForm.form.newRuleRepositoryDescription
           }
-      )
+          addRuleRepository(requestBody).then(response => {
+                if (response.data.code !== '0') {
+                  ElMessage.error(response.data.message)
+                  return;
+                }
+                ElMessage({
+                  message: '新增规则库成功',
+                  type: 'success',
+                })
+                router.push({
+                  path: '/',
+                })
+                getRuleRepository()
+              }
+          )
+        }
+      })
     }
 
     return {
       newRuleRepositoryForm,
       addRuleRepositoryBtn,
       rules,
-      gotoRuleRepository
+      gotoRuleRepository,
+      newRuleRepositoryFormRef
     }
   }
 }
