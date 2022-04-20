@@ -154,6 +154,8 @@ export default {
             message: '更新脚本规则编排成功',
             type: 'success',
           })
+        }else {
+          ElMessage.error(res.data.message)
         }
         router.push({
           path: '/home',
