@@ -113,7 +113,7 @@
 
 <script>
 import {inject, onMounted, reactive, ref} from "vue";
-import {deleteEntityObject, getEntityObject, updateEntityObjectStatus} from "../../api/entityObject";
+import {deleteEntityObject, getEntityObject, updateEntityObjectStatus} from "@/api/entityObject";
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {useRouter} from "vue-router";
 import {Message} from "@element-plus/icons-vue";
@@ -209,6 +209,7 @@ export default {
       let requestBody = {
         objectName: entityObjectForm.objectName,
         status:entityObjectForm.status,
+        timeAscOrDesc: "desc",
         updatedByName: entityObjectForm.updatedByName,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         pageNum: entityObjectPaginationConfig.current,

@@ -162,9 +162,8 @@ export default {
           ruleRepositoryPaginationConfig.current = response.data.pageNum || 1;
           ruleRepositoryPaginationConfig.pageSize = response.data.pageSize;
           ruleRepositoryPaginationConfig.total = response.data.totalCount;
+          listLoading.value = false;
         })
-        .catch((error) => {});
-      listLoading.value = false;
     }
 
     //删除规则库
