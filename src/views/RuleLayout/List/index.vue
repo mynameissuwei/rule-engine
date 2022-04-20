@@ -60,7 +60,8 @@
       </el-col>
     </el-row>
     <el-table :data="ruleLayoutList" style="margin-top: 10px;width: 100%;align:center"
-              @selection-change="handleSelectionChange" height="210">
+              @selection-change="handleSelectionChange" height="210"
+              v-loading="listLoading">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="规则编排名称" prop="name">
         <template #default="scope">
@@ -71,7 +72,7 @@
       <el-table-column label="规则编排code" prop="code"></el-table-column>
       <el-table-column label="状态" prop="statusName">
         <template #default="scope">
-          <r-badge :color="scope.row.status == 'UNPUBLISHED' ? 'gray' : 'green'" />
+          <r-badge :color="scope.row.status == 'UNPUBLISHED' ? 'gray' : 'green'"/>
           <span>
             {{ scope.row.status == 'UNPUBLISHED' ? "未发布" : "已发布" }}
           </span>
@@ -136,10 +137,12 @@ import rBadge from "@/components/rBadge.vue"
 
 export default {
   name: "RuleLayoutList",
-  components: {TestModal,rBadge},
+  components: {TestModal, rBadge},
   setup() {
+    const listLoading = ref(false);
     const store = useStore()
     onMounted(() => {
+      listLoading.value = true;
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,
@@ -153,6 +156,7 @@ export default {
         pagination.pageCount = data.totalPages;
         ruleLayoutList.push(...convertToRuleLayoutList(data.data))
       })
+      listLoading.value = false;
     });
 
     let RULE_LAYOUT_STATUS = {
@@ -203,6 +207,7 @@ export default {
     }
 
     const searchRuleLayout = () => {
+      listLoading.value = true;
       const params = {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,
@@ -219,6 +224,7 @@ export default {
         ruleLayoutList.length = 0;
         ruleLayoutList.push(...convertToRuleLayoutList(data.data));
       })
+      listLoading.value = false;
     }
     const resetForm = () => {
       ruleLayoutQueryForm.name = null;
@@ -264,7 +270,7 @@ export default {
     }
 
     const editRuleLayoutDetail = (row) => {
-      if(row.status==="PUBLISHED"){
+      if (row.status === "PUBLISHED") {
         ElMessage.info("已发布的脚本规则编排不能编辑");
         return
       }
@@ -308,6 +314,7 @@ export default {
     }
 
     const deleteRuleLayout = (id) => {
+      listLoading.value = true;
       removeRuleLayout({id}).then(res => {
         if (res.data.code != "0") {
           ElMessage.error(res.data.message)
@@ -315,6 +322,7 @@ export default {
           searchRuleLayout();
         }
       })
+      listLoading.value = false;
     }
 
 
@@ -375,7 +383,8 @@ export default {
       getRuleLayoutParam,
       testLayout,
       testVisible,
-      countFormatter
+      countFormatter,
+      listLoading
     }
   }
 }
@@ -385,6 +394,7 @@ export default {
 .handle-box {
   margin: 21px 24px 22px 21px;
 }
+
 .row-container {
   margin-bottom: 19px;
 

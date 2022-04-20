@@ -12,19 +12,19 @@
           </el-input>
         </el-col>
         <el-col :span="7">
-          <el-select placeholder="按时间升序或降序查询"
-                     v-model="entityObjectForm.timeAscOrDesc"
-                     style="width: 100%;">
-            <el-option value="asc" label="升序"></el-option>
-            <el-option value="desc" label="降序"></el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="7">
           <el-input
               v-model="entityObjectForm.updatedByName"
               placeholder="最后修改人"
               clearable>
           </el-input>
+        </el-col>
+        <el-col :span="7">
+          <el-select placeholder="状态"
+                     v-model="entityObjectForm.status"
+                     style="width: 100%;">
+            <el-option value=0 label="未发布"></el-option>
+            <el-option value=1 label="已发布"></el-option>
+          </el-select>
         </el-col>
         <el-col :span="3" style="text-align: right">
           <el-button
@@ -61,6 +61,7 @@
         :header-cell-style="{ background: '#F6F7FB' }"
         highlight-current-row
         @selection-change="handleSelectionChange"
+        v-loading="listLoading"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="objectName" label="对象名称" min-width="100%">
@@ -111,7 +112,7 @@
 </template>
 
 <script>
-import {inject, onMounted, reactive} from "vue";
+import {inject, onMounted, reactive, ref} from "vue";
 import {deleteEntityObject, getEntityObject, updateEntityObjectStatus} from "../../api/entityObject";
 import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {useRouter} from "vue-router";
@@ -121,12 +122,13 @@ import {useStore} from "vuex";
 export default {
   name: "index.vue",
   setup() {
+    const listLoading = ref(false)
     const store = useStore();
     const router = useRouter()
     //实体对象查询对象
     const entityObjectForm = reactive({
       objectName: "",
-      timeAscOrDesc: "",
+      status: "",
       updatedByName: ""
     })
     //实体对象表对象
@@ -177,6 +179,7 @@ export default {
           type: 'success',
           message: '发布成功'
         })
+        console.log(entityObjectTable.tableData,1010)
           }
       )
     }
@@ -196,14 +199,16 @@ export default {
               type: 'success',
               message: '停用成功'
             })
+        console.log(entityObjectTable.tableData,1011)
           }
       )
     }
     //实体对象查询
     const entityObjectSearch = () => {
+      listLoading.value = true;
       let requestBody = {
         objectName: entityObjectForm.objectName,
-        timeAscOrDesc: entityObjectForm.timeAscOrDesc,
+        status:entityObjectForm.status,
         updatedByName: entityObjectForm.updatedByName,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         pageNum: entityObjectPaginationConfig.current,
@@ -216,11 +221,12 @@ export default {
             entityObjectPaginationConfig.total = response.data.totalCount
           }
       )
+      listLoading.value = false;
     }
     //实体对象查询输入框重置
     const resetInput = () => {
       entityObjectForm.objectName = "";
-      entityObjectForm.timeAscOrDesc = "";
+      entityObjectForm.status = "";
       entityObjectForm.updatedByName = "";
     }
     //新建实体对象
@@ -232,18 +238,21 @@ export default {
 
     //分页查询实体对象
     function getEntityObjectData() {
+      listLoading.value = true;
       let requestBody = {
         pageNum: entityObjectPaginationConfig.current,
         pageSize: entityObjectPaginationConfig.pageSize,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
-        timeAscOrDesc: "asc"
+        timeAscOrDesc: "desc"
       }
       getEntityObject(requestBody).then(response => {
+        console.log(response,10100)
         entityObjectTable.tableData = response.data.data
         entityObjectPaginationConfig.current = response.data.pageNum || 1
         entityObjectPaginationConfig.pageSize = response.data.pageSize
         entityObjectPaginationConfig.total = response.data.totalCount
       })
+      listLoading.value = false;
     }
 
     const deleteEntityObjectBtn = (id) => {
@@ -301,7 +310,8 @@ export default {
       batchPublishEntityObject,
       batchDisPublishEntityObject,
       deleteEntityObjectBtn,
-      editEntityObjectBtn
+      editEntityObjectBtn,
+      listLoading
     }
   }
 }

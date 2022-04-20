@@ -70,6 +70,7 @@
         :header-cell-style="{ background: '#F6F7FB' }"
         highlight-current-row
         @cell-click="scriptRuleDetailBtn"
+        v-loading="listLoading"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="scriptName" label="脚本规则名称" min-width="100%">
@@ -146,6 +147,7 @@ export default {
   name: "index.vue",
   components: {TestModal,rBadge},
   setup() {
+    const listLoading = ref(false);
     const router = useRouter();
     const store = useStore();
     const scriptRuleForm = reactive({
@@ -214,6 +216,7 @@ export default {
 
     //分页查询脚本规则
     function getPageScriptRuleData() {
+      listLoading.value = true;
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
@@ -227,10 +230,12 @@ export default {
             scriptRulePaginationConfig.total = response.data.totalCount
           }
       )
+      listLoading.value = false;
     }
 
     //查询脚本规则
     function search() {
+      listLoading.value = true;
       const params = {
         pageNum: scriptRulePaginationConfig.current,
         pageSize: scriptRulePaginationConfig.pageSize,
@@ -246,6 +251,7 @@ export default {
             scriptRulePaginationConfig.total = response.data.totalCount
           }
       )
+      listLoading.value = false;
     }
 
     //编辑脚本规则
@@ -343,7 +349,8 @@ export default {
       testVisible,
       getScriptParam,
       testScript,
-      countFormatter
+      countFormatter,
+      listLoading
     }
   }
 }

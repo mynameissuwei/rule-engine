@@ -26,6 +26,7 @@
       :data="ruleRepositoryTable.tableData"
       :border="ruleRepositoryTable.border"
       :header-cell-style="{ background: '#F6F7FB' }"
+      v-loading="listLoading"
       @cell-click="checkRuleRepositoryInfo"
     >
       <el-table-column prop="ruleGroupName" label="规则库名称" min-width="100%">
@@ -77,7 +78,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from "vue";
+import {onMounted, reactive, ref} from "vue";
 import { ElMessage, ElMessageBox } from "@enn/element-plus";
 import {
   deleteRuleRepository,
@@ -89,6 +90,7 @@ import { useStore } from "vuex";
 export default {
   name: "ruleRepository.vue",
   setup() {
+    const listLoading = ref(false);
     const router = useRouter();
     const store = useStore();
     //规则库表对象
@@ -149,6 +151,7 @@ export default {
 
     //分页展示规则库列表
     function getRuleRepositoryData() {
+      listLoading.value = true;
       let { pageNum, pageSize } = {
         pageNum: ruleRepositoryPaginationConfig.current,
         pageSize: ruleRepositoryPaginationConfig.pageSize,
@@ -161,6 +164,7 @@ export default {
           ruleRepositoryPaginationConfig.total = response.data.totalCount;
         })
         .catch((error) => {});
+      listLoading.value = false;
     }
 
     //删除规则库
@@ -201,6 +205,7 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       name,
+      listLoading
     };
   },
 };
