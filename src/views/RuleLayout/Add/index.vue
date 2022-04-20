@@ -66,7 +66,8 @@ import RuleGraph from "@/views/RuleGraph/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { randomRuleLayoutCode, saveRuleLayout } from "@/api/ruleLayout";
 import { ElMessage } from "@enn/element-plus";
-import router from "@/router";
+import {checkGraphData} from "../ruleGraph"
+import {sortRule} from "views/RuleLayout/ruleGraph";
 
 export default {
   name: "RuleLayoutAdd",
@@ -86,12 +87,6 @@ export default {
           message: "Please input rule name",
           trigger: "blur",
         },
-        // {
-        //   min: 3,
-        //   max: 5,
-        //   message: 'Length should be 3 to 5',
-        //   trigger: 'blur',
-        // },
       ],
       code: {
         required: true,
@@ -108,48 +103,6 @@ export default {
       randomRuleLayoutCode(ruleGroupCode).then((res) => {
         ruleLayoutForm.code = res.data.data;
       });
-    };
-
-    //校验 不能有多个起始节点 不能有source target为一个节点的
-    const checkGraphData = (graphData) => {
-      const edges = graphData.edges;
-      const nodes = graphData.nodes;
-      if (nodes.length == 0) {
-        ElMessage.error("没有要保存的节点");
-        throw new Error("没有要保存的节点");
-      }
-      if (nodes.length !== 1 && nodes.length - edges.length > 1) {
-        ElMessage.error("节点没有闭合");
-        throw new Error("节点没有闭合");
-      }
-    };
-
-    const sortedRules = [];
-    const sortRule = (edges) => {
-      if (sortedRules.length == 0 && edges.length > 0) {
-        sortedRules.push(edges[0].source.cell, edges[0].target.cell);
-      }
-      if (edges.length == 1) return sortedRules;
-      for (let i = 1; i < edges.length; i++) {
-        const source = edges[i].source.cell;
-        const target = edges[i].target.cell;
-        //该节点为数组中尾节点的target
-        if (source == sortedRules[sortedRules.length - 1]) {
-          sortedRules.push(target);
-        }
-
-        //该节点为数组中首节点的source
-        if (target == sortedRules[0]) {
-          sortedRules.unshift(source);
-        }
-
-        if (i < edges.length - 1) continue;
-      }
-      //如果遍历完之后 排序好的列表的长度与edges的长度不一致说明仍然有边没有参与，所以需要再遍历一次
-      if (sortedRules.length < edges.length + 1) {
-        sortRule(edges);
-      }
-      return sortedRules;
     };
 
     //对node进行排序 根据edge的指向

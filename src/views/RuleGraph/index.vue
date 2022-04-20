@@ -17,8 +17,8 @@
       </el-form-item>
     </el-form>
 
-    <el-table :data="rulesData" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
+    <el-table ref="multipleTable" :data="rulesData" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" :selectable="handleSelectable"/>
       <el-table-column
         property="name"
         label="规则名称"
@@ -97,8 +97,10 @@ export default {
         pageNum: pagination.currentPage,
         pageSize: pagination.pageSize,
         ruleGroupCode:ruleGroupCode,
-        scriptName:ruleName.value
+        scriptName:ruleName.value,
+        ruleScriptStatus: "PUBLISHED"
       }
+      let rulesDataMap = {};
       scriptRuleList(params).then(res=>{
         rulesData.length = 0;
         rulesData.push(...res.data.data.map(rule => {
@@ -109,7 +111,16 @@ export default {
               updateTime: rule.updateTime
             }
         }))
-        pagination.total = res.data.totalCount
+        rulesData.forEach(rule => {
+          rulesDataMap[rule.id] = rule;
+        })
+        pagination.total = res.data.totalCount;
+        //默认选中
+        graph.getNodes().forEach((row) => {
+          if(rulesDataMap[row.id]){
+            multipleTable.value.toggleRowSelection(rulesDataMap[row.id]);
+          }
+        })
       })
     }
 
@@ -130,8 +141,6 @@ export default {
         if(OPERATION_TYPE.UPDATE === props.operationType ||
           OPERATION_TYPE.PREVIEW === props.operationType){ //当更新或预览的时候才会去获取老数据
           const json = convertExistedNodeAndEdges(props.graphData);
-          console.log("current graph data ", json)
-
           graph.fromJSON(json);
         }else{
           graph.fromJSON({
@@ -144,7 +153,6 @@ export default {
 
     onMounted(()=>{
       graph = initGraph("100%", 500, props.operationType);
-
     })
 
     const convertExistedNodeAndEdges = (data) => {
@@ -152,7 +160,6 @@ export default {
       let y = 80;
       data.nodes.forEach(node => {
         node.width = getTextWidth(node.label);
-        console.log("text width is ",node.label,node.width)
         node.x = x;
         node.y = y + 100;
         y = node.y;
@@ -200,7 +207,6 @@ export default {
     //新增节点
     const addNodes = () => {
       graph.addNodes(convertRulesToNodes(selectedRules))
-      console.log("current nodes ", graph.getNodes())
       dialogTableVisible.value = false
     }
 
@@ -228,7 +234,20 @@ export default {
       })
     }
 
+    let multipleTable = ref();
+    let nodeMap = {};
+    let handleSelectable = (row, index) => {
+      nodeMap = {};
+      graph.getNodes().forEach(node => nodeMap[node.id] = node);
+      if(nodeMap[row.id]){
+        console.log("row index ========> ", row, index);
+        return false;
+      }
+      return true;
+    }
     return {
+      handleSelectable,
+      multipleTable,
       dialogTableVisible,
       formLabelWidth,
       rulesData,

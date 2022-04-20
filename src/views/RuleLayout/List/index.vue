@@ -255,9 +255,9 @@ export default {
       router.push({
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
+          ...route.query,
           ruleLayoutId: ruleLayoutId,
           scene: 'preview',
-          ...route.query
         }
       })
     }
@@ -266,16 +266,16 @@ export default {
       router.push({
         path: '/rule-layout/detail',// 跳转到规则编排详情页面
         query: {
+          ...route.query,
           ruleLayoutId: ruleLayoutId,
           scene: 'update',
-          ...route.query
         }
       })
     }
 
     const route = useRoute();
 
-    const addRuleLayoutDetail = (ruleLayoutId) => {
+    const addRuleLayoutDetail = () => {
       router.push({
         path: '/rule-layout/add',// 跳转到规则编排详情页面
         query: {
