@@ -111,6 +111,7 @@ export default {
 
     let currentNode = reactive({});
     let nodeClick = (nodeObject,node,c) => {
+      console.log(">>>>>>>>>>>>>>>>> tree node ",node)
       let parentNode = node.parent.data;
       currentNode = nodeObject;
       showObject.value = false;
@@ -124,7 +125,7 @@ export default {
       if(variables[parentNode.id] == undefined){
         variables[parentNode.id] = {};
       }
-      variables[parentNode.id][currentNode.id] = '';
+      variables[parentNode.id][currentNode.id] = currentNode.type;
     }
 
     let showAllObjects = () => {
@@ -154,7 +155,8 @@ export default {
           children = objectData.ruleObjectFieldResVoList.map(field => {
             return {
               id: field.fieldCode,
-              label: field.fieldName
+              label: field.fieldName,
+              type: field.fieldType
             }
           })
         }
