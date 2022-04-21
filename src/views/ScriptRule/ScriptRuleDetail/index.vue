@@ -99,13 +99,16 @@ export default {
     const getScriptRuleDataById = () => {
       let id = route.query.scriptRuleId;
       queryScriptRuleById(id).then(response => {
+        let scriptContent = response.data.data.scriptContent;
         exampleValue = response.data.data.exampleValue;
         ScriptRuleFormDetailForm.form.scriptName = response.data.data.scriptName
         ScriptRuleFormDetailForm.form.scriptCode = response.data.data.scriptCode
         ScriptRuleFormDetailForm.form.ruleGroupCode = response.data.data.ruleGroupCode
         ScriptRuleFormDetailForm.form.sceneDesc = response.data.data.sceneDesc
         ScriptRuleFormDetailForm.form.programType = response.data.data.programType
-        ScriptRuleFormDetailForm.form.scriptContent = JSON.stringify(JSON.parse(response.data.data.scriptContent)).replaceAll("\"","")
+        ScriptRuleFormDetailForm.form.scriptContent = scriptContent && scriptContent.length > 0 ?
+            JSON.stringify(JSON.parse(response.data.data.scriptContent))
+            .replaceAll("\"","") : scriptContent;
       })
     }
 
