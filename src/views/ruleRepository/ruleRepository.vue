@@ -54,7 +54,7 @@
           <el-button
             type="text"
             size="medium"
-            @click="deleteRuleRepositoryBtn(scope.row.id)"
+            @click="deleteRuleRepositoryBtn(scope.row)"
           >
             删除
           </el-button>
@@ -83,7 +83,7 @@ import { ElMessage, ElMessageBox } from "@enn/element-plus";
 import {
   deleteRuleRepository,
   getRuleRepository,
-} from "../../api/ruleRepository";
+} from "@/api/ruleRepository";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -131,14 +131,14 @@ export default {
       router.push("newRuleRepository");
     };
     //删除规则库、消息弹出框
-    const deleteRuleRepositoryBtn = (id) => {
+    const deleteRuleRepositoryBtn = (row) => {
       ElMessageBox.confirm("要删除这条规则么，是否继续？", "Warning", {
         cancelButtonText: "取消",
         confirmButtonText: "删除",
         type: "warning",
       })
         .then(() => {
-          deleteRuleRepositoryData(id)
+          deleteRuleRepositoryData(row.id)
           getRuleRepositoryData();
         })
         .catch(() => {
