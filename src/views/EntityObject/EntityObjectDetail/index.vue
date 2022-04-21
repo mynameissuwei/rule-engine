@@ -9,15 +9,15 @@
     <el-main>
       <el-form :rules="rules" label-position="right" label-width="130px">
         <el-form-item label="对象名称：" prop="ObjectName">
-          <el-input v-model="entityObjectForm.form.ObjectName" style="width: 400px;height: 30px"
+          <el-input v-model="entityObjectForm.form.objectName" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="对象代码：" prop="ObjectCode">
-          <el-input v-model="entityObjectForm.form.ObjectCode" style="width: 400px;height: 30px"
+          <el-input v-model="entityObjectForm.form.objectCode" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="对象描述：" prop="ObjectDesc">
-          <el-input v-model="entityObjectForm.form.ObjectDesc" style="width: 400px;height: 30px"
+          <el-input v-model="entityObjectForm.form.objectDesc" style="width: 400px;height: 30px"
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="对象下字段" prop="newEntityObjectTable">
@@ -190,9 +190,9 @@ export default {
       let id = route.query.entityObjectId
       checkEntityObjectDetail(id).then(response => {
         console.log(response,1111)
-        entityObjectForm.form.ObjectName = response.data.data.objectName
-        entityObjectForm.form.ObjectCode = response.data.data.objectCode
-        entityObjectForm.form.ObjectDesc = response.data.data.objectDesc
+        entityObjectForm.form.objectName = response.data.data.objectName
+        entityObjectForm.form.objectCode = response.data.data.objectCode
+        entityObjectForm.form.objectDesc = response.data.data.objectDesc
         updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldResVoList.map(field =>{
           field.index = count++;
           return field
