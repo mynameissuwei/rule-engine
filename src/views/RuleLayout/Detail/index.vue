@@ -36,7 +36,7 @@
   <el-footer class="footerContainer" v-if="scene === 'update'">
     <el-button-group>
       <el-button type="primary" size="small" @click="updateRuleLayout">保存</el-button>
-      <el-button size="small" plain @click="" style="margin: 0px 20px">取消
+      <el-button size="small" plain @click="cancelEdit" style="margin: 0px 20px">取消
       </el-button>
     </el-button-group>
   </el-footer>
@@ -186,6 +186,15 @@ export default {
     }
 
     const scene = ref('preview');
+    let cancelEdit = () => {
+      router.push({
+        path: '/home',
+        query: {
+          message: 'four',
+          ...route.query
+        }
+      })
+    }
     return {
       rules,
       scene,
@@ -193,7 +202,8 @@ export default {
       ruleLayoutInfo,
       ruleLayout,
       rendered,
-      ruleGraph
+      ruleGraph,
+      cancelEdit
     }
   }
 }
