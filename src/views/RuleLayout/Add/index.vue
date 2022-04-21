@@ -68,11 +68,13 @@ import { randomRuleLayoutCode, saveRuleLayout } from "@/api/ruleLayout";
 import { ElMessage } from "@enn/element-plus";
 import {checkGraphData} from "../ruleGraph"
 import {sortRule} from "views/RuleLayout/ruleGraph";
+import {useStore} from "vuex";
 
 export default {
   name: "RuleLayoutAdd",
   components: { RuleGraph },
   setup() {
+    const store = useStore();
     const ruleLayoutForm = reactive({
       name: "",
       code: "",
@@ -99,7 +101,7 @@ export default {
     };
 
     const route = useRoute();
-    const ruleGroupCode = route.query.ruleGroupCode;
+    const ruleGroupCode = store.state.rule.ruleData.ruleGroupCode;
     const handleRandomRuleLayoutCode = () => {
       randomRuleLayoutCode(ruleGroupCode).then((res) => {
         ruleLayoutForm.code = res.data.data;
