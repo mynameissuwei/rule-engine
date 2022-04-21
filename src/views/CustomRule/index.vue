@@ -115,9 +115,7 @@
             @click="handleDelete(scope.row)"
             class="actionClass"
             style="margin: 0px 10px"
-            >删除</span
-          >
-
+            >删除</span>
           <el-dropdown
             class="dropDown"
             @command="(e) => handleModify(e, scope.row)"

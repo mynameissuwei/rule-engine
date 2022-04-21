@@ -97,7 +97,7 @@
           <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)"
                      v-if="scope.row.status !== 'UNPUBLISHED'">停用
           </el-button>
-          <el-button type="text" size="small" @click="deleteRuleLayout(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="deleteRuleLayout(scope.row)">删除</el-button>
           <el-button type="text" size="small" @click="testRuleLayout(scope.row.code)">测试</el-button>
 
         </template>
@@ -155,8 +155,8 @@ export default {
         pagination.total = data.totalCount;
         pagination.pageCount = data.totalPages;
         ruleLayoutList.push(...convertToRuleLayoutList(data.data))
+        listLoading.value = false;
       })
-      listLoading.value = false;
     });
 
     let RULE_LAYOUT_STATUS = {
@@ -223,8 +223,8 @@ export default {
         pagination.total = data.totalCount;
         ruleLayoutList.length = 0;
         ruleLayoutList.push(...convertToRuleLayoutList(data.data));
+        listLoading.value = false;
       })
-      listLoading.value = false;
     }
     const resetForm = () => {
       ruleLayoutQueryForm.name = null;
@@ -313,8 +313,8 @@ export default {
       searchRuleLayout();
     }
 
-    const deleteRuleLayout = (id) => {
-      listLoading.value = true;
+    const deleteRuleLayout = (row) => {
+      let id = row.id;
       removeRuleLayout({id}).then(res => {
         if (res.data.code != "0") {
           ElMessage.error(res.data.message)
@@ -322,7 +322,6 @@ export default {
           searchRuleLayout();
         }
       })
-      listLoading.value = false;
     }
 
 

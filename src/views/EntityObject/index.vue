@@ -89,7 +89,7 @@
           <el-button
               type="text"
               size="medium"
-              @click="deleteEntityObjectBtn(scope.row.id)">
+              @click="deleteEntityObjectBtn(scope.row)">
             删除
           </el-button>
         </template>
@@ -145,6 +145,7 @@ export default {
       pageSizes: [10, 20, 30, 40],
       current: 1
     })
+
     //规则库分页函数
     function handleSizeChange(pageSize) {
       entityObjectPaginationConfig.pageSize = pageSize;
@@ -155,6 +156,7 @@ export default {
       entityObjectPaginationConfig.current = pageNumber;
       getEntityObjectData();
     }
+
     //实体对象勾选对象、勾选函数
     const selectedRuleLayoutIds = reactive([])
     const handleSelectionChange = (layouts) => {
@@ -169,17 +171,17 @@ export default {
         ids: selectedRuleLayoutIds,
         status: 1
       }
-      updateEntityObjectStatus(params).then((response)=>{
-        getEntityObjectData()
-        if (response.data.code !== '0') {
-          ElMessage.error(response.data.message)
-          return;
-        }
-        ElMessage({
-          type: 'success',
-          message: '发布成功'
-        })
-        console.log(entityObjectTable.tableData,1010)
+      updateEntityObjectStatus(params).then((response) => {
+            getEntityObjectData()
+            if (response.data.code !== '0') {
+              ElMessage.error(response.data.message)
+              return;
+            }
+            ElMessage({
+              type: 'success',
+              message: '发布成功'
+            })
+            console.log(entityObjectTable.tableData, 1010)
           }
       )
     }
@@ -189,7 +191,7 @@ export default {
         ids: selectedRuleLayoutIds,
         status: 0
       }
-      updateEntityObjectStatus(params).then((response)=>{
+      updateEntityObjectStatus(params).then((response) => {
             getEntityObjectData()
             if (response.data.code !== '0') {
               ElMessage.error(response.data.message)
@@ -199,7 +201,7 @@ export default {
               type: 'success',
               message: '停用成功'
             })
-        console.log(entityObjectTable.tableData,1011)
+            console.log(entityObjectTable.tableData, 1011)
           }
       )
     }
@@ -208,7 +210,7 @@ export default {
       listLoading.value = true;
       let requestBody = {
         objectName: entityObjectForm.objectName,
-        status:entityObjectForm.status,
+        status: entityObjectForm.status,
         timeAscOrDesc: "desc",
         updatedByName: entityObjectForm.updatedByName,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
@@ -220,9 +222,9 @@ export default {
             entityObjectPaginationConfig.current = response.data.pageNum || 1
             entityObjectPaginationConfig.pageSize = response.data.pageSize
             entityObjectPaginationConfig.total = response.data.totalCount
+            listLoading.value = false;
           }
       )
-      listLoading.value = false;
     }
     //实体对象查询输入框重置
     const resetInput = () => {
@@ -247,39 +249,38 @@ export default {
         timeAscOrDesc: "desc"
       }
       getEntityObject(requestBody).then(response => {
-        console.log(response,10100)
         entityObjectTable.tableData = response.data.data
         entityObjectPaginationConfig.current = response.data.pageNum || 1
         entityObjectPaginationConfig.pageSize = response.data.pageSize
         entityObjectPaginationConfig.total = response.data.totalCount
+        listLoading.value = false;
       })
-      listLoading.value = false;
     }
 
-    const deleteEntityObjectBtn = (id) => {
-        ElMessageBox.confirm(
-            '要删除这条规则么，是否继续？',
-            'Warning',
-            {
-              cancelButtonText: '取消',
-              confirmButtonText: '删除',
-              type: 'warning',
-            }
-        ).then(()=>{
-          deleteEntityObject(id).then(response => {
-            getEntityObjectData()
-            if (response.data.code !== '0') {
-              ElMessage.error(response.data.message)
-              return;
-            }
-            ElMessage({
-              type: 'success',
-              message: 'Delete completed'
-            })
+    const deleteEntityObjectBtn = (row) => {
+      ElMessageBox.confirm(
+          '要删除这条规则么，是否继续？',
+          'Warning',
+          {
+            cancelButtonText: '取消',
+            confirmButtonText: '删除',
+            type: 'warning',
+          }
+      ).then(() => {
+        deleteEntityObject(row.id).then(response => {
+          getEntityObjectData()
+          if (response.data.code !== '0') {
+            ElMessage.error(response.data.message)
+            return;
+          }
+          ElMessage({
+            type: 'success',
+            message: 'Delete completed'
           })
-        }).catch(
+        })
+      }).catch(
 
-        )
+      )
     }
 
     //编辑实体对象
@@ -287,7 +288,7 @@ export default {
       router.push({
         path: 'entityObjectDetail',
         query: {
-          entityObjectId:id,
+          entityObjectId: id,
           scene: 'update'
         }
       })

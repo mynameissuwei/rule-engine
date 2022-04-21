@@ -83,13 +83,14 @@
       <el-table-column property="scriptCode" label="脚本规则代码" min-width="100%"></el-table-column>
       <el-table-column property="ruleScriptStatus" label="发布状态" min-width="100%">
         <template #default="scope">
-          <r-badge :color="scope.row.ruleScriptStatus == 'UNPUBLISHED' ? 'gray' : 'green'" />
+          <r-badge :color="scope.row.ruleScriptStatus == 'UNPUBLISHED' ? 'gray' : 'green'"/>
           <span>
             {{ scope.row.ruleScriptStatus == 'UNPUBLISHED' ? "未发布" : "已发布" }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="transferCount" label="被调用次数" min-width="100%" :formatter="countFormatter"></el-table-column>
+      <el-table-column prop="transferCount" label="被调用次数" min-width="100%"
+                       :formatter="countFormatter"></el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
       <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
@@ -112,17 +113,17 @@
       </el-table-column>
     </el-table>
     <div class="demo-pagination-block">
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="scriptRulePaginationConfig.current"
-            :page-sizes="scriptRulePaginationConfig.pageSizes"
-            :page-size="scriptRulePaginationConfig.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="scriptRulePaginationConfig.total"
-        >
-        </el-pagination>
-      </div>
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="scriptRulePaginationConfig.current"
+          :page-sizes="scriptRulePaginationConfig.pageSizes"
+          :page-size="scriptRulePaginationConfig.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="scriptRulePaginationConfig.total"
+      >
+      </el-pagination>
+    </div>
   </div>
   <TestModal
       v-if="testVisible"
@@ -145,7 +146,7 @@ import rBadge from "@/components/rBadge.vue"
 
 export default {
   name: "index.vue",
-  components: {TestModal,rBadge},
+  components: {TestModal, rBadge},
   setup() {
     const listLoading = ref(false);
     const router = useRouter();
@@ -159,8 +160,8 @@ export default {
       tableData: [],
     })
     //脚本规则详情
-    let scriptRuleDetailBtn = (row,column,event,cell) => {
-      if (column.label === "脚本规则名称"){
+    let scriptRuleDetailBtn = (row, column, event, cell) => {
+      if (column.label === "脚本规则名称") {
         router.push({
           path: "scriptRuleDetail",
           query: {
@@ -223,14 +224,13 @@ export default {
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
       }
       pageScriptRule(params).then(response => {
-        console.log(response,11)
             scriptRuleTable.tableData = response.data.data
             scriptRulePaginationConfig.current = response.data.pageNum || 1
             scriptRulePaginationConfig.pageSize = response.data.pageSize
             scriptRulePaginationConfig.total = response.data.totalCount
+            listLoading.value = false;
           }
       )
-      listLoading.value = false;
     }
 
     //查询脚本规则
@@ -249,14 +249,15 @@ export default {
             scriptRulePaginationConfig.current = response.data.pageNum || 1
             scriptRulePaginationConfig.pageSize = response.data.pageSize
             scriptRulePaginationConfig.total = response.data.totalCount
+            listLoading.value = false;
           }
       )
-      listLoading.value = false;
+
     }
 
     //编辑脚本规则
     const editScriptRule = (row) => {
-      if(row.ruleScriptStatus==="PUBLISHED"){
+      if (row.ruleScriptStatus === "PUBLISHED") {
         ElMessage.info("已发布的脚本规则不能编辑");
         return
       }
@@ -308,7 +309,7 @@ export default {
         // ruleGroupCode: "FFyX88RJ",
         // ruleLayoutCode: "20220406183002"
       });
-      if(res.data.code !== '0'){
+      if (res.data.code !== '0') {
         ElMessage.error(res.data.message);
         return;
       }
@@ -316,7 +317,7 @@ export default {
     }
     let testScript = async (param) => {
       const res = await scriptRuleTest(param);
-      if(res.data.code !== '0'){
+      if (res.data.code !== '0') {
         return res.data
       }
       return res.data.data;
@@ -360,6 +361,7 @@ export default {
 .handle-box {
   margin: 21px 24px 22px 21px;
 }
+
 .row-container {
   margin-bottom: 19px;
 

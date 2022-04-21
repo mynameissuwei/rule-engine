@@ -189,7 +189,6 @@ export default {
       let count = 0;
       let id = route.query.entityObjectId
       checkEntityObjectDetail(id).then(response => {
-        console.log(response,1111)
         entityObjectForm.form.objectName = response.data.data.objectName
         entityObjectForm.form.objectCode = response.data.data.objectCode
         entityObjectForm.form.objectDesc = response.data.data.objectDesc
