@@ -11,7 +11,7 @@
   <!--新增规则弹框-->
   <el-dialog v-model="dialogTableVisible" title="查询脚本规则">
     <el-form>
-      <el-form-item label="* 规则名称" :label-width="formLabelWidth">
+      <el-form-item label="规则名称" :label-width="formLabelWidth">
         <el-input  v-model="ruleName" autocomplete="off" style="width: 50%"></el-input>
         <el-button type="primary" size="small" style="margin-left: auto" @click="searchScriptRuleList">查询</el-button>
       </el-form-item>
@@ -108,7 +108,7 @@ export default {
               id: rule.scriptCode,
               name: rule.scriptName,
               lastModify: rule.updatedByName,
-              updateTime: rule.updateTime
+              updateTime: rule.updatedDate
             }
         }))
         rulesData.forEach(rule => {

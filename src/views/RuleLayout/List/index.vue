@@ -128,7 +128,7 @@
 <script>
 import {reactive, onMounted, inject, ref} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
-import {ElMessage} from "@enn/element-plus";
+import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {pageRuleLayoutList, changeRuleLayoutStatus, removeRuleLayout} from '@/api/ruleLayout'
 import {useStore} from "vuex";
 import TestModal from "views/CustomRule/TestModal.vue"
@@ -311,6 +311,9 @@ export default {
       changeRuleLayoutStatus(params).then((res) => {
             if (res.data.code === '0') {
               searchRuleLayout();
+              ElMessage.success(res.data.data);
+            }else {
+              ElMessage.error(res.data.message);
             }
           }
       )
@@ -324,6 +327,9 @@ export default {
       changeRuleLayoutStatus(params).then((res) => {
             if (res.data.code === '0') {
               searchRuleLayout();
+              ElMessage.success(res.data.data);
+            }else {
+              ElMessage.error(res.data.message);
             }
           }
       )
@@ -331,13 +337,31 @@ export default {
 
     const deleteRuleLayout = (row) => {
       let id = row.id;
-      removeRuleLayout({id}).then(res => {
-        if (res.data.code != "0") {
-          ElMessage.error(res.data.message)
-        } else {
-          searchRuleLayout();
-        }
+      ElMessageBox.confirm(
+          '确认删除该规则编排?',
+          'Warning',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      )
+      .then(() => {
+        removeRuleLayout({id}).then(res => {
+          if (res.data.code != "0") {
+            ElMessage.error(res.data.message)
+          } else {
+            ElMessage({
+              type: 'success',
+              message: '该规则编排删除成功',
+            })
+            searchRuleLayout();
+          }
+        })
       })
+      .catch(() => {
+      })
+
     }
 
 
