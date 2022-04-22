@@ -107,7 +107,7 @@ export default {
         ScriptRuleFormDetailForm.form.sceneDesc = response.data.data.sceneDesc
         ScriptRuleFormDetailForm.form.programType = response.data.data.programType
         ScriptRuleFormDetailForm.form.scriptContent = scriptContent && scriptContent.length > 0 ?
-            JSON.stringify(JSON.parse(response.data.data.scriptContent))
+            response.data.data.scriptContent
             .replaceAll("\"","") : scriptContent;
       })
     }
@@ -123,7 +123,7 @@ export default {
     let codeBlock = ref();
     const updateScriptRule = () => {
       let scriptParam = codeBlock.value.getScriptParam();
-      let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
+      let scriptContent = codeBlock.value.getScriptContent();
       let requestBody = {
         id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
