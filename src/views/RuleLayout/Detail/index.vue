@@ -7,7 +7,9 @@
     </el-header>
     <el-main>
       <el-form :rules="rules" label-position="right" label-width="130px">
-        <el-form-item label="规则编排名称：" prop="name">{{ruleLayoutInfo.name}}</el-form-item>
+        <el-form-item label="规则编排名称：" prop="name">
+          <el-input v-model="ruleLayoutInfo.name" style="width: 400px;height: 30px" :disabled="scene === 'preview'"></el-input>
+        </el-form-item>
         <el-form-item label="规则编排代码：" prop="code">{{ruleLayoutInfo.code}}</el-form-item>
         <el-form-item label="程序类型：">
           <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'">
