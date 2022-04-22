@@ -17,7 +17,7 @@
               v-model="ruleLayoutForm.name"
           ></el-input>
         </el-form-item>
-        <el-form-item label="规则编排代码：" prop="code">
+<!--        <el-form-item label="规则编排代码：" prop="code">
           <el-input
               style="width: 400px; height: 30px"
               v-model="ruleLayoutForm.code"
@@ -27,7 +27,7 @@
               @click="handleRandomRuleLayoutCode"
           >随机生成</span
           >
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="程序类型：">
           <el-select
               model-value="GROOVY"
@@ -96,6 +96,7 @@ export default {
       code: {
         required: true,
       },
+
     });
 
     const cancelAddRuleLayout = () => {
@@ -104,11 +105,11 @@ export default {
 
     const route = useRoute();
     const ruleGroupCode = store.state.rule.ruleData.ruleGroupCode;
-    const handleRandomRuleLayoutCode = () => {
+/*    const handleRandomRuleLayoutCode = () => {
       randomRuleLayoutCode(ruleGroupCode).then((res) => {
         ruleLayoutForm.code = res.data.data;
       });
-    };
+    };*/
 
     //对node进行排序 根据edge的指向
     const convertToRuleLayouts = (graphData) => {
@@ -165,7 +166,7 @@ export default {
     return {
       ruleLayoutForm,
       rules,
-      handleRandomRuleLayoutCode,
+     // handleRandomRuleLayoutCode,
       addRuleLayout,
       ruleGraph,
       cancelAddRuleLayout,

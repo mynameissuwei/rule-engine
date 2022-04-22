@@ -57,7 +57,7 @@
               style="width: 800px;margin-left: 20px">
           </el-input>
         </el-form-item>
-        <el-form-item label="脚本代码:" prop="scriptContent">
+        <el-form-item label="代码片段:" prop="scriptContent">
           <code-block ref="codeBlock" :script-content="inputScriptRuleForm.form.scriptContent"
                       style="margin-left: 20px"></code-block>
         </el-form-item>
@@ -120,7 +120,7 @@ export default {
         scriptContent: ''
       }
     })
-    //新增修改规则库
+    //新增修改脚本规则
     let codeBlock = ref();
     function addScriptRuleBtn () {
           let scriptParam = codeBlock.value.getScriptParam();
@@ -135,19 +135,20 @@ export default {
             ruleScriptStatus: "UNPUBLISHED",
             exampleValue: JSON.stringify(scriptParam)
           }
-          if(requestBody.scriptName === ""){
+          if (requestBody.scriptName === "") {
             ElMessage.info("脚本规则名不能为空");
             return
           }
-          if(requestBody.scriptContent === ""){
+          if (requestBody.scriptContent === "") {
             ElMessage.info("脚本规则代码片段不能为空");
             return
           }
           addScriptRule(requestBody).then(res => {
-            if(res.data.code !== '0'){
+            if (res.data.code !== '0') {
               ElMessage({
                 type: 'warning',
-                message:res.data.message});
+                message: res.data.message
+              });
               return
             }
             ElMessage({
@@ -156,8 +157,8 @@ export default {
             });
             router.push({
               path: "home",
-              query:{
-                tab:"ScriptRule"
+              query: {
+                tab: "ScriptRule"
               }
             })
           })

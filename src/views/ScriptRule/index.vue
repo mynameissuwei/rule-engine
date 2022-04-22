@@ -19,7 +19,7 @@
           </el-input>
         </el-col>
         <el-col :span="7">
-          <el-select placeholder="状态" v-model="scriptRuleForm.ruleScriptStatus">
+          <el-select placeholder="状态" v-model="scriptRuleForm.ruleScriptStatus" clearable>
             <el-option value="PUBLISHED" label="发布"></el-option>
             <el-option value="UNPUBLISHED" label="未发布"></el-option>
           </el-select>

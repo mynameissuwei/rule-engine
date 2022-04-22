@@ -21,7 +21,7 @@
         <el-col :span="7">
           <el-select placeholder="状态"
                      v-model="entityObjectForm.status"
-                     style="width: 100%;">
+                     style="width: 100%;" clearable>
             <el-option value=0 label="未发布"></el-option>
             <el-option value=1 label="已发布"></el-option>
           </el-select>
@@ -62,16 +62,24 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
         v-loading="listLoading"
+        @cell-click="entityObjectDetailBtn"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column property="objectName" label="对象名称" min-width="100%">
+        <template #default="scope">
+          <div style="color: blue; cursor: pointer">
+            {{ scope.row.objectName }}
+          </div>
+        </template>
       </el-table-column>
       <el-table-column property="objectCode" label="对象编码" min-width="100%">
       </el-table-column>
-      <el-table-column property="status" label="对象状态" min-width="100%">
+      <el-table-column property="status" label="发布状态" min-width="100%">
         <template #default="scope">
-          <span v-if="scope.row.status === 0">未发布</span>
-          <span v-if="scope.row.status === 1">发布</span>
+          <r-badge :color="scope.row.status == 0 ? 'gray' : 'green'"/>
+          <span>
+            {{ scope.row.status == 0 ? "未发布" : "已发布" }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column property="updatedByName" label="最后修改人" min-width="100%">
@@ -83,7 +91,7 @@
           <el-button
               type="text"
               size="medium"
-              @click="editEntityObjectBtn(scope.row.id)">
+              @click="editEntityObjectBtn(scope.row)">
             编辑
           </el-button>
           <el-button
@@ -118,9 +126,11 @@ import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import {useRouter} from "vue-router";
 import {Message} from "@element-plus/icons-vue";
 import {useStore} from "vuex";
+import rBadge from "@/components/rBadge.vue"
 
 export default {
   name: "index.vue",
+  components:{rBadge},
   setup() {
     const listLoading = ref(false)
     const store = useStore();
@@ -239,6 +249,18 @@ export default {
       })
     }
 
+    let entityObjectDetailBtn = (row, column, event, cell) => {
+      if (column.label === "对象名称") {
+        router.push({
+          path: "entityObjectDetail",
+          query: {
+            entityObjectId: row.id,
+            scene: 'preview'
+          },
+        });
+      }
+    }
+
     //分页查询实体对象
     function getEntityObjectData() {
       listLoading.value = true;
@@ -249,6 +271,7 @@ export default {
         timeAscOrDesc: "desc"
       }
       getEntityObject(requestBody).then(response => {
+        console.log(response,1010)
         entityObjectTable.tableData = response.data.data
         entityObjectPaginationConfig.current = response.data.pageNum || 1
         entityObjectPaginationConfig.pageSize = response.data.pageSize
@@ -284,11 +307,15 @@ export default {
     }
 
     //编辑实体对象
-    const editEntityObjectBtn = (id) => {
+    const editEntityObjectBtn = (row) => {
+      if (row.status === 1) {
+        ElMessage.info("已发布的脚本规则编排不能编辑");
+        return
+      }
       router.push({
         path: 'entityObjectDetail',
         query: {
-          entityObjectId: id,
+          entityObjectId: row.id,
           scene: 'update'
         }
       })
@@ -313,7 +340,8 @@ export default {
       batchDisPublishEntityObject,
       deleteEntityObjectBtn,
       editEntityObjectBtn,
-      listLoading
+      listLoading,
+      entityObjectDetailBtn
     }
   }
 }
