@@ -252,7 +252,6 @@ export default {
             listLoading.value = false;
           }
       )
-
     }
 
     //编辑脚本规则
@@ -277,8 +276,12 @@ export default {
         list: selectedRuleLayoutIds,
         ruleScriptStatus: "PUBLISHED"
       }
-      updateScriptRuleStatus(params);
-      getPageScriptRuleData()
+      updateScriptRuleStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              getPageScriptRuleData()
+            }
+          }
+      )
     }
 
 
@@ -291,8 +294,12 @@ export default {
         list: selectedRuleLayoutIds,
         ruleScriptStatus: "UNPUBLISHED"
       }
-      updateScriptRuleStatus(params);
-      getPageScriptRuleData()
+      updateScriptRuleStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              getPageScriptRuleData()
+            }
+          }
+      )
     }
 
     onMounted(() => {

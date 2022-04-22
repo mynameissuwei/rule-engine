@@ -139,7 +139,6 @@ export default {
       })
         .then(() => {
           deleteRuleRepositoryData(row.id)
-          getRuleRepositoryData();
         })
         .catch(() => {
           ElMessage({
@@ -173,6 +172,7 @@ export default {
           ElMessage.error(response.data.message)
           return;
         }
+        getRuleRepositoryData();
         ElMessage({
           type: "success",
           message: "删除成功",

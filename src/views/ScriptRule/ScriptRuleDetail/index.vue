@@ -143,7 +143,10 @@ export default {
           type: 'success',
         })
         router.push({
-          path: 'home'
+          path: 'home',
+          query: {
+            tab:"ScriptRule"
+          }
         })
       })
     }

@@ -267,7 +267,7 @@ export default {
             type: 'warning',
           }
       ).then(() => {
-        deleteEntityObject(row.id).then(response => {
+        deleteEntityObject(row.id).then((response) => {
           getEntityObjectData()
           if (response.data.code !== '0') {
             ElMessage.error(response.data.message)

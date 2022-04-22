@@ -238,8 +238,12 @@ export default {
         list: selectedRuleLayoutIds,
         ruleLayoutStatus: "UNPUBLISHED"
       }
-      changeRuleLayoutStatus(params);
-      searchRuleLayout();
+      changeRuleLayoutStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              searchRuleLayout();
+            }
+          }
+      )
     }
 
     const batchPublishRuleLayout = () => {
@@ -247,8 +251,12 @@ export default {
         list: selectedRuleLayoutIds,
         ruleLayoutStatus: "PUBLISHED"
       }
-      changeRuleLayoutStatus(params);
-      searchRuleLayout();
+      changeRuleLayoutStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              searchRuleLayout();
+            }
+          }
+      )
     }
 
     const selectedRuleLayoutIds = reactive([])
@@ -300,8 +308,12 @@ export default {
         list: [id],
         ruleLayoutStatus: "PUBLISHED"
       }
-      changeRuleLayoutStatus(params);
-      searchRuleLayout();
+      changeRuleLayoutStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              searchRuleLayout();
+            }
+          }
+      )
     }
 
     const disableRuleLayout = (id) => {
@@ -309,8 +321,12 @@ export default {
         list: [id],
         ruleLayoutStatus: "UNPUBLISHED"
       }
-      changeRuleLayoutStatus(params);
-      searchRuleLayout();
+      changeRuleLayoutStatus(params).then((res) => {
+            if (res.data.code === '0') {
+              searchRuleLayout();
+            }
+          }
+      )
     }
 
     const deleteRuleLayout = (row) => {

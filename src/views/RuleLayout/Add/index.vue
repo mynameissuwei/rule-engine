@@ -151,8 +151,7 @@ export default {
         router.push({
           path: "/home",
           query: {
-            ...route.query,
-            message: "four",
+            tab: "four",
           },
         });
       });
