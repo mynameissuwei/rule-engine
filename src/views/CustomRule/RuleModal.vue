@@ -18,9 +18,9 @@
           <el-table
             ref="singleTableRef"
             :data="objectListRef"
-            highlight-current-row
             v-loading="tableLoading"
-            @current-change="handleCurrentChange"
+            :row-class-name="tableRowClassName"
+            @row-click="handleRowClick"
             :show-header="false"
           >
             <el-table-column prop="objectName" label="objectName" width="140" />
@@ -28,7 +28,9 @@
         </div>
       </div>
       <div class="center">
-        <div class="center-title">客户</div>
+        <div class="center-title">
+          {{ currentRowRef && currentRowRef.objectName }}
+        </div>
         <div class="check-group">
           <el-scrollbar height="420px" v-loading="checkBoxLoading">
             <el-checkbox-group v-model="checkListRef" @change="handleCheckBox">
@@ -67,6 +69,7 @@ import { Search } from "@element-plus/icons-vue";
 import FormilyForm from "./FormilyForm.vue";
 import { cloneDeep } from "lodash";
 import { useStore } from "vuex";
+import { ElMessage } from "@enn/element-plus";
 
 const searchValueRef = ref("");
 const currentRowRef = ref(null);
@@ -223,31 +226,52 @@ const props = defineProps([
 
 const emits = defineEmits(["pushRule"]);
 
-// 点击table每一行高亮
-const handleCurrentChange = async (checkedRow, oldCurrentRow) => {
-  checkBoxLoading.value = true;
-  let currentRow = checkedRow ? checkedRow : currentRowRef.value;
-  const { id } = currentRow;
-  const res = await fetchObjectDetail(id);
-  if (currentRow.hasOwnProperty("checkList")) {
-    checkListRef.value = currentRow.checkList;
-  } else {
-    checkListRef.value = [];
+const tableRowClassName = ({ row, rowIndex }) => {
+  if (currentRowRef.value) {
+    if (row.id === currentRowRef.value.id) {
+      return "highlight-row";
+    }
   }
-
-  if (currentRow.hasOwnProperty("formData")) {
-    formData.value = currentRow.formData;
-  } else {
-    formData.value = {};
-  }
-
-  objectDetailRef.value = res.data.ruleObjectFieldResVoList.filter(
-    (item) => item.calibratorType != "UN_KNOWN"
-  );
-  currentRowRef.value = currentRow;
-  checkBoxLoading.value = false;
+  return "";
 };
+// 点击table每一行函数
+const handleRowClick = (checkedRow) => {
+  const formRefDom = formRef.value.formRefDom;
+  formRefDom.validate(async (valid, fields) => {
+    if (valid) {
+      checkBoxLoading.value = true;
+      console.log(checkedRow, currentRowRef.value, "valuevalue");
+      let currentRow = checkedRow ? checkedRow : currentRowRef.value;
 
+      // singleTableRef.value.setCurrentRow(currentRow);
+
+      const { id } = currentRow;
+      const res = await fetchObjectDetail(id);
+      if (currentRow.hasOwnProperty("checkList")) {
+        checkListRef.value = currentRow.checkList;
+      } else {
+        checkListRef.value = [];
+      }
+
+      if (currentRow.hasOwnProperty("formData")) {
+        formData.value = currentRow.formData;
+      } else {
+        formData.value = {};
+      }
+
+      objectDetailRef.value = res.data.ruleObjectFieldResVoList.filter(
+        (item) => item.calibratorType != "UN_KNOWN"
+      );
+      currentRowRef.value = currentRow;
+      checkBoxLoading.value = false;
+    } else {
+      ElMessage({
+        type: "error",
+        message: "请填写参数",
+      });
+    }
+  });
+};
 // 获取对象列表
 const getObjectList = async () => {
   tableLoading.value = true;
@@ -316,8 +340,10 @@ onMounted(async () => {
     let currentRow = objectListRef.value.find((item) =>
       item.hasOwnProperty("checkList")
     );
+    currentRowRef.value = currentRow;
+    handleRowClick();
 
-    singleTableRef.value.setCurrentRow(currentRow);
+    // singleTableRef.value.setCurrentRow(currentRow);
   }
 });
 </script>
@@ -327,6 +353,11 @@ onMounted(async () => {
   display: flex;
   border-top: 1px solid #ebecf0;
   border-bottom: 1px solid #ebecf0;
+  ::v-deep {
+    .el-table .highlight-row {
+      --el-table-tr-bg-color: #ecf5ff !important;
+    }
+  }
 }
 .input-class {
   width: 140px;

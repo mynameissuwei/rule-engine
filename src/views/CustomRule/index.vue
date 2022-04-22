@@ -115,7 +115,8 @@
             @click="handleDelete(scope.row)"
             class="actionClass"
             style="margin: 0px 10px"
-            >删除</span>
+            >删除</span
+          >
           <el-dropdown
             class="dropDown"
             @command="(e) => handleModify(e, scope.row)"
@@ -136,7 +137,7 @@
       <el-pagination
         v-model:currentPage="listQuery.pageNum"
         v-model:page-size="listQuery.pageSize"
-        layout=" prev, pager, next,  sizes,jumper"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="pageTotal"
         @size-change="handleSizeChange"
         @current-change="handlePageChange"

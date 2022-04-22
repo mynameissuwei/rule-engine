@@ -170,6 +170,7 @@
     <el-footer class="footerContainer">
       <el-button-group>
         <el-button
+          v-if="!isDetail"
           type="primary"
           size="small"
           @click="onSubmit(formRef)"

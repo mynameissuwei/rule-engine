@@ -158,10 +158,8 @@ onUnmounted(() => {
 .json-editor {
   height: 600px;
   position: relative;
-
   ::v-deep {
     .CodeMirror {
-      height: auto;
       min-height: 570px;
     }
 
