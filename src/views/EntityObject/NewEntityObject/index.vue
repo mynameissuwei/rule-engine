@@ -233,8 +233,6 @@ export default {
     })
 
     function addEntityObjectBtn() {
-      newEntityObjectFormRef.value.validate((valid) => {
-        if (valid) {
           let requestBody = {
             objectCode: newEntityObjectForm.form.newObjectCode,
             objectDesc: newEntityObjectForm.form.newObjectDescription,
@@ -259,8 +257,6 @@ export default {
             })
 
           })
-        }
-      })
     }
 
     const cancelAdd = () => {
