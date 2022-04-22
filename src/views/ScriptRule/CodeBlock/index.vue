@@ -111,8 +111,11 @@ export default {
 
     let currentNode = reactive({});
     let nodeClick = (nodeObject,node,c) => {
-      console.log(">>>>>>>>>>>>>>>>> tree node ",node)
+      console.log(">>>>>>>>>>>>>>>>> tree node parent ",node.parent)
+      if(node.parent.parent === null) return;
       let parentNode = node.parent.data;
+      console.log(">>>>>>>>>>>>>>>>> tree node parent data",parentNode)
+
       currentNode = nodeObject;
       showObject.value = false;
       let scriptInput = document.getElementById("script");
