@@ -21,7 +21,7 @@
         <el-col :span="7">
           <el-select placeholder="状态"
                      v-model="entityObjectForm.status"
-                     style="width: 100%;">
+                     style="width: 100%;" clearable>
             <el-option value=0 label="未发布"></el-option>
             <el-option value=1 label="已发布"></el-option>
           </el-select>
@@ -91,7 +91,7 @@
           <el-button
               type="text"
               size="medium"
-              @click="editEntityObjectBtn(scope.row.id)">
+              @click="editEntityObjectBtn(scope.row)">
             编辑
           </el-button>
           <el-button
@@ -271,6 +271,7 @@ export default {
         timeAscOrDesc: "desc"
       }
       getEntityObject(requestBody).then(response => {
+        console.log(response,1010)
         entityObjectTable.tableData = response.data.data
         entityObjectPaginationConfig.current = response.data.pageNum || 1
         entityObjectPaginationConfig.pageSize = response.data.pageSize
@@ -306,11 +307,15 @@ export default {
     }
 
     //编辑实体对象
-    const editEntityObjectBtn = (id) => {
+    const editEntityObjectBtn = (row) => {
+      if (row.status === 1) {
+        ElMessage.info("已发布的脚本规则编排不能编辑");
+        return
+      }
       router.push({
         path: 'entityObjectDetail',
         query: {
-          entityObjectId: id,
+          entityObjectId: row.id,
           scene: 'update'
         }
       })

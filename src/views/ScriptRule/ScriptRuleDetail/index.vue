@@ -92,7 +92,8 @@ export default {
           message: 'Please input rule name',
           trigger: 'blur',
         }
-      ]
+      ],
+      scriptContent: [{required: true, message: "请输入代码片段", trigger: "blur"}],
     })
 
     let exampleValue = reactive({});
