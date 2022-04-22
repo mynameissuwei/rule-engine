@@ -123,7 +123,7 @@ export default {
     let codeBlock = ref();
     const updateScriptRule = () => {
       let scriptParam = codeBlock.value.getScriptParam();
-      let scriptContent = JSON.stringify(codeBlock.value.getScriptContent());
+      let scriptContent = codeBlock.value.getScriptContent();
       let requestBody = {
         id: parseInt(route.query.scriptRuleId),
         programType: ScriptRuleFormDetailForm.form.programType,
