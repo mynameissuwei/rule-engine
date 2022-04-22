@@ -160,7 +160,6 @@ export default {
         router.push({
           path: '/home',
           query: {
-            tab: 'four'
           }
         })
       })
@@ -189,7 +188,6 @@ export default {
       router.push({
         path: '/home',
         query: {
-          tab: 'four',
         }
       })
     }

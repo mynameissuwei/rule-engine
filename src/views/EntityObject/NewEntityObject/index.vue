@@ -2,7 +2,7 @@
   <div class="container">
     <div style="margin: 50px 100px">
       <el-form
-          :ref="newEntityObjectForm.ref"
+          ref="newEntityObjectFormRef"
           :label-position="right"
           label-width="100px"
           :model="newEntityObjectForm.form"
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {addOrUpdateEntityObject} from "@/api/entityObject";
 import {useRoute, useRouter} from "vue-router";
 import {ElMessage} from "@enn/element-plus";
@@ -149,12 +149,12 @@ import {useStore} from "vuex";
 export default {
   name: "index.vue",
   setup() {
+    const newEntityObjectFormRef = ref("")
     const store = useStore();
     const router = useRouter()
     const route = useRoute()
     //新建实体对象表单对象
     const newEntityObjectForm = reactive({
-      ref: "newEntityObjectFormRef",
       form: {
         newObjectName: '',
         newObjectCode: '',
@@ -204,7 +204,7 @@ export default {
     //实体对象表单校验
     const rules = reactive({
       newObjectName: [
-        { required: true, message: "请输入实体对象名称", trigger: "blur" },
+        {required: true, message: "请输入实体对象名称", trigger: "blur"},
         {
           pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
           message: "只能输入中文、数字、英文",
@@ -226,32 +226,40 @@ export default {
       newEntityObjectTable: [
         {
           required: true,
+          message: "请填写实体对象字段表",
           trigger: 'blur',
         }
       ]
     })
 
     function addEntityObjectBtn() {
-      let requestBody = {
-        objectCode: newEntityObjectForm.form.newObjectCode,
-        objectDesc: newEntityObjectForm.form.newObjectDescription,
-        objectName: newEntityObjectForm.form.newObjectName,
-        ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
-        ruleObjectFieldReqVoList: newEntityObjectTable.tableData
-      }
-      addOrUpdateEntityObject(requestBody).then(response => {
-        if (response.data.code !== '0') {
-          ElMessage.error(response.data.message)
-          return;
-        }
-        ElMessage({
-          message: '新建实体对象成功',
-          type: 'success',
-        })
-        router.push({
-          path: 'home'
-        })
+      newEntityObjectFormRef.value.validate((valid) => {
+        if (valid) {
+          let requestBody = {
+            objectCode: newEntityObjectForm.form.newObjectCode,
+            objectDesc: newEntityObjectForm.form.newObjectDescription,
+            objectName: newEntityObjectForm.form.newObjectName,
+            ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
+            ruleObjectFieldReqVoList: newEntityObjectTable.tableData
+          }
+          addOrUpdateEntityObject(requestBody).then(response => {
+            if (response.data.code !== '0') {
+              ElMessage.error(response.data.message)
+              return;
+            }
+            ElMessage({
+              message: '新建实体对象成功',
+              type: 'success',
+            })
+            router.push({
+              path: 'home',
+              query:{
+                tab:"EntityObject"
+              }
+            })
 
+          })
+        }
       })
     }
 
@@ -265,7 +273,7 @@ export default {
     }
 
     const handleDelete = (index) => {
-      newEntityObjectTable.tableData.splice(index,1)
+      newEntityObjectTable.tableData.splice(index, 1)
     }
     return {
       newEntityObjectForm,
@@ -277,7 +285,8 @@ export default {
       addEntityObjectBtn,
       //handleSizeChange,
       //handleCurrentChange,
-      cancelAdd
+      cancelAdd,
+      newEntityObjectFormRef
     }
   }
 }
@@ -292,6 +301,7 @@ export default {
   margin-top: 10px;
   float: right;
 }
+
 .el-header,
 .el-footer {
   background-color: #FFFFFF;

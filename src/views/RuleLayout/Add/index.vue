@@ -5,42 +5,43 @@
     </el-header>
     <el-main>
       <el-form
-        :rules="rules"
-        label-position="right"
-        label-width="130px"
-        :model="ruleLayoutForm"
+          ref="ruleLayoutFormRef"
+          :rules="rules"
+          label-position="right"
+          label-width="130px"
+          :model="ruleLayoutForm"
       >
         <el-form-item label="规则编排名称：" prop="name">
           <el-input
-            style="width: 400px; height: 30px"
-            v-model="ruleLayoutForm.name"
+              style="width: 400px; height: 30px"
+              v-model="ruleLayoutForm.name"
           ></el-input>
         </el-form-item>
         <el-form-item label="规则编排代码：" prop="code">
           <el-input
-            style="width: 400px; height: 30px"
-            v-model="ruleLayoutForm.code"
+              style="width: 400px; height: 30px"
+              v-model="ruleLayoutForm.code"
           ></el-input>
           <span
-            style="margin-left: 10px; color: #4a9ff9"
-            @click="handleRandomRuleLayoutCode"
-            >随机生成</span
+              style="margin-left: 10px; color: #4a9ff9"
+              @click="handleRandomRuleLayoutCode"
+          >随机生成</span
           >
         </el-form-item>
         <el-form-item label="程序类型：">
           <el-select
-            model-value="GROOVY"
-            placeholder="请选择"
-            :disabled="scene === 'preview'"
+              model-value="GROOVY"
+              placeholder="请选择"
+              :disabled="scene === 'preview'"
           >
-            <el-option label="GROOVY" value="GROOVY"> </el-option>
+            <el-option label="GROOVY" value="GROOVY"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="使用场景描述：">
           <el-input
-            v-model="ruleLayoutForm.sceneDesc"
-            style="width: 400px; height: 30px"
-            :disabled="scene === 'preview'"
+              v-model="ruleLayoutForm.sceneDesc"
+              style="width: 400px; height: 30px"
+              :disabled="scene === 'preview'"
           ></el-input>
         </el-form-item>
         <el-form-item label="规则编排：">
@@ -61,19 +62,20 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import {reactive, ref} from "vue";
 import RuleGraph from "@/views/RuleGraph/index.vue";
-import { useRoute, useRouter } from "vue-router";
-import { randomRuleLayoutCode, saveRuleLayout } from "@/api/ruleLayout";
-import { ElMessage } from "@enn/element-plus";
+import {useRoute, useRouter} from "vue-router";
+import {randomRuleLayoutCode, saveRuleLayout} from "@/api/ruleLayout";
+import {ElMessage} from "@enn/element-plus";
 import {checkGraphData} from "../ruleGraph"
 import {sortRule} from "views/RuleLayout/ruleGraph";
 import {useStore} from "vuex";
 
 export default {
   name: "RuleLayoutAdd",
-  components: { RuleGraph },
+  components: {RuleGraph},
   setup() {
+    const ruleLayoutFormRef = ref("")
     const store = useStore();
     const ruleLayoutForm = reactive({
       name: "",
@@ -84,7 +86,7 @@ export default {
     });
     const rules = reactive({
       name: [
-        { required: true, message: "请输入规则编排名称", trigger: "blur" },
+        {required: true, message: "请输入规则编排名称", trigger: "blur"},
         {
           pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
           message: "只能输入中文、数字、英文",
@@ -129,32 +131,36 @@ export default {
     const ruleGraph = ref(); //绑定rule-graph组件
     const router = useRouter();
     const addRuleLayout = () => {
-      const graphData = ruleGraph.value.getGraphData();
-      checkGraphData(graphData);
-      const ruleLayouts = convertToRuleLayouts(graphData);
-      const params = {
-        ruleGroupCode: ruleGroupCode,
-        ruleLayoutCode: ruleLayoutForm.code,
-        ruleLayoutName: ruleLayoutForm.name,
-        sceneDesc: ruleLayoutForm.sceneDesc,
-        list: ruleLayouts,
-      };
-      saveRuleLayout(params).then((res) => {
-        if (res.data.code !== "0") {
-          ElMessage.error(res.data.message);
-          return;
+      ruleLayoutFormRef.value.validate((valid) => {
+        if (valid) {
+          const graphData = ruleGraph.value.getGraphData();
+          checkGraphData(graphData);
+          const ruleLayouts = convertToRuleLayouts(graphData);
+          const params = {
+            ruleGroupCode: ruleGroupCode,
+            ruleLayoutCode: ruleLayoutForm.code,
+            ruleLayoutName: ruleLayoutForm.name,
+            sceneDesc: ruleLayoutForm.sceneDesc,
+            list: ruleLayouts,
+          };
+          saveRuleLayout(params).then((res) => {
+            if (res.data.code !== "0") {
+              ElMessage.error(res.data.message);
+              return;
+            }
+            ElMessage({
+              message: "新增脚本规则编排成功",
+              type: "success",
+            });
+            router.push({
+              path: "/home",
+              query: {
+                tab: "four",
+              },
+            });
+          });
         }
-        ElMessage({
-          message: "新增脚本规则编排成功",
-          type: "success",
-        });
-        router.push({
-          path: "/home",
-          query: {
-            tab: "four",
-          },
-        });
-      });
+      })
     };
     return {
       ruleLayoutForm,
@@ -163,6 +169,7 @@ export default {
       addRuleLayout,
       ruleGraph,
       cancelAddRuleLayout,
+      ruleLayoutFormRef
     };
   },
 };
@@ -172,6 +179,7 @@ export default {
 .container {
   height: calc(100vh - 50px);
 }
+
 .el-header,
 .el-footer {
   background-color: #ffffff;
@@ -179,6 +187,7 @@ export default {
   text-align: center;
   line-height: 60px;
 }
+
 .el-main {
   background-color: #ffffff;
   color: var(--el-text-color-primary);
