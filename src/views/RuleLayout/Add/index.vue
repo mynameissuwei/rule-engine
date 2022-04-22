@@ -96,6 +96,7 @@ export default {
       code: {
         required: true,
       },
+
     });
 
     const cancelAddRuleLayout = () => {

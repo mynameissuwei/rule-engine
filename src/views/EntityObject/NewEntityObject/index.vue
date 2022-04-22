@@ -90,6 +90,21 @@
                 value="java.lang.Integer"
             >
             </el-option>
+            <el-option
+                label="Double"
+                value="java.lang.Double"
+            >
+            </el-option>
+            <el-option
+                label="BigDecimal"
+                value="java.lang.BigDecimal"
+            >
+            </el-option>
+            <el-option
+                label="Date"
+                value="java.lang.Date"
+            >
+            </el-option>
           </el-select>
         </template>
       </el-table-column>
@@ -252,7 +267,6 @@ export default {
             router.push({
               path: 'home',
               query:{
-                tab:"EntityObject"
               }
             })
 

@@ -183,35 +183,36 @@ export default {
       })
     }
 
-    const scene = ref('update');
+    const scene = ref('preview');
 
     const getEntityObjectDataById = () => {
+      let scene = route.query.scene
       let count = 0;
       let id = route.query.entityObjectId
       checkEntityObjectDetail(id).then(response => {
         entityObjectForm.form.objectName = response.data.data.objectName
         entityObjectForm.form.objectCode = response.data.data.objectCode
         entityObjectForm.form.objectDesc = response.data.data.objectDesc
-        updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldResVoList.map(field =>{
+        updateEntityObjectTable.tableData = response.data.data.ruleObjectFieldResVoList.map(field => {
           field.index = count++;
           return field
         })
       })
     }
     const handleDelete = (index) => {
-      updateEntityObjectTable.tableData.splice(index,1)
+      updateEntityObjectTable.tableData.splice(index, 1)
     }
 
     const addOrUpdateEntityObjectBtn = () => {
       let requestBody = {
-        id:route.query.entityObjectId,
+        id: route.query.entityObjectId,
         objectCode: entityObjectForm.form.objectCode,
         objectDesc: entityObjectForm.form.objectDesc,
         objectName: entityObjectForm.form.objectName,
         ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
         ruleObjectFieldReqVoList: updateEntityObjectTable.tableData
       }
-      addOrUpdateEntityObject(requestBody).then((response) =>{
+      addOrUpdateEntityObject(requestBody).then((response) => {
         if (response.data.code !== '0') {
           ElMessage.error(response.data.message)
           return;
@@ -234,6 +235,7 @@ export default {
 
     onMounted(() => {
           getEntityObjectDataById()
+          scene.value = route.query.scene;
         }
     )
     return {
