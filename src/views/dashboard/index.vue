@@ -8,7 +8,7 @@
       <!-- <el-tab-pane label="校验规则" name="first">
         <check-rule></check-rule>
       </el-tab-pane> -->
-      <el-tab-pane label="脚本规则" name="ScriptRule">
+      <el-tab-pane label="脚本规则" name="scriptRule">
         <ScriptRule></ScriptRule>
       </el-tab-pane>
       <el-tab-pane label="自定义规则" name="customRule">
@@ -49,10 +49,6 @@ export default {
     const message = ref("entityObject");
     const route = useRoute();
     const router = useRouter();
-    const id = ref(route.query.id);
-    const name = ref(route.query.ruleGroupName);
-    const ruleGroupCode = ref(route.query.ruleGroupCode);
-    const description = ref(route.query.ruleGroupDesc);
 
     onMounted(() => {
       let tabValue = route.query.tab;
@@ -67,6 +63,7 @@ export default {
         },
       });
     };
+
     return {
       message,
       handleTabClick,

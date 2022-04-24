@@ -66,7 +66,7 @@
         :data="scriptRuleTable.tableData"
         style="margin-top: 10px;width: 100%;align:center"
         @selection-change="handleSelectionChange"
-        max-height="210"
+        max-height="450"
         :header-cell-style="{ background: '#F6F7FB' }"
         highlight-current-row
         @cell-click="scriptRuleDetailBtn"
@@ -95,20 +95,28 @@
       <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
-          <el-button
-              type="text"
-              icon="el-icon-edit"
-              @click="editScriptRule(scope.row)"
-          >编辑
-          </el-button>
-          <el-button
-              type="text"
-              icon="el-icon-delete"
-              class="red"
-              @click="testScriptRule(scope.row.scriptCode)"
-          >测试
-          </el-button
+          <span @click="editScriptRule(scope.row)" class="actionClass">编辑</span>
+          <span
+              @click="deleteScriptRuleBtn(scope.row)"
+              class="actionClass"
+              style="margin: 0px 10px"
+          >删除</span
           >
+          <el-dropdown
+              class="dropDown"
+              @command="(e) => handleModify(e, scope.row)"
+          >
+            <el-icon>
+              <more-filled/>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="1">发布</el-dropdown-item>
+                <el-dropdown-item command="0">停用</el-dropdown-item>
+                <el-dropdown-item command="2">测试</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -137,16 +145,19 @@
 <script>
 import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
+import {deleteScriptRuleById, pageScriptRule, updateScriptRuleStatus} from "@/api/scriptRule";
 import TestModal from "views/CustomRule/TestModal.vue"
 import {useStore} from "vuex";
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
-import {ElMessage} from "@enn/element-plus";
+import {ElMessage, ElMessageBox} from "@enn/element-plus";
 import rBadge from "@/components/rBadge.vue"
+import {deleteEntityObject} from "@/api/entityObject";
+import {MoreFilled} from "@element-plus/icons-vue";
+import {modifyList} from "@/api/customrule";
 
 export default {
   name: "index.vue",
-  components: {TestModal, rBadge},
+  components: {TestModal, rBadge, MoreFilled},
   setup() {
     const listLoading = ref(false);
     const router = useRouter();
@@ -254,6 +265,72 @@ export default {
       )
     }
 
+    //按钮组
+    const handleModify = (status, row) => {
+      const ids = {
+        id: row.id,
+        scriptCode: row.scriptCode
+      }
+      const params = {
+        list: [ids],
+        ruleScriptStatus: "PUBLISHED"
+      }
+      const param = {
+        list: [ids],
+        ruleScriptStatus: "UNPUBLISHED"
+      }
+      if (status === "2") {
+        testScriptRule(row.scriptCode);
+      } else {
+        if (status === "1") {
+          ElMessageBox.confirm(
+              `你确定要发布该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            updateScriptRuleStatus(params).then((response) => {
+              if (response.data.code !== '0') {
+                ElMessage.error(response.data.message)
+                return;
+              }
+                  ElMessage({
+                    type: "success",
+                    message: "发布成功",
+                  })
+                  getPageScriptRuleData();
+                })
+          })
+        }else{
+          ElMessageBox.confirm(
+              `你确定要停用该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            updateScriptRuleStatus(param).then((response) => {
+              if (response.data.code !== '0') {
+                ElMessage.error(response.data.message)
+                return;
+              }
+                  ElMessage({
+                    type: "success",
+                    message: "停用成功",
+                  })
+                  getPageScriptRuleData();
+                }
+            )
+          })
+        }
+      }
+    }
+
     //编辑脚本规则
     const editScriptRule = (row) => {
       if (row.ruleScriptStatus === "PUBLISHED") {
@@ -299,6 +376,32 @@ export default {
               getPageScriptRuleData()
             }
           }
+      )
+    }
+
+    const deleteScriptRuleBtn = (row) => {
+      let id = row.id
+      ElMessageBox.confirm(
+          '要删除这条规则么，是否继续？',
+          'Warning',
+          {
+            cancelButtonText: '取消',
+            confirmButtonText: '删除',
+            type: 'warning',
+          }
+      ).then(() => {
+        deleteScriptRuleById({id}).then((response) => {
+          getPageScriptRuleData()
+          if (response.data.code !== '0') {
+            ElMessage.error(response.data.message)
+            return;
+          }
+          ElMessage({
+            type: 'success',
+            message: '删除成功'
+          })
+        })
+      }).catch(
       )
     }
 
@@ -358,7 +461,9 @@ export default {
       getScriptParam,
       testScript,
       countFormatter,
-      listLoading
+      listLoading,
+      deleteScriptRuleBtn,
+      handleModify
     }
   }
 }
@@ -392,5 +497,10 @@ export default {
 .demo-pagination-block {
   margin-top: 10px;
   float: right;
+}
+
+.dropDown {
+  margin-left: 20px;
+  margin-top: 4px;
 }
 </style>

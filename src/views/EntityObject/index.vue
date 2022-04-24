@@ -57,7 +57,7 @@
     <el-table
         :data="entityObjectTable.tableData"
         style="width: 100%"
-        height="210"
+        max-height="450"
         :header-cell-style="{ background: '#F6F7FB' }"
         highlight-current-row
         @selection-change="handleSelectionChange"
@@ -88,18 +88,27 @@
       </el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
-          <el-button
-              type="text"
-              size="medium"
-              @click="editEntityObjectBtn(scope.row)">
-            编辑
-          </el-button>
-          <el-button
-              type="text"
-              size="medium"
-              @click="deleteEntityObjectBtn(scope.row)">
-            删除
-          </el-button>
+          <span @click="editEntityObjectBtn(scope.row)" class="actionClass">编辑</span>
+          <span
+              @click="deleteEntityObjectBtn(scope.row)"
+              class="actionClass"
+              style="margin: 0px 10px"
+          >删除</span
+          >
+          <el-dropdown
+              class="dropDown"
+              @command="(e) => handleModify(e, scope.row)"
+          >
+            <el-icon>
+              <more-filled/>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="1">发布</el-dropdown-item>
+                <el-dropdown-item command="0">停用</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -127,10 +136,12 @@ import {useRouter} from "vue-router";
 import {Message} from "@element-plus/icons-vue";
 import {useStore} from "vuex";
 import rBadge from "@/components/rBadge.vue"
+import {updateScriptRuleStatus} from "@/api/scriptRule";
+import {MoreFilled} from "@element-plus/icons-vue";
 
 export default {
   name: "index.vue",
-  components:{rBadge},
+  components:{rBadge,MoreFilled},
   setup() {
     const listLoading = ref(false)
     const store = useStore();
@@ -211,7 +222,6 @@ export default {
               type: 'success',
               message: '停用成功'
             })
-            console.log(entityObjectTable.tableData, 1011)
           }
       )
     }
@@ -241,6 +251,7 @@ export default {
       entityObjectForm.objectName = "";
       entityObjectForm.status = "";
       entityObjectForm.updatedByName = "";
+      getEntityObjectData()
     }
     //新建实体对象
     const newEntityObject = () => {
@@ -271,7 +282,6 @@ export default {
         timeAscOrDesc: "desc"
       }
       getEntityObject(requestBody).then(response => {
-        console.log(response,1010)
         entityObjectTable.tableData = response.data.data
         entityObjectPaginationConfig.current = response.data.pageNum || 1
         entityObjectPaginationConfig.pageSize = response.data.pageSize
@@ -282,7 +292,7 @@ export default {
 
     const deleteEntityObjectBtn = (row) => {
       ElMessageBox.confirm(
-          '要删除这条规则么，是否继续？',
+          '要删除这个实体么，是否继续？',
           'Warning',
           {
             cancelButtonText: '取消',
@@ -320,6 +330,64 @@ export default {
         }
       })
     }
+    //按钮组
+    const handleModify = (status, row) => {
+      const params = {
+        ids: [parseInt(row.id)],
+        status: 0
+      }
+      const param = {
+        ids: [parseInt(row.id)],
+        status: 1
+      }
+
+        if (status === "1") {
+          ElMessageBox.confirm(
+              `你确定要发布该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            updateEntityObjectStatus(param).then((response) => {
+              if (response.data.code !== '0') {
+                ElMessage.error(response.data.message)
+                return;
+              }
+              ElMessage({
+                type: "success",
+                message: "发布成功",
+              })
+              getEntityObjectData();
+            })
+          })
+        }else{
+          ElMessageBox.confirm(
+              `你确定要停用该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            updateEntityObjectStatus(params).then((response) => {
+                  if (response.data.code !== '0') {
+                    ElMessage.error(response.data.message)
+                    return;
+                  }
+                  ElMessage({
+                    type: "success",
+                    message: "停用成功",
+                  })
+              getEntityObjectData();
+                }
+            )
+          })
+        }
+    }
 
 
     onMounted(() => {
@@ -341,7 +409,8 @@ export default {
       deleteEntityObjectBtn,
       editEntityObjectBtn,
       listLoading,
-      entityObjectDetailBtn
+      entityObjectDetailBtn,
+      handleModify
     }
   }
 }
@@ -373,4 +442,8 @@ export default {
   float: right;
 }
 
+.dropDown {
+  margin-left: 20px;
+  margin-top: 4px;
+}
 </style>

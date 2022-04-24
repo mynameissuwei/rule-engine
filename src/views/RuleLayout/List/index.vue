@@ -60,7 +60,7 @@
       </el-col>
     </el-row>
     <el-table :data="ruleLayoutList" style="margin-top: 10px;width: 100%;align:center"
-              @selection-change="handleSelectionChange" height="210"
+              @selection-change="handleSelectionChange" max-height="450"
               v-loading="listLoading">
       <el-table-column type="selection" width="55"/>
       <el-table-column label="规则编排名称" prop="name">
@@ -82,24 +82,30 @@
       </el-table-column>
       <el-table-column label="最后修改人" prop="lastModify"></el-table-column>
       <el-table-column label="最后修改时间" prop="lastModifyTime"></el-table-column>
-      <el-table-column label="操作" prop="operation">
+      <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
-          <el-button
-              type="text"
-              size="small"
-              @click.prevent="editRuleLayoutDetail(scope.row)"
+          <span @click="editRuleLayoutDetail(scope.row)" class="actionClass">编辑</span>
+          <span
+              @click="deleteRuleLayout(scope.row)"
+              class="actionClass"
+              style="margin: 0px 10px"
+          >删除</span
           >
-            编辑
-          </el-button>
-          <el-button type="text" size="small" @click="publishRuleLayout(scope.row.id)"
-                     v-if="scope.row.status !== 'PUBLISHED'">发布
-          </el-button>
-          <el-button type="text" size="small" @click="disableRuleLayout(scope.row.id)"
-                     v-if="scope.row.status !== 'UNPUBLISHED'">停用
-          </el-button>
-          <el-button type="text" size="small" @click="deleteRuleLayout(scope.row)">删除</el-button>
-          <el-button type="text" size="small" @click="testRuleLayout(scope.row.code)">测试</el-button>
-
+          <el-dropdown
+              class="dropDown"
+              @command="(e) => handleModify(e, scope.row)"
+          >
+            <el-icon>
+              <more-filled/>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="1">发布</el-dropdown-item>
+                <el-dropdown-item command="0">停用</el-dropdown-item>
+                <el-dropdown-item command="2">测试</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -134,10 +140,13 @@ import {useStore} from "vuex";
 import TestModal from "views/CustomRule/TestModal.vue"
 import {scriptRuleParam, scriptRuleTest} from "@/api/ruleTest";
 import rBadge from "@/components/rBadge.vue"
+import {updateEntityObjectStatus} from "@/api/entityObject";
+import {MoreFilled} from "@element-plus/icons-vue";
+import {updateScriptRuleStatus} from "@/api/scriptRule";
 
 export default {
   name: "RuleLayoutList",
-  components: {TestModal, rBadge},
+  components: {TestModal, rBadge, MoreFilled},
   setup() {
     const listLoading = ref(false);
     const store = useStore()
@@ -312,11 +321,73 @@ export default {
             if (res.data.code === '0') {
               searchRuleLayout();
               ElMessage.success(res.data.data);
-            }else {
+            } else {
               ElMessage.error(res.data.message);
             }
           }
       )
+    }
+
+    //按钮组
+    const handleModify = (status, row) => {
+      const params = {
+        list: [row.id],
+        ruleLayoutStatus: "PUBLISHED"
+      }
+      const param = {
+        list: [row.id],
+        ruleLayoutStatus: "UNPUBLISHED"
+      }
+      if (status === "2") {
+        testRuleLayout(row.code);
+      } else {
+        if (status === "1") {
+          ElMessageBox.confirm(
+              `你确定要发布该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            changeRuleLayoutStatus(params).then((response) => {
+              if (response.data.code !== '0') {
+                ElMessage.error(response.data.message)
+                return;
+              }
+              ElMessage({
+                type: "success",
+                message: "发布成功",
+              })
+              searchRuleLayout();
+            })
+          })
+        } else {
+          ElMessageBox.confirm(
+              `你确定要停用该规则么?`,
+              "警告",
+              {
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                type: "warning",
+                buttonSize: "small",
+              }).then(() => {
+            changeRuleLayoutStatus(param).then((response) => {
+                  if (response.data.code !== '0') {
+                    ElMessage.error(response.data.message)
+                    return;
+                  }
+                  ElMessage({
+                    type: "success",
+                    message: "停用成功",
+                  })
+                  searchRuleLayout();
+                }
+            )
+          })
+        }
+      }
     }
 
     const disableRuleLayout = (id) => {
@@ -328,7 +399,7 @@ export default {
             if (res.data.code === '0') {
               searchRuleLayout();
               ElMessage.success(res.data.data);
-            }else {
+            } else {
               ElMessage.error(res.data.message);
             }
           }
@@ -346,21 +417,21 @@ export default {
             type: 'warning',
           }
       )
-      .then(() => {
-        removeRuleLayout({id}).then(res => {
-          if (res.data.code != "0") {
-            ElMessage.error(res.data.message)
-          } else {
-            ElMessage({
-              type: 'success',
-              message: '该规则编排删除成功',
+          .then(() => {
+            removeRuleLayout({id}).then(res => {
+              if (res.data.code != "0") {
+                ElMessage.error(res.data.message)
+              } else {
+                ElMessage({
+                  type: 'success',
+                  message: '该规则编排删除成功',
+                })
+                searchRuleLayout();
+              }
             })
-            searchRuleLayout();
-          }
-        })
-      })
-      .catch(() => {
-      })
+          })
+          .catch(() => {
+          })
 
     }
 
@@ -423,7 +494,8 @@ export default {
       testLayout,
       testVisible,
       countFormatter,
-      listLoading
+      listLoading,
+      handleModify
     }
   }
 }
@@ -453,5 +525,10 @@ export default {
 .el-table thead {
   font-weight: 500;
   background: #5a5e66 !important;
+}
+
+.dropDown {
+  margin-left: 20px;
+  margin-top: 4px;
 }
 </style>

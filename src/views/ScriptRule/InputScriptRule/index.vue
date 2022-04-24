@@ -100,8 +100,6 @@ export default {
         },
       ],
       ruleGroupCode: [{required: true, message: "请输入规则库名称", trigger: "blur"}],
-      scriptCode: [{required: true, message: "请输入规则代码", trigger: "blur"}],
-      scriptContent: [{required: true, trigger: "blur"}],
     };
 
     const route = useRoute();

@@ -33,11 +33,10 @@ export const pageScriptRule = (params) => {
 /**
  * 根据id删除脚本规则
  */
-export function deleteScriptRuleById (id){
+export const deleteScriptRuleById = (params) => {
     return request({
+        url:`/scriptRule/deleteScriptRuleById/${params.id}`,
         method:'post',
-        url:'/scriptRule/deleteScriptRuleById/{id}',
-        data:id
     })
 }
 
