@@ -78,10 +78,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="被调用次数" prop="transferCount" :formatter="countFormatter">
+      <el-table-column label="被调用次数" prop="transferCount" :formatter="countFormatter" sortable>
       </el-table-column>
       <el-table-column label="最后修改人" prop="lastModify"></el-table-column>
-      <el-table-column label="最后修改时间" prop="lastModifyTime"></el-table-column>
+      <el-table-column label="最后修改时间" prop="lastModifyTime" sortable></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
           <span @click="editRuleLayoutDetail(scope.row)" class="actionClass">编辑</span>

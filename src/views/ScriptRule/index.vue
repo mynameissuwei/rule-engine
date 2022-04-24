@@ -90,9 +90,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="transferCount" label="被调用次数" min-width="100%"
-                       :formatter="countFormatter"></el-table-column>
+                       :formatter="countFormatter" sortable></el-table-column>
       <el-table-column prop="updatedByName" label="最后修改人" min-width="100%"></el-table-column>
-      <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%"></el-table-column>
+      <el-table-column prop="updatedDate" label="最后修改时间" min-width="100%" sortable></el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
           <span @click="editScriptRule(scope.row)" class="actionClass">编辑</span>
