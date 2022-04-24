@@ -56,12 +56,11 @@ export default {
     });
 
     const handleTabClick = (tab) => {
-      router.push({
-        query: {
-          ...route.query,
-          tab: tab.props.name,
-        },
-      });
+/*      router.push({
+        query: {*/
+          tab = tab.props.name
+/*        },
+      });*/
     };
 
     return {
