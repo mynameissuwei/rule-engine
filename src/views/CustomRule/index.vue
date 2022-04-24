@@ -21,7 +21,7 @@
         <el-select
           v-model="listQuery.releaseStatus"
           clearable
-          placeholder="请选择"
+          placeholder="状态"
         >
           <el-option
             v-for="item in [
@@ -205,9 +205,11 @@ const handleCancel = () => {
 };
 
 const callCountFormatter = (row, column) => {
-  return row.callCount == null ? "0/次" : row.callCount + "/次";
+  return row.callCount == null ? "0" + "次" : row.callCount + "次";
 };
-
+const sortChange = ({ column, prop, order }) => {
+  console.log(column, prop, order);
+};
 // 获取表格数据
 const getList = () => {
   listLoading.value = true;
@@ -328,6 +330,10 @@ const handleReset = () => {
 };
 
 const handleEdit = (row) => {
+  if (row.releaseStatus === "1") {
+    ElMessage.info("已发布的规则不可以编辑");
+    return;
+  }
   router.push({
     name: "editCustomRule",
     params: { id: row.ruleId },

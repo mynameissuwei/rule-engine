@@ -17,7 +17,7 @@
         <div class="left-container">
           <el-table
             ref="singleTableRef"
-            :data="objectListRef"
+            :data="objectListRefBuff"
             v-loading="tableLoading"
             :row-class-name="tableRowClassName"
             @row-click="handleRowClick"
@@ -74,6 +74,7 @@ import { ElMessage } from "@enn/element-plus";
 const searchValueRef = ref("");
 const currentRowRef = ref(null);
 const objectListRef = ref([]);
+const objectListRefBuff = ref([]);
 const objectArrayRef = ref([]);
 const objectDetailRef = ref([]);
 const tableLoading = ref(false);
@@ -93,7 +94,8 @@ watch(searchValueRef, (newVal, oldVal) => {
   let result = objectArrayRef.value.filter(
     (item) => item.objectName.toLowerCase().indexOf(newVal) != -1
   );
-  objectListRef.value = result;
+  // objectListRef.value = result;
+  objectListRefBuff.value = result;
 });
 
 let valueContains = ["INTEGER_RANGE", "DOUBLE_RANGE", "NUMBER_RANGE"];
@@ -284,6 +286,7 @@ const getObjectList = async () => {
   });
 
   objectListRef.value = data;
+  objectListRefBuff.value = data;
   objectArrayRef.value = data;
   tableLoading.value = false;
 };
@@ -337,6 +340,7 @@ onMounted(async () => {
       return isRule ? isRule : item;
     });
     objectListRef.value = result;
+    objectListRefBuff.value = result;
     let currentRow = objectListRef.value.find((item) =>
       item.hasOwnProperty("checkList")
     );

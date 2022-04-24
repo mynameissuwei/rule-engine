@@ -164,6 +164,11 @@
               </el-scrollbar>
             </div>
           </el-form-item>
+          <el-form-item label=" " v-if="ruleObjectListFlag">
+            <span style="color: #f56c6c"
+              >该规则集下没有属性，请添加属性
+            </span></el-form-item
+          >
         </el-form>
       </div>
     </div>
@@ -239,7 +244,7 @@ export default {
     const spinLoadingRef = ref(false);
     const ruleSet = ref([]);
     const editDataRef = ref(null);
-
+    const ruleObjectListFlag = ref(false);
     const dataMap = reactive({
       formRef: null,
       form: {
@@ -442,6 +447,7 @@ export default {
         });
       },
       // 添加多个currentRow  ruleObjectList:[{ruleObjectFieldList:{}},{ruleObjectFieldList:{}}]
+
       pushRule(ruleObjectList) {
         let result;
         if (dataMap.fieldStatus == "edit") {
@@ -467,6 +473,14 @@ export default {
         }
 
         ruleSet.value = result;
+        ruleObjectListFlag.value = false;
+        for (let item of result) {
+          for (let ruleItem of item.ruleObjectList) {
+            if (!ruleItem.checkList.length) {
+              ruleObjectListFlag.value = true;
+            }
+          }
+        }
       },
       onCancel() {
         router.push({
@@ -504,6 +518,7 @@ export default {
       ruleSet,
       buttonLoadingRef,
       spinLoadingRef,
+      ruleObjectListFlag,
     };
   },
 };
