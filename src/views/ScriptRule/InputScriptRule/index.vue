@@ -156,7 +156,7 @@ export default {
             router.push({
               path: "home",
               query: {
-                tab: "ScriptRule"
+                tab: "scriptRule"
               }
             })
           })
@@ -173,7 +173,7 @@ export default {
       router.push({
         path: "home",
         query: {
-          ...route.query
+          tab:"scriptRule"
         }
       })
     }

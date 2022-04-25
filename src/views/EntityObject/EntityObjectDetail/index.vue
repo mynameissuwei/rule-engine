@@ -7,17 +7,23 @@
       </el-button>
     </el-header>
     <el-main>
-      <el-form :rules="rules" label-position="right" label-width="130px">
-        <el-form-item label="对象名称：" prop="ObjectName">
+      <el-form :rules="rules" label-position="right" label-width="130px" :model="entityObjectForm.form">
+        <el-form-item label="对象名称：" prop="objectName">
           <el-input v-model="entityObjectForm.form.objectName" style="width: 400px;height: 30px"
+                    maxlength="50"
+                    show-word-limit
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="对象代码：" prop="ObjectCode">
+        <el-form-item label="对象代码：" prop="objectCode">
           <el-input v-model="entityObjectForm.form.objectCode" style="width: 400px;height: 30px"
+                    maxlength="50"
+                    show-word-limit
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="对象描述：" prop="ObjectDesc">
+        <el-form-item label="对象描述：" prop="objectDesc">
           <el-input v-model="entityObjectForm.form.objectDesc" style="width: 400px;height: 30px"
+                    maxlength="50"
+                    show-word-limit
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="对象下字段" prop="newEntityObjectTable">
@@ -153,7 +159,7 @@ export default {
       ]
     })
     const rules = reactive({
-      ObjectName: [
+      objectName: [
         {required: true, message: "请输入实体对象名称", trigger: "blur"},
         {
           pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
@@ -161,7 +167,7 @@ export default {
           trigger: "blur",
         },
       ],
-      ObjectCode: [
+      objectCode: [
         {
           required: true,
           message: 'Please input rule name',

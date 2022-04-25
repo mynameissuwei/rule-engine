@@ -7,12 +7,16 @@
       </el-button>
     </el-header>
     <el-main>
-      <el-form :rules="rules" label-position="right" label-width="130px">
+      <el-form :rules="rules" label-position="right" label-width="130px" :model="ScriptRuleFormDetailForm.form">
         <el-form-item label="脚本规则名称：" prop="scriptName">
-          <el-input v-model="ScriptRuleFormDetailForm.form.scriptName" style="width: 400px;height: 30px"
+          <el-input v-model="ScriptRuleFormDetailForm.form.scriptName" style="width: 400px;height: 30px" maxlength="50"
+                    show-word-limit
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
-        <el-form-item label="规则库名称：" prop="ruleGroupCode">{{ ScriptRuleFormDetailForm.form.ruleGroupCode }}</el-form-item>
+        <el-form-item label="规则库名称：" prop="ruleGroupCode">{{
+            ScriptRuleFormDetailForm.form.ruleGroupCode
+          }}
+        </el-form-item>
         <el-form-item label="脚本规则代码：" prop="scriptCode">{{ ScriptRuleFormDetailForm.form.scriptCode }}</el-form-item>
         <el-form-item label="程序类型：">
           <el-select model-value="GROOVY" placeholder="请选择" :disabled="scene === 'preview'">
@@ -24,7 +28,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="使用场景描述：">
-          <el-input v-model="ScriptRuleFormDetailForm.form.sceneDesc" style="width: 400px;height: 30px"
+          <el-input v-model="ScriptRuleFormDetailForm.form.sceneDesc" style="width: 400px;height: 30px" maxlength="50"
+                    show-word-limit
                     :disabled="scene === 'preview'"></el-input>
         </el-form-item>
         <el-form-item label="代码片段：">
