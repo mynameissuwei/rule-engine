@@ -107,8 +107,7 @@ export default {
         ScriptRuleFormDetailForm.form.sceneDesc = response.data.data.sceneDesc
         ScriptRuleFormDetailForm.form.programType = response.data.data.programType
         ScriptRuleFormDetailForm.form.scriptContent = scriptContent && scriptContent.length > 0 ?
-            response.data.data.scriptContent
-            .replaceAll("\"","") : scriptContent;
+            response.data.data.scriptContent : scriptContent;
       })
     }
 
