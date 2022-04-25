@@ -165,7 +165,9 @@ export default {
         }
         router.push({
           path: '/home',
-          query: {}
+          query: {
+            tab:"four"
+          }
         })
       })
     }
@@ -192,7 +194,9 @@ export default {
     let cancelEdit = () => {
       router.push({
         path: '/home',
-        query: {}
+        query: {
+          tab:"four"
+        }
       })
     }
     return {
