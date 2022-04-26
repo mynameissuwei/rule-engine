@@ -207,12 +207,12 @@ export default {
     // 分页函数
     function handleSizeChange(pageSize) {
       scriptRulePaginationConfig.pageSize = pageSize
-      getPageScriptRuleData()
+      search()
     }
 
     function handleCurrentChange(pageNumber) {
       scriptRulePaginationConfig.current = pageNumber
-      getPageScriptRuleData()
+      search()
     }
 
     const selectedRuleLayoutIds = reactive([])

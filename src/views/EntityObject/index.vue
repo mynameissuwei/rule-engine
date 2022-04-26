@@ -172,12 +172,12 @@ export default {
     //规则库分页函数
     function handleSizeChange(pageSize) {
       entityObjectPaginationConfig.pageSize = pageSize;
-      getEntityObjectData();
+      entityObjectSearch();
     }
 
     function handleCurrentChange(pageNumber) {
       entityObjectPaginationConfig.current = pageNumber;
-      getEntityObjectData();
+      entityObjectSearch();
     }
 
     //实体对象勾选对象、勾选函数
