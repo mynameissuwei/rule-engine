@@ -49,13 +49,13 @@
                      size="small"
                      @click="batchDisPublishScriptRule"
                      :disabled="selectedRuleLayoutIds.length===0">
-            停用
+            批量停用
           </el-button>
           <el-button class="publish"
                      size="small"
                      @click="batchPublishScriptRule"
                      :disabled="selectedRuleLayoutIds.length===0">
-            发布
+            批量发布
           </el-button>
         </el-button-group>
       </el-col>

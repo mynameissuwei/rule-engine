@@ -47,8 +47,10 @@
       <el-col :span="12" class="right">
         <el-button-group>
           <el-button type="primary" size="small" @click="newEntityObject">新建</el-button>
-          <el-button class="stop" size="small" @click="batchDisPublishEntityObject">停用</el-button>
-          <el-button class="publish" size="small" @click="batchPublishEntityObject">发布</el-button>
+          <el-button class="stop" size="small" @click="batchDisPublishEntityObject"
+                     :disabled="selectedRuleLayoutIds.length===0">批量停用</el-button>
+          <el-button class="publish" size="small" @click="batchPublishEntityObject"
+                     :disabled="selectedRuleLayoutIds.length===0">批量发布</el-button>
           <el-button size="small">从对象管理导入</el-button>
         </el-button-group>
       </el-col>
@@ -410,7 +412,8 @@ export default {
       editEntityObjectBtn,
       listLoading,
       entityObjectDetailBtn,
-      handleModify
+      handleModify,
+      selectedRuleLayoutIds
     }
   }
 }
