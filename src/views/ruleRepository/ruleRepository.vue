@@ -41,7 +41,7 @@
       <el-table-column
         prop="ruleGroupDescription"
         label="规则库描述"
-        min-width="200%"
+        min-width="100%"
       >
       </el-table-column>
       <el-table-column
