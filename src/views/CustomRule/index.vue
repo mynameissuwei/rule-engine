@@ -218,7 +218,7 @@ const getList = () => {
   fetchTableData({
     ...listQuery,
     ruleName: listQuery.ruleName.trim(),
-    updatedByName: listQuery.updatedByName.trim(),
+    updatedUserName: listQuery.updatedByName.trim(),
     groupId: store.state.rule.ruleData.id,
   }).then((res) => {
     tableData.value = res.data;
