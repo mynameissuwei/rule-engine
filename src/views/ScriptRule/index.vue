@@ -14,7 +14,7 @@
         <el-col :span="7">
           <el-input
               v-model="scriptRuleForm.updatedByName"
-              placeholder="最后修改人关键词"
+              placeholder="最后修改人"
               clearable>
           </el-input>
         </el-col>
