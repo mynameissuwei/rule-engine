@@ -255,6 +255,14 @@ export default {
             ruleGroupCode: store.state.rule.ruleData.ruleGroupCode,
             ruleObjectFieldReqVoList: newEntityObjectTable.tableData
           }
+      if (requestBody.objectName === "") {
+        ElMessage.info("实体对象名不能为空");
+        return
+      }
+      if (requestBody.objectCode === "") {
+        ElMessage.info("实体对象编码");
+        return
+      }
           addOrUpdateEntityObject(requestBody).then(response => {
             if (response.data.code !== '0') {
               ElMessage.error(response.data.message)
