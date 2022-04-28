@@ -7,6 +7,16 @@ export const checkGraphData = (graphData) => {
     console.log(">>>>>>>>>>>>>>>> nodes edges", nodes, edges)
     console.log("allNodeIds --------->", nodes.map(node => node.id))
     const nodeIds = nodes.map(node => node.id);
+    for (let i = 0; i < edges.length; i++) {
+        for (let j = i+1; j < edges.length; j++) {
+            if(edges[i].source.cell === edges[j].target.cell &&
+                edges[i].target.cell === edges[j].source.cell
+            ){
+                ElMessage.error("两个节点之间不可互相指向");
+                throw new Error("两个节点之间不可互相指向");
+            }
+        }
+    }
     for (let i = 0; i < nodeIds.length; i++) {
         let asSource = 0;
         let asTarget = 0;
