@@ -8,6 +8,11 @@ export const checkGraphData = (graphData) => {
     console.log("allNodeIds --------->", nodes.map(node => node.id))
     const nodeIds = nodes.map(node => node.id);
     for (let i = 0; i < edges.length; i++) {
+        //校验每条边的source与target是否存在
+        if(!edges[i].source.cell || !edges[i].target.cell){
+            ElMessage.error("存在边的指向或者源头节点不明");
+            throw new Error("存在边的指向或者源头节点不明");
+        }
         for (let j = i+1; j < edges.length; j++) {
             if(edges[i].source.cell === edges[j].target.cell &&
                 edges[i].target.cell === edges[j].source.cell
