@@ -66,11 +66,13 @@ export function generateEdgeRemoveTools(scene){
 export function initGraph(width, height, scene){
   const graph =  new Graph({
     container: document.getElementById("container"),
-    width: width,
-    height: height,
+    // width: width,
+    // height: height,
     background: {
       color: '#F2F3F5', // 设置画布背景颜色
     },
+    panning: true,
+
   })
 
   // 监听边生成期间，添加删除工具

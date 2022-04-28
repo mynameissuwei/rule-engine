@@ -32,9 +32,12 @@
 
           <!--          <div class="mask"></div>-->
 
-          <div style="height: 300px; width: 1045px">
-            <rule-graph ref="ruleGraph" :operation-type="scene" :graphData="ruleLayoutInfo.ruleLayout"></rule-graph>
-          </div>
+<!--          <div style="height: 500px; width: 1045px">-->
+<!--            <rule-graph ref="ruleGraph" :operation-type="scene" :graphData="ruleLayoutInfo.ruleLayout"></rule-graph>-->
+<!--          </div>-->
+
+          <rule-graph ref="ruleGraph" :operation-type="scene" :graphData="ruleLayoutInfo.ruleLayout"></rule-graph>
+
 
         </el-form-item>
       </el-form>

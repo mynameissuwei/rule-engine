@@ -5,7 +5,7 @@
         <el-button @click="openDialogForRuleList" size="small" plain style="background: #F2F3F5;margin-left: auto" :disabled="!editable">添加规则</el-button>
       </div>
     </template>
-    <div id="container"></div>
+    <div id="container" style="height: 500px; width: 1045px"></div>
   </el-card>
 
   <!--新增规则弹框-->
