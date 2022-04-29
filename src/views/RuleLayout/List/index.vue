@@ -13,7 +13,7 @@
         <el-col :span="7">
           <el-input
               v-model="ruleLayoutQueryForm.keyword"
-              placeholder="最后修改人关键词"
+              placeholder="最后修改人"
               clearable>
           </el-input>
         </el-col>
@@ -239,6 +239,8 @@ export default {
       ruleLayoutQueryForm.name = null;
       ruleLayoutQueryForm.keyword = null;
       ruleLayoutQueryForm.status = null;
+      pagination.currentPage = 1
+      pagination.pageSize = 10
       searchRuleLayout();
     }
 

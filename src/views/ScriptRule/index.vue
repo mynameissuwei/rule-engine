@@ -201,6 +201,8 @@ export default {
       scriptRuleForm.scriptName = ''
       scriptRuleForm.ruleScriptStatus = ''
       scriptRuleForm.updatedByName = ''
+      scriptRulePaginationConfig.current = 1
+      scriptRulePaginationConfig.pageSize = 10
       getPageScriptRuleData()
     }
 

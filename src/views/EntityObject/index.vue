@@ -86,7 +86,7 @@
       </el-table-column>
       <el-table-column property="updatedByName" label="最后修改人" min-width="100%">
       </el-table-column>
-      <el-table-column property="updatedDate" label="最后修改时间" min-width="100%">
+      <el-table-column property="updatedDate" label="最后修改时间" min-width="100%" sortable>
       </el-table-column>
       <el-table-column label="操作" min-width="100%" align="center">
         <template #default="scope">
@@ -253,6 +253,8 @@ export default {
       entityObjectForm.objectName = "";
       entityObjectForm.status = "";
       entityObjectForm.updatedByName = "";
+      entityObjectPaginationConfig.current = 1
+      entityObjectPaginationConfig.pageSize = 10
       getEntityObjectData()
     }
     //新建实体对象
