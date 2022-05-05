@@ -186,7 +186,8 @@ export default {
           statusName: RULE_LAYOUT_STATUS[layout.ruleLayoutStatus],
           isUsing: "否",
           lastModify: layout.updatedByName,
-          lastModifyTime: layout.updatedDate
+          lastModifyTime: layout.updatedDate,
+          transferCount:layout.transferCount
         }
       })
     }
@@ -469,6 +470,8 @@ export default {
       testVisible.value = false;
     };
     const countFormatter = (row, column) => {
+      console.log("row",row)
+      console.log("row.id",row.transferCount)
       return row.transferCount == null ? "0次" : row.transferCount + "次";
     };
 
