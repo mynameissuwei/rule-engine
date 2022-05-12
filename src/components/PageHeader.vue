@@ -1,7 +1,12 @@
 <template>
   <div class="page-header">
     <div class="top-container">
-      <div class="left">{{ name }}</div>
+      <div class="left">
+        {{ name }}
+        <el-button @click="goPage" type="text" style="margin-left: 8px"
+          >返回列表</el-button
+        >
+      </div>
       <div class="right">
         <el-button
           type="primary"
@@ -62,11 +67,17 @@ export default {
         },
       });
     };
+    const goPage = () => {
+      router.push({
+        path: "/",
+      });
+    };
     return {
       name,
       code,
       description,
       gotoUpdateRuleRepository,
+      goPage,
     };
   },
 };
